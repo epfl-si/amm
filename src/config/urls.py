@@ -1,3 +1,5 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 """amm URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:

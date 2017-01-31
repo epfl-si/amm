@@ -1,3 +1,5 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 #!/usr/bin/env python
 import os
 import sys
