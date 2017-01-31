@@ -2,5 +2,5 @@
 AMM
 =================
 
-This application ...
+This application .....
 
