@@ -10,6 +10,4 @@ class FakeTestCase(TestCase):
     def test_fake(self):
         """Test fake"""
 
-        import pdb; pdb.set_trace()
-
         self.assertEqual("toto", 'toto')

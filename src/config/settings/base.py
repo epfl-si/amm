@@ -1,20 +1,33 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 import os
+import json
 
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+from django.core.exceptions import ImproperlyConfigured
+from unipath import Path
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1g6@kri8wk$*s^a-u^y7tagi&mkq37_&2u(!l=_d_a*&+-9zxj'
+# secrets
+BASE_DIR = Path(__file__).ancestor(4)
 
+SRC_DIR = Path(__file__).ancestor(3)
+
+with open(BASE_DIR + "/secrets.json", 'r') as f:
+    secrets = json.loads(f.read())
+
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {0} environnement variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = get_secret("SECRET_KEY")
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
