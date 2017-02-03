@@ -38,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third librairies
+    'rest_framework',
+
+    # Custom django app
     'api',
 ]
 
