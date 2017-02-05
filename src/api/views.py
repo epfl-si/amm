@@ -4,7 +4,7 @@ from rest_framework.parsers import JSONParser
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from api.models import Key
-from api.redis import save_in_redis, get_all_keys, get_keys
+from api.redis import save_apikey_in_redis, is_exist
 
 
 class JSONResponse(HttpResponse):
@@ -31,9 +31,11 @@ def ldap_authentificate(username, password):
 def key_list(request):
 
     if request.method == 'GET':
-        dict = {}
-        for username in get_all_keys():
-            keys = get_keys(username)
+
+        data = JSONParser().parse(request)
+        username = is_exist(data['apikey'])
+        if username:
+            apikeys = get_apikeys(username)
             username = str(username, 'utf-8')
             dict[username] = keys
         return JSONResponse(dict, status=201)
@@ -46,8 +48,9 @@ def key_list(request):
         if not username:
             LDAPS_AUTHENTIFICATION_ERROR = "Ldaps authentication failed"
         else:
-            key = Key(username=username, public_key="abc", private_key="def")
-            save_in_redis(username, key)
-            print(get_all_keys())
-            return JSONResponse(key.__dict__, status=201)
+            key = Key()
+            save_apikey_in_redis(username, key.__str__())
+            dict = key.__dict__
+            dict['apikey'] = key.get_apikey()
+            return JSONResponse(dict, status=201)
         return JSONResponse(LDAPS_AUTHENTIFICATION_ERROR, status=400)

@@ -3,6 +3,6 @@ from api.views import key_list
 
 
 urlpatterns = [
-    url(r'^keys/$', key_list),
+    url(r'^apikeys/$', key_list),
 
 ]

@@ -5,16 +5,23 @@ def get_connection():
     return get_redis_connection("default")
 
 
-def save_in_redis(username, key):
+def save_apikey_in_redis(username, apikey):
     connection = get_connection()
-    connection.lpush(username, key)
+    connection.hset('apikeys', apikey, username)
 
 
-def get_keys(username):
+def get_apikeys(username):
     connection = get_connection()
-    return connection.lrange(username, 0, -1)
+    apikeys = []
+    allkeys = connection.hgetall('apikeys')
+    for key in allkeys:
+        if username == connection.hget('apikeys', key):
+            apikeys.append(key)
+    return apikeys
 
-
-def get_all_keys():
+def is_exist(apikey):
     connection = get_connection()
-    return connection.keys()
+    return connection.hexists('apikeys', apikey)
+
+
+
