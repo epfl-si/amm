@@ -1,5 +1,4 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-import os
 import json
 
 from django.core.exceptions import ImproperlyConfigured
@@ -23,6 +22,7 @@ def get_secret(setting, secrets=secrets):
     except KeyError:
         error_msg = "Set the {0} environnement variable".format(setting)
         raise ImproperlyConfigured(error_msg)
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_secret("SECRET_KEY")

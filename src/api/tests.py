@@ -2,7 +2,6 @@
 from django.test import TestCase
 
 
-
 class FakeTestCase(TestCase):
     def setUp(self):
         pass

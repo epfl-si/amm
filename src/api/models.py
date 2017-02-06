@@ -3,22 +3,22 @@ import binascii
 import os
 
 
-class Key:
+class APIKey:
 
     def __init__(self):
-        self.private_key = self.generate_private_key()
-        self.public_key = self.generate_public_key()
+        self.access_key = self.generate_access_key()
+        self.secret_key = self.generate_secret_key()
 
     def __str__(self):
-        return self.public_key + self.private_key
+        return self.access_key + self.secret_key
 
     @staticmethod
-    def generate_private_key():
-        return binascii.hexlify(os.urandom(40))
+    def generate_access_key():
+        return binascii.hexlify(os.urandom(20)).decode("utf-8")
 
     @staticmethod
-    def generate_public_key():
-        return binascii.hexlify(os.urandom(20))
+    def generate_secret_key():
+        return binascii.hexlify(os.urandom(40)).decode("utf-8")
 
-    def get_apikey(self):
-        return self.public_key + self.private_key
+    def get_id(self, username):
+        return "key:%s:%s" % (username, self.access_key)

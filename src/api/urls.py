@@ -1,8 +1,8 @@
 from django.conf.urls import url
-from api.views import key_list
+from api.views import keys
 
 
 urlpatterns = [
-    url(r'^apikeys/$', key_list),
+    url(r'^apikeys/$', keys),
 
 ]

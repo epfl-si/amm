@@ -3,8 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
-from api.models import Key
-from api.redis import save_apikey_in_redis, is_exist
+from api.models import APIKey
+from api.redis import save_key, exists, get_apikeys
 
 
 class JSONResponse(HttpResponse):
@@ -19,8 +19,11 @@ class JSONResponse(HttpResponse):
 
 
 def ldap_authentificate(username, password):
+    """
+    LDAPs authentication
+    """
 
-    # connection = get_ldap_connection()
+    # connection = get_ldap_connection(username, password)
     connection = True
     if connection:
         return username
@@ -28,29 +31,28 @@ def ldap_authentificate(username, password):
 
 
 @csrf_exempt
-def key_list(request):
+def keys(request):
+    """ View to manage """
 
     if request.method == 'GET':
 
         data = JSONParser().parse(request)
-        username = is_exist(data['apikey'])
+
+        username = exists(data['access_key'], data['secret_key'])
         if username:
-            apikeys = get_apikeys(username)
-            username = str(username, 'utf-8')
-            dict[username] = keys
-        return JSONResponse(dict, status=201)
+            apikeys = get_apikeys(username=username)
+            return JSONResponse(apikeys, status=201)
+
+        return JSONResponse("APIKey doesn't exist", status=403)
 
     if request.method == 'POST':
 
         data = JSONParser().parse(request)
         username = ldap_authentificate(data['username'], data['password'])
 
-        if not username:
-            LDAPS_AUTHENTIFICATION_ERROR = "Ldaps authentication failed"
-        else:
-            key = Key()
-            save_apikey_in_redis(username, key.__str__())
-            dict = key.__dict__
-            dict['apikey'] = key.get_apikey()
+        if username:
+            apikey = APIKey()
+            save_key(username, apikey)
+            dict = apikey.__dict__
             return JSONResponse(dict, status=201)
-        return JSONResponse(LDAPS_AUTHENTIFICATION_ERROR, status=400)
+        return JSONResponse("Ldaps authentication failed", status=400)

@@ -10,4 +10,3 @@ def get_ldap_connection():
                       check_names=True,
                       user='charmier',
                       password='toto')
-
