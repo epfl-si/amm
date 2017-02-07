@@ -4,7 +4,6 @@ AMM
 
 This application .....
 
-
 http POST http://127.0.0.1:8000/v1/apikeys/ username='greg' password='toto'
 
 HTTP/1.0 201 Created

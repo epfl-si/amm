@@ -29,7 +29,7 @@ cd amm
 Step 4 : Create a python virtualenv
 -----------------------------------
 
-mkvirtualenv --python=/usr/bin/python3 testamm
+mkvirtualenv --python=/usr/bin/python3 amm
 
 Step 5 : Install all third packages
 -----------------------------------
@@ -39,7 +39,7 @@ pip install -r requirements/local.txt
 Step 6 : Create secrets file
 ----------------------------
 
-Create a file **secrets.json** and copy/paste the following content
+Create a file **/secrets.json** and copy/paste the following content :
 
 {
   "FILENAME": "secrets.json",
