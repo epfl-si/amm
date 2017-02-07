@@ -1,30 +1,23 @@
-import ldap
-import ldap.dn
+import re
+from ldap3 import Server, Connection
 
-# LDAP (secure connection)
-LDAP_URL = "ldaps://scoldap.epfl.ch"
-LDAP_SUCCESS_CODE = 97
+# config
+LDAP_BASE = 'ou=users,o=epfl,c=ch'
+LDAP_SERVER = 'scoldap.epfl.ch'
 
 
 def authenticate(username, password):
 
-    ldap_conn = get_ldap()
+    """ authenticate the user with a secure bind on the LDAP server """
 
-    # escape the username because it's part of a dn
-    username = ldap.dn.escape_dn_chars(username)
+    # check the username
+    if not re.match("^[A-Za-z0-9_-]*$", username):
+        return False
 
-    dn = "uid=" + username + ",ou=users,o=epfl,c=ch"
+    dn = "uid=" + username + "," + LDAP_BASE
 
-    result = ldap_conn.simple_bind_s(dn, password)
+    s = Server(LDAP_SERVER, use_ssl=True)
 
-    return result[0] == LDAP_SUCCESS_CODE
+    c = Connection(s, user=dn, password=password)
 
-
-def get_ldap():
-    """
-    Returns an LDAP connection.
-
-    :return an LDAP connection.
-    """
-
-    return ldap.initialize(LDAP_URL)
+    return c.bind()
