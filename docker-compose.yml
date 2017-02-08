@@ -12,6 +12,7 @@ services:
     build: .
     volumes:
       - ./src:/opt/amm/src
+      - ./htmlcov:/opt/amm/htmlcov
     expose:
       - "8000"
     depends_on:

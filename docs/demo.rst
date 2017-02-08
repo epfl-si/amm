@@ -2,7 +2,13 @@
 ==========
 docker-compose build
 docker-compose up
+
+Si on veut flusher redis :
 docker exec -it amm_redis_1 redis-cli
+
+Pour lancer les tests et calculer le coverage
+docker-compose exec django ./coverage.sh
+
 
 
 2. Echec d'authentification LDAPS
@@ -34,8 +40,8 @@ http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='ee3a52cbaadf239c9a40' se
 
 5. Points importants
 ====================
-
 - Couverture de tests : 91%
+docker-compose exec django ./coverage.sh
 file:///home/greg/workspace-idevelop/amm/htmlcov/index.html
 
 - Respect de la convention PEP8 : 100%

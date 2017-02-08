@@ -1,4 +1,3 @@
-bin/*
 docs/*
 docker/nginx/*
 docker/redis/*

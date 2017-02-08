@@ -17,7 +17,6 @@ class APIKey:
     def generate_access_key():
         return binascii.hexlify(os.urandom(10)).decode("utf-8")
 
-
     def generate_secret_key(self):
 
         secret_key_clear_byte = binascii.hexlify(os.urandom(20))
@@ -28,7 +27,5 @@ class APIKey:
         return "key:%s:%s" % (username, self.access_key)
 
     def get_values(self):
-        dict = {}
-        dict["access_key"] = self.access_key
-        dict["secret_key"] = self.secret_key_clear
-        return dict
+        return {"access_key": self.access_key,
+                "secret_key": self.secret_key_clear}
