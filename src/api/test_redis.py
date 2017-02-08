@@ -1,0 +1,32 @@
+from django.test import TestCase
+
+from api.apikey import APIKey
+from api.redis import save_key, exists, get_apikeys, flushall
+
+
+class RedisTestCase(TestCase):
+
+    def test_redis(self):
+
+        # Create data
+        username = 'greg'
+        apikey = APIKey()
+
+        # Save an APIKey
+        save_key(username, apikey)
+
+        # Check is APIKEY exists
+        exists(apikey.access_key, apikey.secret_key)
+
+        # Return all keys of username 'greg'
+        keys = get_apikeys(username)
+
+        # Check if apikey
+        self.assertTrue(apikey.access_key in keys)
+
+        flushall(self)
+
+    def test_not_exists(self):
+
+        # Check is APIKEY exists
+        self.assertFalse(exists("1234", "4321"))

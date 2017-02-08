@@ -7,7 +7,6 @@ LDAP_SERVER = 'scoldap.epfl.ch'
 
 
 def authenticate(username, password):
-
     """ authenticate the user with a secure bind on the LDAP server """
 
     # check the username

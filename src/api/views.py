@@ -3,8 +3,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
-from api.models import APIKey
+from api.apikey import APIKey
 from api.redis import save_key, exists, get_apikeys
+from utils import authenticate
 
 
 class JSONResponse(HttpResponse):
@@ -18,41 +19,28 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
-def ldap_authentificate(username, password):
-    """
-    LDAPs authentication
-    """
-
-    # connection = get_ldap_connection(username, password)
-    connection = True
-    if connection:
-        return username
-    return False
-
-
 @csrf_exempt
 def keys(request):
     """ View to manage """
 
     if request.method == 'GET':
 
-        data = JSONParser().parse(request)
+        if 'access_key' in request.GET and 'secret_key' in request.GET:
+            username = exists(request.GET['access_key'], request.GET['secret_key'])
+            if username:
+                apikeys = get_apikeys(username=username)
+                return JSONResponse(apikeys, status=201)
 
-        username = exists(data['access_key'], data['secret_key'])
-        if username:
-            apikeys = get_apikeys(username=username)
-            return JSONResponse(apikeys, status=201)
-
-        return JSONResponse("APIKey doesn't exist", status=403)
+            return JSONResponse("APIKey doesn't exist", status=403)
 
     if request.method == 'POST':
 
         data = JSONParser().parse(request)
-        username = ldap_authentificate(data['username'], data['password'])
 
-        if username:
+        if authenticate(data['username'], data['password']):
             apikey = APIKey()
-            save_key(username, apikey)
-            dict = apikey.__dict__
-            return JSONResponse(dict, status=201)
-        return JSONResponse("Ldaps authentication failed", status=400)
+            save_key(data['username'], apikey)
+            return JSONResponse(apikey.__dict__, status=201)
+        else:
+            return JSONResponse("Ldaps authentication failed", status=401)
+    return JSONResponse("Bad request", status=400)

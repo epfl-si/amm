@@ -9,7 +9,6 @@ def get_connection():
 
 
 def save_key(username, apikey):
-
     """ Save APIKey in redis """
     id = apikey.get_id(username)
     connection = get_connection()
@@ -35,13 +34,19 @@ def get_apikeys(username):
 
 def exists(access_key, secret_key):
     """ Return True if the apikey exists """
+    try:
+        # get the key
+        key = get_connection().keys("key:*:%s" % access_key)
+        key = key[0].decode("utf-8")
 
-    # get the key
-    key = get_connection().keys("key:*:%s" % access_key)
-    key = key[0].decode("utf-8")
+        key_str, username, access_key = key.split(':')
 
-    key_str, username, access_key = key.split(':')
+        if key and get_connection().hget(key, 'secret').decode("utf-8") == secret_key:
+            return username
+        return False
+    except:
+        return False
 
-    if key and get_connection().hget(key, 'secret').decode("utf-8") == secret_key:
-        return username
-    return False
+
+def flushall(self):
+    get_connection().flushall()

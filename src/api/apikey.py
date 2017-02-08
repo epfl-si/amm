@@ -14,11 +14,11 @@ class APIKey:
 
     @staticmethod
     def generate_access_key():
-        return binascii.hexlify(os.urandom(20)).decode("utf-8")
+        return binascii.hexlify(os.urandom(10)).decode("utf-8")
 
     @staticmethod
     def generate_secret_key():
-        return binascii.hexlify(os.urandom(40)).decode("utf-8")
+        return binascii.hexlify(os.urandom(20)).decode("utf-8")
 
     def get_id(self, username):
         return "key:%s:%s" % (username, self.access_key)

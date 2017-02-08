@@ -3,6 +3,5 @@ from api.views import keys
 
 
 urlpatterns = [
-    url(r'^apikeys/$', keys),
-
+    url(r'^apikeys/$', keys, name="apikeys"),
 ]
