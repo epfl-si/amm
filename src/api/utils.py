@@ -1,9 +1,7 @@
 import re
 from ldap3 import Server, Connection
 
-# config
-LDAP_BASE = 'ou=users,o=epfl,c=ch'
-LDAP_SERVER = 'scoldap.epfl.ch'
+from config.settings.base import LDAP_SERVER, LDAP_BASE
 
 
 def authenticate(username, password):

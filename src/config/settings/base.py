@@ -124,3 +124,7 @@ CACHES = {
         }
     }
 }
+
+# LDAP Configuration
+LDAP_BASE = 'ou=users,o=epfl,c=ch'
+LDAP_SERVER = 'scoldap.epfl.ch'

@@ -1,5 +1,6 @@
 import unittest
-import utils
+
+from api import utils
 from config.settings.base import get_secret
 
 

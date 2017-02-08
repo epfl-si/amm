@@ -1,11 +1,12 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
+
 from api.apikey import APIKey
 from api.redis import save_key, exists, get_apikeys
-from utils import authenticate
+from api.utils import authenticate
 
 
 class JSONResponse(HttpResponse):
