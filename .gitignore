@@ -1,5 +1,5 @@
 *.pyc
 .idea/
-.coverage/
+.coverage
 htmlcov/
 secrets.json

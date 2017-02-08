@@ -1,4 +1,5 @@
 from django_redis import get_redis_connection
+import hashlib
 
 import time
 
@@ -40,6 +41,9 @@ def exists(access_key, secret_key):
         key = key[0].decode("utf-8")
 
         key_str, username, access_key = key.split(':')
+
+        # has the secret_key
+        secret_key = hashlib.sha256(secret_key.encode("utf-8")).hexdigest()
 
         if key and get_connection().hget(key, 'secret').decode("utf-8") == secret_key:
             return username

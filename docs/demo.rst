@@ -15,7 +15,7 @@ X-Frame-Options: SAMEORIGIN
 1. Créer la clé
 ===============
 
-http POST http://127.0.0.1:8000/v1/apikeys/ username='kermit' password='lgMB@Ece2Gqj6o3J'
+http POST http://127.0.0.1:8000/v1/apikeys/ username='kermit' password='XXXXXXXXXXXXX'
 
 
 2. Récupérer la liste

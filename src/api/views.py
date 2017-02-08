@@ -41,7 +41,7 @@ def keys(request):
         if authenticate(data['username'], data['password']):
             apikey = APIKey()
             save_key(data['username'], apikey)
-            return JSONResponse(apikey.__dict__, status=200)
+            return JSONResponse(apikey.get_values(), status=200)
         else:
             return JSONResponse("Ldaps authentication failed", status=401)
 

@@ -10,7 +10,7 @@ class KeyTestCase(TestCase):
         for index in range(100):
             apikey = APIKey()
             self.assertEqual(len(apikey.access_key), 20)
-            self.assertEqual(len(apikey.secret_key), 40)
+            self.assertEqual(len(apikey.secret_key), 64)
 
     def test_get_id(self):
         apikey = APIKey()
@@ -21,3 +21,9 @@ class KeyTestCase(TestCase):
         apikey = APIKey()
         # Check the string representation of APIKey
         self.assertEqual(apikey.__str__(), apikey.access_key + apikey.secret_key)
+
+    def test_get_values(self):
+        apikey = APIKey()
+        self.assertEqual(len(apikey.get_values()), 2)
+        self.assertTrue('secret_key' in apikey.get_values().keys())
+        self.assertTrue('access_key' in apikey.get_values().keys())
