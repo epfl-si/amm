@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+
+  redis:
+     image: amm/redis
+     build:
+       context: docker/redis
+
+  django:
+    image: amm/django
+    build: .
+    volumes:
+      - ./src:/opt/amm/src
+    expose:
+      - "8000"
+#    depends_on:
+#      - "redis"
+
+  nginx:
+    image: amm/nginx
+    build:
+       context: docker/nginx
+    ports:
+      - "127.0.0.1:8888:80"
+    depends_on:
+      - "django"

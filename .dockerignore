@@ -1,0 +1,6 @@
+bin/*
+docs/*
+docker/nginx/*
+docker/redis/*
+README.rst
+htmlcov/*
