@@ -1,7 +1,14 @@
-0. Echec d'authentification LDAPS
+1. Docker
+==========
+docker-compose build
+docker-compose up
+docker exec -it amm_redis_1 redis-cli
+
+
+2. Echec d'authentification LDAPS
 =================================
 
-http POST http://127.0.0.1:8000/v1/apikeys/ username='toto' password='tutu'
+http POST http://127.0.0.1:8888/v1/apikeys/ username='toto' password='tutu'
 
 HTTP/1.0 401 Unauthorized
 Content-Type: application/json
@@ -12,20 +19,20 @@ X-Frame-Options: SAMEORIGIN
 "Ldaps authentication failed"
 
 
-1. Créer la clé
+3. Créer la clé
 ===============
 
-http POST http://127.0.0.1:8000/v1/apikeys/ username='kermit' password='XXXXXXXXXXXXX'
+http POST http://127.0.0.1:8888/v1/apikeys/ username='kermit' password='XXXXXXXXXXXXX'
 
 
-2. Récupérer la liste
+4. Récupérer la liste
 =====================
 
-http GET http://127.0.0.1:8000/v1/apikeys/ access_key=='XXXXXXXXX' secret_key=='XXXXXXXXX'
+http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='XXXXXXXXX' secret_key=='XXXXXXXXX'
 
-http GET http://127.0.0.1:8000/v1/apikeys/ access_key=='ee3a52cbaadf239c9a40' secret_key=='9e786a7c64dc4e4c149a071510f0b583acfe7c0e'
+http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='ee3a52cbaadf239c9a40' secret_key=='9e786a7c64dc4e4c149a071510f0b583acfe7c0e'
 
-3. Points importants
+5. Points importants
 ====================
 
 - Couverture de tests : 91%

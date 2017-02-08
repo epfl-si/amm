@@ -3,3 +3,4 @@ unipath==1.1
 djangorestframework==3.5.3
 django-redis==4.7.0
 ldap3==2.2.0
+gunicorn==19.6.0

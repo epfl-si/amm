@@ -14,8 +14,9 @@ services:
       - ./src:/opt/amm/src
     expose:
       - "8000"
-#    depends_on:
-#      - "redis"
+    depends_on:
+      - "redis"
+    command: gunicorn --reload -w 2 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
 
   nginx:
     image: amm/nginx
