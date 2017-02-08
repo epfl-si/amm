@@ -18,7 +18,7 @@ class KeyViewTestCase(APITestCase):
             format='json'
         )
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         content = json.loads(response.content.decode('utf-8'))
 
         self.assertEqual(len(content["access_key"]), 20)
@@ -51,7 +51,7 @@ class KeyViewTestCase(APITestCase):
         content = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(content), 1)
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response['content-type'],
             'application/json'
