@@ -29,7 +29,7 @@ def keys(request):
             username = exists(request.GET['access_key'], request.GET['secret_key'])
             if username:
                 apikeys = get_apikeys(username=username)
-                return JSONResponse(apikeys, status=201)
+                return JSONResponse(apikeys, status=200)
 
             return JSONResponse("APIKey doesn't exist", status=403)
 
@@ -40,7 +40,8 @@ def keys(request):
         if authenticate(data['username'], data['password']):
             apikey = APIKey()
             save_key(data['username'], apikey)
-            return JSONResponse(apikey.__dict__, status=201)
+            return JSONResponse(apikey.__dict__, status=200)
         else:
             return JSONResponse("Ldaps authentication failed", status=401)
+
     return JSONResponse("Bad request", status=400)
