@@ -1,13 +1,18 @@
 1. Docker
 ==========
-docker-compose build
-docker-compose up
 
-Si on veut flusher redis :
-docker exec -it amm_redis_1 redis-cli
+sudo docker-compose build
+sudo docker-compose up
+
+Se connecter à django :
+sudo docker exec -it amm_django_1 bash
+
+Se connecter à redis :
+sudo docker exec -it amm_redis_1 redis-cli
 
 Pour lancer les tests et calculer le coverage
-docker-compose exec django ./coverage.sh
+sudo docker-compose exec django ./coverage.sh
+
 
 
 
@@ -28,7 +33,7 @@ X-Frame-Options: SAMEORIGIN
 3. Créer la clé
 ===============
 
-http POST http://127.0.0.1:8888/v1/apikeys/ username='kermit' password='XXXXXXXXXXXXX'
+http POST http://127.0.0.1:8888/v1/apikeys/ username='kermit' password='XXXXXXXXXXXXXXXXXXXXXX'
 
 
 4. Récupérer la liste
@@ -36,13 +41,15 @@ http POST http://127.0.0.1:8888/v1/apikeys/ username='kermit' password='XXXXXXXX
 
 http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='XXXXXXXXX' secret_key=='XXXXXXXXX'
 
-http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='ee3a52cbaadf239c9a40' secret_key=='9e786a7c64dc4e4c149a071510f0b583acfe7c0e'
+http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='36cb0a6b6cf1d3b6160c' secret_key=='ef848027d73fc107126bf38eef4c6480965aa420'
 
 5. Points importants
 ====================
-- Couverture de tests : 91%
-docker-compose exec django ./coverage.sh
-file:///home/greg/workspace-idevelop/amm/htmlcov/index.html
+
+- Couverture de tests : 91% :
+
+sudo docker-compose exec django ./coverage.sh
+chromium-browser ./htmlcov/index.html &
 
 - Respect de la convention PEP8 : 100%
 - Code sous github avec mirroir sur c4science
