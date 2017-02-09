@@ -1,5 +1,6 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 import json
+import os
 
 from django.core.exceptions import ImproperlyConfigured
 from unipath import Path
@@ -7,25 +8,16 @@ from unipath import Path
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-# secrets
-BASE_DIR = Path(__file__).ancestor(4)
-
-SRC_DIR = Path(__file__).ancestor(3)
-
-with open(BASE_DIR + "/secrets.json", 'r') as f:
-    secrets = json.loads(f.read())
-
-
-def get_secret(setting, secrets=secrets):
+def get_config(setting):
     try:
-        return secrets[setting]
+        return os.environ[setting]
     except KeyError:
         error_msg = "Set the {0} environnement variable".format(setting)
         raise ImproperlyConfigured(error_msg)
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = get_config("SECRET_KEY")
 
 ALLOWED_HOSTS = []
 
@@ -117,14 +109,14 @@ STATIC_URL = '/static/'
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": get_config('CACHE_REDIS_LOCATION'),
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CLIENT_CLASS": get_config('CACHE_REDIS_CLIENT_CLASS'),
             "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
         }
     }
 }
 
 # LDAP Configuration
-LDAP_BASE = 'ou=users,o=epfl,c=ch'
-LDAP_SERVER = 'scoldap.epfl.ch'
+LDAP_USER_BASE_DN = get_config('LDAP_USER_BASE_DN')
+LDAP_SERVER = get_config('LDAP_SERVER')

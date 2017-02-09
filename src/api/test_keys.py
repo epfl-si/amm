@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from api.apikey import APIKey
+from config.settings.base import get_config
 
 
 class KeyTestCase(TestCase):
@@ -15,7 +16,8 @@ class KeyTestCase(TestCase):
     def test_get_id(self):
         apikey = APIKey()
         # Check the format of the redis key
-        self.assertEqual(apikey.get_id(username='greg'), "key:%s:%s" % ('greg', apikey.access_key))
+        self.assertEqual(apikey.get_id(username=get_config("TEST_USERNAME")), "key:%s:%s" %
+                (get_config("TEST_USERNAME"), apikey.access_key))
 
     def test_to_str(self):
         apikey = APIKey()

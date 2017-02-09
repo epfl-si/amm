@@ -1,7 +1,7 @@
 import re
 from ldap3 import Server, Connection
 
-from config.settings.base import LDAP_SERVER, LDAP_BASE
+from config.settings.base import LDAP_SERVER, LDAP_USER_BASE_DN
 
 
 def authenticate(username, password):
@@ -11,7 +11,7 @@ def authenticate(username, password):
     if not re.match("^[A-Za-z0-9_-]*$", username):
         return False
 
-    dn = "uid=" + username + "," + LDAP_BASE
+    dn = "uid=" + username + "," + LDAP_USER_BASE_DN
 
     s = Server(LDAP_SERVER, use_ssl=True)
 

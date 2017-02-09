@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from api.apikey import APIKey
 from api.redis import save_key, exists, get_apikeys, flushall
+from config.settings.base import get_config
 
 
 class RedisTestCase(TestCase):
@@ -9,7 +10,7 @@ class RedisTestCase(TestCase):
     def test_redis(self):
 
         # Create data
-        username = 'greg'
+        username = get_config("TEST_USERNAME")
         apikey = APIKey()
 
         # Save an APIKey
