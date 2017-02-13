@@ -21,4 +21,14 @@ For the tests to pass, some more variables need to be assigned:
 #. TEST_CORRECT_PWD: The correct password for that user for authentication
 #. TEST_WRONG_PWD: A password that will fail authentication
 
+Version Number:
+
+The version number is set using the following environment variables:
+
+# MAJOR_RELEASE: The major version of the application
+# MINOR_RELEASE: The bugfix version of the application
+# BUILD_NUMBER: The build number, which should be incremented at each image build
+
+These variables are setup when the image is built using variables of the exact same name set with --build-arg. The build system is responsible for setting these variables correctly in the docker ``build command``.
+
 (c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017

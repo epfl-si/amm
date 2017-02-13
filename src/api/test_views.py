@@ -125,3 +125,12 @@ class KeyViewTestCase(APITestCase):
             'application/json'
         )
         flushall(self)
+
+    def test_get_version(self):
+        """ Test the get method of Version """
+        response = self.client.get(
+                reverse('version'),
+                format='json'
+        )
+        content = json.loads(response.content.decode('utf-8'))
+        self.assertIsNotNone(re.match('^\d+\.\d+\.\d+$', content))

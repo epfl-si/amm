@@ -8,6 +8,10 @@ COPY ./requirements ./requirements/
 COPY ./bin/coverage.sh ./coverage.sh
 COPY ./bin/flake8.sh ./flake8.sh
 
+ARG MAJOR_RELEASE
+ARG MINOR_RELEASE
+ARG BUILD_NUMBER
+
 ENV \
     SECRET_KEY=dummy \
     TEST_CORRECT_PWD=dummy \
@@ -18,6 +22,9 @@ ENV \
     LDAP_USER_SEARCH_ATTR=uid \
     CACHE_REDIS_LOCATION=redis://redis:6379/1 \
     CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient \
-    AMM_ENVIRONMENT=prod
+    AMM_ENVIRONMENT=prod \
+    MAJOR_RELEASE=${MAJOR_RELEASE} \
+    MINOR_RELEASE=${MINOR_RELEASE} \
+    BUILD_NUMBER=${BUILD_NUMBER}
 
 RUN pip install --no-cache-dir -r requirements/local.txt
