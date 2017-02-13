@@ -1,5 +1,4 @@
 from django_redis import get_redis_connection
-import hashlib
 
 from api.apikey import APIKey
 
@@ -17,7 +16,7 @@ def save_key(username, apikey):
     connection = get_connection()
     mapping = {
         'secret': apikey.get_secret_key_hash(),
-        'salt' : apikey.salt.encode('utf-8'),
+        'salt': apikey.salt.encode('utf-8'),
         'created': time.time(),
     }
     connection.hmset(id, mapping)
@@ -51,7 +50,7 @@ def exists(access_key, secret_key):
         apikey.secret_key_clear = secret_key
         apikey.salt = salt
         apikey.access_key = access_key
-        
+
         if key and get_connection().hget(key, 'secret').decode("utf-8") == apikey.get_secret_key_hash():
             return username
         return False

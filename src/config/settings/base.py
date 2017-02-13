@@ -1,12 +1,11 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-import json
 import os
 
 from django.core.exceptions import ImproperlyConfigured
-from unipath import Path
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+
 
 def get_config(setting):
     try:

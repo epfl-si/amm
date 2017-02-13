@@ -18,7 +18,7 @@ class KeyTestCase(TestCase):
         apikey = APIKey.generate()
         # Check the format of the redis key
         self.assertEqual(apikey.get_id(username=get_config("TEST_USERNAME")), "key:%s:%s" %
-                (get_config("TEST_USERNAME"), apikey.access_key))
+                         (get_config("TEST_USERNAME"), apikey.access_key))
 
     def test_to_str(self):
         apikey = APIKey.generate()

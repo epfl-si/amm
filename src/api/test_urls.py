@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.urls import resolve, reverse
 
-from config.settings.base import get_config
 
 class UrlTestCase(TestCase):
 

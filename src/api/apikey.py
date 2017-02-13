@@ -43,7 +43,8 @@ class APIKey:
                 "secret_key": self.secret_key_clear}
 
     def get_secret_key_hash(self):
-        if self.secret_key_hash == None:
-            byteshash = hashlib.pbkdf2_hmac('sha256', self.secret_key_clear.encode('utf-8'), self.salt.encode('utf-8'), 1)
+        if self.secret_key_hash is None:
+            byteshash = hashlib.pbkdf2_hmac('sha256', self.secret_key_clear.encode('utf-8'), self.salt.encode('utf-8'),
+                                            1)
             self.secret_key_hash = binascii.hexlify(byteshash).decode('utf-8')
         return self.secret_key_hash
