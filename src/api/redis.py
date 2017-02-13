@@ -1,6 +1,8 @@
 from django_redis import get_redis_connection
 import hashlib
 
+from api.apikey import APIKey
+
 import time
 
 
@@ -14,7 +16,8 @@ def save_key(username, apikey):
     id = apikey.get_id(username)
     connection = get_connection()
     mapping = {
-        'secret': apikey.secret_key,
+        'secret': apikey.get_secret_key_hash(),
+        'salt' : apikey.salt.encode('utf-8'),
         'created': time.time(),
     }
     connection.hmset(id, mapping)
@@ -36,16 +39,20 @@ def get_apikeys(username):
 def exists(access_key, secret_key):
     """ Return True if the apikey exists """
     try:
+        connection = get_connection()
         # get the key
-        key = get_connection().keys("key:*:%s" % access_key)
+        key = connection.keys("key:*:%s" % access_key)
         key = key[0].decode("utf-8")
 
         key_str, username, access_key = key.split(':')
+        salt = connection.hget(key, 'salt').decode('utf-8')
 
-        # has the secret_key
-        secret_key = hashlib.sha256(secret_key.encode("utf-8")).hexdigest()
-
-        if key and get_connection().hget(key, 'secret').decode("utf-8") == secret_key:
+        apikey = APIKey()
+        apikey.secret_key_clear = secret_key
+        apikey.salt = salt
+        apikey.access_key = access_key
+        
+        if key and get_connection().hget(key, 'secret').decode("utf-8") == apikey.get_secret_key_hash():
             return username
         return False
     except:

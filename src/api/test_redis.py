@@ -11,13 +11,13 @@ class RedisTestCase(TestCase):
 
         # Create data
         username = get_config("TEST_USERNAME")
-        apikey = APIKey()
+        apikey = APIKey.generate()
 
         # Save an APIKey
         save_key(username, apikey)
 
         # Check is APIKEY exists
-        exists(apikey.access_key, apikey.secret_key)
+        exists(apikey.access_key, apikey.get_secret_key_hash())
 
         # Return all keys of username 'greg'
         keys = get_apikeys(username)

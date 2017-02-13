@@ -39,7 +39,7 @@ def keys(request):
         data = JSONParser().parse(request)
 
         if authenticate(data['username'], data['password']):
-            apikey = APIKey()
+            apikey = APIKey.generate()
             save_key(data['username'], apikey)
             return JSONResponse(apikey.get_values(), status=200)
         else:

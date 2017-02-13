@@ -9,23 +9,24 @@ class KeyTestCase(TestCase):
     def test_generate(self):
         # Generate 100 keys and ckeck the format
         for index in range(100):
-            apikey = APIKey()
+            apikey = APIKey.generate()
             self.assertEqual(len(apikey.access_key), 20)
-            self.assertEqual(len(apikey.secret_key), 64)
+            self.assertEqual(len(apikey.get_secret_key_hash()), 64)
+            self.assertEqual(len(apikey.salt), 20)
 
     def test_get_id(self):
-        apikey = APIKey()
+        apikey = APIKey.generate()
         # Check the format of the redis key
         self.assertEqual(apikey.get_id(username=get_config("TEST_USERNAME")), "key:%s:%s" %
                 (get_config("TEST_USERNAME"), apikey.access_key))
 
     def test_to_str(self):
-        apikey = APIKey()
+        apikey = APIKey.generate()
         # Check the string representation of APIKey
-        self.assertEqual(apikey.__str__(), apikey.access_key + apikey.secret_key)
+        self.assertEqual(apikey.__str__(), apikey.access_key + apikey.get_secret_key_hash())
 
     def test_get_values(self):
-        apikey = APIKey()
+        apikey = APIKey.generate()
         self.assertEqual(len(apikey.get_values()), 2)
         self.assertTrue('secret_key' in apikey.get_values().keys())
         self.assertTrue('access_key' in apikey.get_values().keys())
