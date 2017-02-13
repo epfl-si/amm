@@ -13,6 +13,16 @@ services:
     volumes:
       - ./src:/opt/amm/src
       - ./htmlcov:/opt/amm/htmlcov
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      TEST_CORRECT_PWD: ${TEST_CORRECT_PWD}
+      TEST_WRONG_PWD: ${TEST_WRONG_PWD}
+      TEST_USERNAME: ${TEST_USERNAME}
+      LDAP_USER_BASE_DN: ${LDAP_USER_BASE_DN}
+      LDAP_USER_SEARCH_ATTR: ${LDAP_USER_SEARCH_ATTR}
+      LDAP_SERVER: ${LDAP_SERVER}
+      CACHE_REDIS_LOCATION: ${CACHE_REDIS_LOCATION}
+      CACHE_REDIS_CLIENT_CLASS: ${CACHE_REDIS_CLIENT_CLASS}
     expose:
       - "8000"
     depends_on:

@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from api.redis import flushall
-from config.settings.base import get_secret
+from config.settings.base import get_config
 
 
 class KeyViewTestCase(APITestCase):
@@ -14,7 +14,7 @@ class KeyViewTestCase(APITestCase):
 
         response = self.client.post(
             reverse('apikeys'),
-            data={"username": "kermit", "password": get_secret("TEST_PWD")},
+            data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
             format='json'
         )
 
@@ -35,7 +35,7 @@ class KeyViewTestCase(APITestCase):
 
         response = self.client.post(
             reverse('apikeys'),
-            data={"username": "kermit", "password": get_secret("TEST_PWD")},
+            data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
             format='json'
         )
 
