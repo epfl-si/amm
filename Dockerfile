@@ -19,7 +19,8 @@ ENV \
     LDAP_USER_SEARCH_ATTR=uid \
     CACHE_REDIS_LOCATION=redis://redis:6379/1 \
     CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient \
-    AMM_ENVIRONMENT=prod
+    AMM_ENVIRONMENT=prod \
+    DJANGO_HOST=localhost
 
 RUN pip install --no-cache-dir -r requirements/local.txt
 

@@ -19,7 +19,9 @@ def get_config(setting):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_config("SECRET_KEY")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+        get_config('DJANGO_HOST'),
+]
 
 # Application definition
 
