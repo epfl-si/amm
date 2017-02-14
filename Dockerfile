@@ -7,6 +7,7 @@ WORKDIR /opt/amm
 COPY ./requirements ./requirements/
 COPY ./bin/coverage.sh ./coverage.sh
 COPY ./bin/flake8.sh ./flake8.sh
+COPY ./src ./src/
 
 ENV \
     SECRET_KEY=dummy \
@@ -21,3 +22,6 @@ ENV \
     AMM_ENVIRONMENT=prod
 
 RUN pip install --no-cache-dir -r requirements/local.txt
+
+ENTRYPOINT [ "gunicorn" ]
+CMD [ "--reload", "-w", "2", "-b", ":8000", "--chdir", "/opt/amm/src/", "--access-logfile", "-", "config.wsgi:application" ]
