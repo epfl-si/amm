@@ -6,6 +6,7 @@ WORKDIR /opt/amm
 
 COPY ./requirements ./requirements/
 COPY ./bin/coverage.sh ./coverage.sh
+COPY ./bin/flake8.sh ./flake8.sh
 
 ENV \
     SECRET_KEY=dummy \
