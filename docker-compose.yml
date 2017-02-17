@@ -3,13 +3,10 @@ version: '2'
 services:
 
   redis:
-     image: amm/redis
-     build:
-       context: docker/redis
+    image: library/redis
 
   django:
-    image: amm/django
-    build: .
+    image: epflidevelop/amm:latest
     volumes:
       - ./src:/opt/amm/src
       - ./htmlcov:/opt/amm/htmlcov
@@ -25,15 +22,16 @@ services:
       CACHE_REDIS_CLIENT_CLASS: ${CACHE_REDIS_CLIENT_CLASS}
     expose:
       - "8000"
-    depends_on:
-      - "redis"
-    command: gunicorn --reload -w 2 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
+    links:
+      - redis
+    command: --reload -w 2 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
+    entrypoint: gunicorn
 
   nginx:
-    image: amm/nginx
-    build:
-       context: docker/nginx
+    image: library/nginx
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "127.0.0.1:8888:80"
-    depends_on:
-      - "django"
+    links:
+      - django
