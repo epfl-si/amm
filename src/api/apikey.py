@@ -2,6 +2,7 @@
 import binascii
 import os
 import hashlib
+from api import utils
 
 
 class APIKey:
@@ -25,15 +26,13 @@ class APIKey:
 
     @staticmethod
     def generate_salt():
-        return binascii.hexlify(os.urandom(10)).decode("utf-8")
+        return utils.generate_password(20)
 
     def generate_access_key(self):
-        return binascii.hexlify(os.urandom(10)).decode("utf-8")
+        return utils.generate_random_b64(20)
 
     def generate_secret_key(self):
-
-        secret_key_clear_byte = binascii.hexlify(os.urandom(20))
-        self.secret_key_clear = secret_key_clear_byte.decode("utf-8")
+        self.secret_key_clear = utils.generate_password(40)
 
     def get_id(self, username):
         return "key:%s:%s" % (username, self.access_key)
