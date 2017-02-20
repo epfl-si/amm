@@ -1,6 +1,6 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
-from django.http import HttpResponse
+import django.http
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -9,91 +9,87 @@ from api import apikey, redis, utils, rancher
 from config.settings import base
 
 
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
+class AMMApp(object):
+    def __init__(self, authenticator):
+        self.authenticator = authenticator
 
+    def generate_response(self, data, **kwargs):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
+        return django.http.HttpResponse(content, **kwargs)
 
+    @csrf_exempt
+    def keys(self, request):
+        """ View to manage """
 
-@csrf_exempt
-def keys(request):
-    """ View to manage """
+        if request.method == 'GET':
 
-    if request.method == 'GET':
+            if 'access_key' in request.GET and 'secret_key' in request.GET:
+                username = redis.exists(request.GET['access_key'], request.GET['secret_key'])
+                if username:
+                    apikeys = redis.get_apikeys(username=username)
+                    return self.generate_response(apikeys, status=200)
 
-        if 'access_key' in request.GET and 'secret_key' in request.GET:
-            username = redis.exists(request.GET['access_key'], request.GET['secret_key'])
-            if username:
-                apikeys = redis.get_apikeys(username=username)
-                return JSONResponse(apikeys, status=200)
+                return self.generate_response("APIKey doesn't exist", status=403)
 
-            return JSONResponse("APIKey doesn't exist", status=403)
+        if request.method == 'POST':
 
-    if request.method == 'POST':
+            data = JSONParser().parse(request)
 
-        data = JSONParser().parse(request)
+            if self.authenticator.authenticate(data['username'], data['password']):
+                thekey = apikey.APIKey.generate()
+                redis.save_key(data['username'], thekey)
+                return self.generate_response(thekey.get_values(), status=200)
+            else:
+                return self.generate_response("Authentication Failed", status=401)
 
-        if utils.authenticate(data['username'], data['password']):
-            thekey = apikey.APIKey.generate()
-            redis.save_key(data['username'], thekey)
-            return JSONResponse(thekey.get_values(), status=200)
-        else:
-            return JSONResponse("Ldaps authentication failed", status=401)
+        return self.generate_response("Expecting GET or POST method", status=400)
 
-    return JSONResponse("Expecting GET or POST method", status=400)
+    @csrf_exempt
+    def schemas(self, request):
+        """ View to manage """
 
+        r = rancher.Rancher()
 
-@csrf_exempt
-def schemas(request):
-    """ View to manage """
+        if request.method == 'GET':
+            if 'access_key' in request.GET and 'secret_key' in request.GET:
+                username = redis.exists(request.GET['access_key'], request.GET['secret_key'])
+                if username:
 
-    r = rancher.Rancher()
+                    return self.generate_response(r.get_stacks(username), status=200)
 
-    if request.method == 'GET':
-        if 'access_key' in request.GET and 'secret_key' in request.GET:
-            username = redis.exists(request.GET['access_key'], request.GET['secret_key'])
-            if username:
+                return self.generate_response("APIKey doesn't exist", status=403)
 
-                return JSONResponse(r.get_stacks(username), status=200)
+            return self.generate_response("No api key given", status=400)
 
-            return JSONResponse("APIKey doesn't exist", status=403)
+        if request.method == 'POST':
 
-        return JSONResponse("No api key given", status=400)
+            data = JSONParser().parse(request)
 
-    if request.method == 'POST':
+            if 'access_key' in data and 'secret_key' in data:
+                username = redis.exists(data['access_key'], data['secret_key'])
+                if username:
+                    db_username = utils.generate_random_b64(10)
+                    db_password = utils.generate_password(32)
+                    db_port = 1234
+                    db_schema = utils.generate_random_b64(10)
+                    db_stack = utils.generate_random_b64(20)
+                    db_env = base.get_config('AMM_ENVIRONMENT')
 
-        data = JSONParser().parse(request)
+                    r.create_stack(username, db_username, db_password, db_port, db_schema, db_stack, db_env)
 
-        if 'access_key' in data and 'secret_key' in data:
-            username = redis.exists(data['access_key'], data['secret_key'])
-            if username:
-                db_username = utils.generate_random_b64(10)
-                db_password = utils.generate_password(32)
-                db_port = 1234
-                db_schema = utils.generate_random_b64(10)
-                db_stack = utils.generate_random_b64(20)
-                db_env = utils.get_config('AMM_ENVIRONMENT')
+                    connection = "mysql://%s:%s@mysql.%s.%s.epfl.ch:%s/%s" % (db_username, db_password, db_stack,
+                                                                              db_env, db_port, db_schema)
 
-                r.create_stack(username, db_username, db_password, db_port, db_schema, db_stack, db_env)
+                    return self.generate_response(connection, status=200)
 
-                connection = "mysql://%s:%s@mysql.%s.%s.epfl.ch:%s/%s" % (db_username, db_password, db_stack, db_env,
-                                                                          db_port, db_schema)
+                return self.generate_response("APIKey doesn't exist", status=403)
 
-                return JSONResponse(connection, status=200)
+            return self.generate_response("No api key given", status=400)
 
-            return JSONResponse("APIKey doesn't exist", status=403)
+        return self.generate_response("Bad request", status=400)
 
-        return JSONResponse("No api key given", status=400)
-
-    return JSONResponse("Bad request", status=400)
-
-
-@csrf_exempt
-def version(request):
-    """ View to get version number """
-    return JSONResponse(base.VERSION, status=200)
+    @csrf_exempt
+    def version(self, request):
+        """ View to get version number """
+        return self.generate_response(base.VERSION, status=200)

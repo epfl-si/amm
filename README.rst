@@ -12,9 +12,12 @@ Some variables need to be assigned correctly for the application to start:
 #. LDAP_USER_SEARCH_ATTR: the LDAP user search attribute
 #. LDAP_USER_BASE_DN: The BaseDN for ldap user search
 #. LDAP_SERVER: The LDAP server to bind to
+#. LDAP_USE_SSL: Whether to use 'ldaps' or 'ldap' (no support for starttls), use 'ldaps' only if set to 'true' any other value is false
 #. AMM_ENVIRONMENT: the amm environment
+#. AMM_AUTHENTICATOR_CLASS: The authentication class to use, currently only 'ldap' is supported
 #. DJANGO_HOST: the value to accept as Host header in HTTP requests
 #. DJANGO_WORKER_COUNT: the number of worker processes
+#. DJANGO_SETTINGS_MODULE: the django configuration module to use, currently only 'config.settings.local' for local testing and 'config.settings.base' for production are supported
 
 
 For the tests to pass, some more variables need to be assigned:

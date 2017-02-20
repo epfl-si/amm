@@ -2,10 +2,12 @@
 
 from django.conf.urls import url
 from api import views
+import auth
 
+app = views.AMMApp(auth.get_configured_authenticator())
 
 urlpatterns = [
-    url(r'^apikeys/$', views.keys, name="apikeys"),
-    url(r'^schemas/$', views.schemas, name="schemas"),
-    url(r'^version/$', views.version, name='version'),
+    url(r'^apikeys/$', app.keys, name="apikeys"),
+    url(r'^schemas/$', app.schemas, name="schemas"),
+    url(r'^version/$', app.version, name='version'),
 ]

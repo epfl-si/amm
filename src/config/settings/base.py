@@ -120,7 +120,3 @@ CACHES = {
         }
     }
 }
-
-# LDAP Configuration
-LDAP_USER_BASE_DN = get_config('LDAP_USER_BASE_DN')
-LDAP_SERVER = get_config('LDAP_SERVER')
