@@ -21,3 +21,4 @@ For the tests to pass, some more variables need to be assigned:
 #. TEST_CORRECT_PWD: The correct password for that user for authentication
 #. TEST_WRONG_PWD: A password that will fail authentication
 
+(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017
