@@ -1,4 +1,5 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
@@ -45,6 +46,7 @@ def keys(request):
 
     return JSONResponse("Expecting GET or POST method", status=400)
 
+
 @csrf_exempt
 def schemas(request):
     """ View to manage """
@@ -65,7 +67,7 @@ def schemas(request):
     if request.method == 'POST':
 
         data = JSONParser().parse(request)
-        
+
         if 'access_key' in data and 'secret_key' in data:
             username = redis.exists(data['access_key'], data['secret_key'])
             if username:
@@ -88,4 +90,3 @@ def schemas(request):
         return JSONResponse("No api key given", status=400)
 
     return JSONResponse("Bad request", status=400)
-     

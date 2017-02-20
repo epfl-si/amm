@@ -1,3 +1,5 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import json
 
 from django.urls import reverse
@@ -89,7 +91,6 @@ class KeyViewTestCase(APITestCase):
         )
         flushall(self)
 
-    
     def test_get_schemas(self):
         """ Test the GET method of schemas"""
 
@@ -115,7 +116,7 @@ class KeyViewTestCase(APITestCase):
         )
 
         content = json.loads(response.content.decode('utf-8'))
-        
+
         self.assertEqual(len(content), 1)
 
         self.assertEqual(response.status_code, 200)

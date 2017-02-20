@@ -1,3 +1,5 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 CONNECTIONS = []
 
 
@@ -19,7 +21,6 @@ class Rancher(object):
 
         CONNECTIONS.append(connection)
         return connection
-
 
     def get_stacks(self, requester):
 

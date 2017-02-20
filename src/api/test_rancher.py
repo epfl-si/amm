@@ -1,6 +1,9 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import unittest
 
 from api import rancher
+
 
 class RancherTest(unittest.TestCase):
     def test_create_stack(self):

@@ -1,4 +1,5 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import os
 
 from django.core.wsgi import get_wsgi_application
