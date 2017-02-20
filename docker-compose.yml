@@ -1,3 +1,5 @@
+# (c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017
+---
 version: '2'
 
 services:
@@ -21,13 +23,12 @@ services:
       CACHE_REDIS_LOCATION: ${CACHE_REDIS_LOCATION}
       CACHE_REDIS_CLIENT_CLASS: ${CACHE_REDIS_CLIENT_CLASS}
       AMM_ENVIRONMENT: ${AMM_ENVIRONMENT}
+      DJANGO_WORKER_COUNT: 1
 
     expose:
       - "8000"
     links:
       - redis
-    command: --reload -w 1 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
-    entrypoint: gunicorn
 
   nginx:
     image: library/nginx
