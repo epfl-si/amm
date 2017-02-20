@@ -9,6 +9,10 @@ COPY ./bin/coverage.sh ./coverage.sh
 COPY ./bin/flake8.sh ./flake8.sh
 COPY ./src ./src/
 
+ARG MAJOR_RELEASE
+ARG MINOR_RELEASE
+ARG BUILD_NUMBER
+
 ENV \
     SECRET_KEY=dummy \
     TEST_CORRECT_PWD=dummy \
@@ -21,7 +25,10 @@ ENV \
     CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient \
     AMM_ENVIRONMENT=prod \
     DJANGO_HOST=localhost \
-    DJANGO_WORKER_COUNT=2
+    DJANGO_WORKER_COUNT=2 \
+    MAJOR_RELEASE=${MAJOR_RELEASE} \
+    MINOR_RELEASE=${MINOR_RELEASE} \
+    BUILD_NUMBER=${BUILD_NUMBER}
 
 RUN pip install --no-cache-dir -r requirements/local.txt
 
