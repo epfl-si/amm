@@ -16,6 +16,8 @@ def get_config(setting):
         raise ImproperlyConfigured(error_msg)
 
 
+VERSION = get_config('MAJOR_RELEASE') + '.' + get_config('MINOR_RELEASE') + '.' + get_config('BUILD_NUMBER')
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_config("SECRET_KEY")
 

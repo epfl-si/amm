@@ -6,6 +6,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
 from api import apikey, redis, utils, rancher
+from config.settings import base
 
 
 class JSONResponse(HttpResponse):
@@ -90,3 +91,9 @@ def schemas(request):
         return JSONResponse("No api key given", status=400)
 
     return JSONResponse("Bad request", status=400)
+
+
+@csrf_exempt
+def version(request):
+    """ View to get version number """
+    return JSONResponse(base.VERSION, status=200)

@@ -7,4 +7,5 @@ from api import views
 urlpatterns = [
     url(r'^apikeys/$', views.keys, name="apikeys"),
     url(r'^schemas/$', views.schemas, name="schemas"),
+    url(r'^version/$', views.version, name='version'),
 ]
