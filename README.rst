@@ -14,6 +14,7 @@ Some variables need to be assigned correctly for the application to start:
 #. LDAP_SERVER: The LDAP server to bind to
 #. AMM_ENVIRONMENT: the amm environment
 #. DJANGO_HOST: the value to accept as Host header in HTTP requests
+#. DJANGO_WORKER_COUNT: the number of worker processes
 
 
 For the tests to pass, some more variables need to be assigned:

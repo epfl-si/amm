@@ -20,9 +20,10 @@ ENV \
     CACHE_REDIS_LOCATION=redis://redis:6379/1 \
     CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient \
     AMM_ENVIRONMENT=prod \
-    DJANGO_HOST=localhost
+    DJANGO_HOST=localhost \
+    DJANGO_WORKER_COUNT=2
 
 RUN pip install --no-cache-dir -r requirements/local.txt
 
-ENTRYPOINT [ "gunicorn" ]
-CMD [ "--reload", "-w", "2", "-b", ":8000", "--chdir", "/opt/amm/src/", "--access-logfile", "-", "config.wsgi:application" ]
+ENTRYPOINT [ "bash" ]
+CMD [ "-c", "gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application" ]
