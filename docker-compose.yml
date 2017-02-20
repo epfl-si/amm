@@ -20,11 +20,13 @@ services:
       LDAP_SERVER: ${LDAP_SERVER}
       CACHE_REDIS_LOCATION: ${CACHE_REDIS_LOCATION}
       CACHE_REDIS_CLIENT_CLASS: ${CACHE_REDIS_CLIENT_CLASS}
+      AMM_ENVIRONMENT: ${AMM_ENVIRONMENT}
+
     expose:
       - "8000"
     links:
       - redis
-    command: --reload -w 2 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
+    command: --reload -w 1 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
     entrypoint: gunicorn
 
   nginx:
