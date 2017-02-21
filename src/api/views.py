@@ -93,4 +93,6 @@ class AMMApp(object):
     @csrf_exempt
     def version(self, request):
         """ View to get version number """
-        return self.generate_response(base.VERSION, status=200)
+        if request.method == 'GET':
+            return self.generate_response(base.VERSION, status=200)
+        return self.generate_response("Bad request", status=400)
