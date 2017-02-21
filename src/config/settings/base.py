@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Custom django app
-    'api',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
