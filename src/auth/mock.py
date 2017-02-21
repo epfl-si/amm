@@ -9,4 +9,6 @@ class Authenticator(object):
 
         """Mock version of authenticate needed because we don't have access to the LDAP server"""
 
-        return username == base.get_config('TEST_USERNAME') and password == base.get_config('TEST_CORRECT_PWD')
+        return False
+        
+        #return username == base.get_config('TEST_USERNAME') and password == base.get_config('TEST_CORRECT_PWD')
