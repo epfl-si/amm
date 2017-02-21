@@ -13,13 +13,13 @@ class Authenticator(object):
         server = base.get_config('LDAP_SERVER')
         scheme = 'ldaps' if base.get_config('LDAP_USE_SSL') == 'true' else 'ldap'
 
-        self.use_ssl = True if base.get_config('LDAP_USE_SSL') == 'true' else False,
+        self.use_ssl = True if base.get_config('LDAP_USE_SSL') == 'true' else False
         self.uri = scheme + '://' + server
         self.userdn = base.get_config('LDAP_USER_BASE_DN')
         self.user_attr = base.get_config('LDAP_USER_SEARCH_ATTR')
 
     def authenticate(self, username, password):
-        """ authenticate the user with a secure bind on the LDAP server """
+        """ Authenticate the user with a bind on the LDAP server """
 
         if username is None or password is None:
             return False

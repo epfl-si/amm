@@ -1,2 +1,2 @@
 - csrf protection ?
-- password saisi mais HTTPS donc suffisant ?
+- use http basic auth for authentication

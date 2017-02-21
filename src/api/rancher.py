@@ -8,6 +8,7 @@ class Rancher(object):
         pass
 
     def create_stack(self, requester, db_username, db_password, db_port, db_schema, db_stack, db_env):
+        """Create a db stack with the given informations"""
         connection = {
 
             'requester': requester,
@@ -23,6 +24,7 @@ class Rancher(object):
         return connection
 
     def get_stacks(self, requester):
+        """Returns the stacks of the given users"""
 
         result = []
 

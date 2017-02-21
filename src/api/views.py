@@ -16,16 +16,20 @@ class AMMApp(object):
         self.rancher = rancher
 
     def generate_response(self, data, **kwargs):
+        """generate the JSON response"""
+
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         return django.http.HttpResponse(content, **kwargs)
 
     @csrf_exempt
     def keys(self, request):
-        """ View to manage """
+        """ API for managing the keys """
 
+        # with GET we return the user's keys
         if request.method == 'GET':
 
+            # first we check the key
             username = self.apikey_handler.validate(
                                             request.GET.get('access_key', None),
                                             request.GET.get('secret_key', None)
@@ -34,8 +38,9 @@ class AMMApp(object):
                 keys = self.apikey_handler.get_keys(username)
                 return self.generate_response(keys, status=200)
 
-            return self.generate_response("Invalid APIKeys", status=403)
+            return self.generate_response("Invalid APIKey", status=403)
 
+        # with POST we create a new key
         if request.method == 'POST':
 
             data = JSONParser().parse(request)
@@ -44,7 +49,7 @@ class AMMApp(object):
                 thekey = self.apikey_handler.generate_keys(data['username'])
                 return self.generate_response(thekey.get_values(), status=200)
             else:
-                return self.generate_response("Authentication Failed", status=401)
+                return self.generate_response("Authentication failed", status=401)
 
         return self.generate_response("Expecting GET or POST method", status=400)
 
@@ -52,6 +57,7 @@ class AMMApp(object):
     def schemas(self, request):
         """ API for managing schemas """
 
+        # with GET we return the user's schemas
         if request.method == 'GET':
             username = self.apikey_handler.validate(
                                             request.GET.get('access_key', None),
@@ -61,8 +67,9 @@ class AMMApp(object):
                 stacks = self.rancher.get_stacks(username)
                 return self.generate_response(stacks, status=200)
 
-            return self.generate_response("Invalid APIKeys", status=403)
+            return self.generate_response("Invalid APIKey", status=403)
 
+        # with POST we create a new schema
         if request.method == 'POST':
 
             data = JSONParser().parse(request)
@@ -88,11 +95,11 @@ class AMMApp(object):
 
             return self.generate_response("Invalid APIKeys", status=403)
 
-        return self.generate_response("Bad request", status=400)
+        return self.generate_response("Expecting GET or POST method", status=400)
 
     @csrf_exempt
     def version(self, request):
-        """ View to get version number """
+        """ Return the API version number """
         if request.method == 'GET':
             return self.generate_response(base.VERSION, status=200)
-        return self.generate_response("Bad request", status=400)
+        return self.generate_response("Expecting GET method", status=400)
