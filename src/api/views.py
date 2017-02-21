@@ -50,7 +50,7 @@ class AMMApp(object):
 
     @csrf_exempt
     def schemas(self, request):
-        """ View to manage """
+        """ API for managing schemas """
 
         if request.method == 'GET':
             username = self.apikey_handler.validate(

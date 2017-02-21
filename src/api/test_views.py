@@ -8,7 +8,16 @@ from rest_framework.test import APITestCase
 from api.redis import flushall
 from config.settings.base import get_config
 
+import views
+
+import unittest.mock
+
 import re
+
+
+def mock_authenticate(username, password):
+
+    if
 
 
 class KeyViewTestCase(APITestCase):
@@ -134,3 +143,18 @@ class KeyViewTestCase(APITestCase):
         )
         content = json.loads(response.content.decode('utf-8'))
         self.assertIsNotNone(re.match('^\d+\.\d+\.\d+$', content))
+
+
+    def test_foo(self):
+
+        authenticator = unittest.mock.Mock()
+        authenticator.authenticate = lambda x,y: True
+
+
+        apikey_handler = unittest.mock.Mock()
+        unittest.
+
+        rancher = unittest.mock.Mock()
+
+        app = views.AMMApp(authenticator, apikey_handler, rancher)
+
