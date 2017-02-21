@@ -1,5 +1,6 @@
 from config.settings import base
 
+
 class Authenticator(object):
 
     def authenticate(self, username, password):
