@@ -15,9 +15,9 @@ install:
     docker tag $(docker images -q epflidevelop/amm:${TRAVIS_BRANCH}) epflidevelop/amm:latest
 
 script:
-  - export TEST_USERNAME="${TRAVIS_SECRET_TEST_USERNAME}";
-    export TEST_CORRECT_PWD="${TRAVIS_SECRET_TEST_CORRECT_PWD}";
-    export TEST_WRONG_PWD="${TRAVIS_SECRET_TEST_WRONG_PWD}";
+  - export TEST_USERNAME="test";
+    export TEST_CORRECT_PWD="test";
+    export TEST_WRONG_PWD="test_wrong_pwd";
     export SECRET_KEY="aslkdjflsajdlsakjlkjsfdajkfds";
     export LDAP_USER_BASE_DN=ou=users,o=epfl,c=ch;
     export LDAP_SERVER=localhost;
