@@ -14,7 +14,7 @@ import re
 class KeyViewTestCase(APITestCase):
 
     def test_post_apikeys(self):
-        """ Test the post method of KeyView """
+        """ Test the POST method of KeyView """
 
         response = self.client.post(
             reverse('apikeys'),
@@ -35,7 +35,7 @@ class KeyViewTestCase(APITestCase):
         flushall(self)
 
     def test_get_apikeys(self):
-        """ Test the post method of KeyView """
+        """ Test the GET method of KeyView """
 
         response = self.client.post(
             reverse('apikeys'),
@@ -63,7 +63,7 @@ class KeyViewTestCase(APITestCase):
         flushall(self)
 
     def test_post_schemas(self):
-        """ Test the post method of Schemas """
+        """ Test the POST method of Schemas """
 
         response = self.client.post(
             reverse('apikeys'),
@@ -127,7 +127,7 @@ class KeyViewTestCase(APITestCase):
         flushall(self)
 
     def test_get_version(self):
-        """ Test the get method of Version """
+        """ Test the GET method of Version """
         response = self.client.get(
                 reverse('version'),
                 format='json'

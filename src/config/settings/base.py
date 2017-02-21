@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Custom django app
-    'api',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -120,7 +120,3 @@ CACHES = {
         }
     }
 }
-
-# LDAP Configuration
-LDAP_USER_BASE_DN = get_config('LDAP_USER_BASE_DN')
-LDAP_SERVER = get_config('LDAP_SERVER')

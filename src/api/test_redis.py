@@ -11,20 +11,20 @@ class RedisTestCase(TestCase):
 
     def test_redis(self):
 
-        # Create data
+        # create data
         username = get_config("TEST_USERNAME")
         apikey = APIKey.generate()
 
-        # Save an APIKey
+        # save the APIKey
         save_key(username, apikey)
 
-        # Check is APIKEY exists
+        # check if the APIKey exists
         exists(apikey.access_key, apikey.get_secret_key_hash())
 
-        # Return all keys of username 'greg'
+        # get all the keys of the test user
         keys = get_apikeys(username)
 
-        # Check if apikey
+        # check that the key is there
         self.assertTrue(apikey.access_key in keys)
 
         flushall(self)

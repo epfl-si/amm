@@ -6,6 +6,7 @@ from api import rancher
 
 
 class RancherTest(unittest.TestCase):
+
     def test_create_stack(self):
         requester = "test1"
         db_username = "test2"

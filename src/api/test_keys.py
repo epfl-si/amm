@@ -9,7 +9,7 @@ from config.settings.base import get_config
 class KeyTestCase(TestCase):
 
     def test_generate(self):
-        # Generate 100 keys and ckeck the format
+        # generate 100 keys and check the format
         for index in range(100):
             apikey = APIKey.generate()
             self.assertEqual(len(apikey.access_key), 20)
@@ -18,13 +18,13 @@ class KeyTestCase(TestCase):
 
     def test_get_id(self):
         apikey = APIKey.generate()
-        # Check the format of the redis key
+        # check the redis id format
         self.assertEqual(apikey.get_id(username=get_config("TEST_USERNAME")), "key:%s:%s" %
                          (get_config("TEST_USERNAME"), apikey.access_key))
 
     def test_to_str(self):
         apikey = APIKey.generate()
-        # Check the string representation of APIKey
+        # check the string representation of APIKey
         self.assertEqual(apikey.__str__(), apikey.access_key + apikey.get_secret_key_hash())
 
     def test_get_values(self):
