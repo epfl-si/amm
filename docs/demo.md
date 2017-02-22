@@ -1,28 +1,42 @@
 
-source /home/me/Desktop/demo.txt
+### Config :
 
-Créer la clé :
+source /opt/projects/amm/demo.config
 
+### Créer la clé :
 
+~~~
 http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
+~~~
+
+### Créer le schema :
+
+~~~
+http POST http://127.0.0.1:8888/v1/schemas/ access_key="ab4b2e297886fe723dfc" secret_key="IyZ+MCr1S-tkryvEJOOmiT1i58GkI4n4onKMElDA"
+~~~
+
+### Lister les schémas :
+
+~~~
+http GET http://127.0.0.1:8888/v1/schemas/ access_key=="ab4b2e297886fe723dfc" secret_key=="IyZ+MCr1S-tkryvEJOOmiT1i58GkI4n4onKMElDA"
+~~~
 
 
-http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
 
 
 
-http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='XXXXXXXXX' secret_key=='XXXXXXXXX'
+### Lister les clés :
 
-http GET http://127.0.0.1:8888/v1/apikeys/ access_key=='36cb0a6b6cf1d3b6160c' secret_key=='ef848027d73fc107126bf38eef4c6480965aa420'
+~~~
+http GET http://127.0.0.1:8888/v1/apikeys/ access_key=="6074a93120f0c7150fff" secret_key=="MkxbuAFRXlAkDhSB3-ld-a8RaGBeBoRldwOpmB02"
+~~~
 
-5. Points importants
-====================
 
-- Couverture de tests : 91% :
 
-sudo docker-compose exec django ./coverage.sh
-chromium-browser ./htmlcov/index.html &
+sudo docker-compose exec redis redis-cli
 
-- Respect de la convention PEP8 : 100%
-- Code sous github avec mirroir sur c4science
 
+
+sudo docker build --build-arg MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --build-arg BUILD_NUMBER=5 --no-cache -t epflidevelop/amm .
+
+sudo docker-compose exec -T django ./coverage.sh

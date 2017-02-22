@@ -8,6 +8,7 @@ from api import rancher
 class RancherTest(unittest.TestCase):
 
     def test_create_stack(self):
+
         requester = "test1"
         db_username = "test2"
         db_password = "test3"
@@ -18,15 +19,19 @@ class RancherTest(unittest.TestCase):
 
         conn = rancher.Rancher()
 
-        ret = conn.create_stack(requester, db_username, db_password, db_port, db_schema, db_stack, db_env)
-        self.assertIsNotNone(ret)
+        stacks = conn.create_stack(requester, db_username, db_password, db_port, db_schema, db_stack, db_env)
+        self.assertIsNotNone(stacks)
 
-        ret = conn.get_stacks(requester)
-        self.assertEqual(len(ret), 1)
-        self.assertEqual(ret[0]['requester'], requester)
-        self.assertEqual(ret[0]['db_username'], db_username)
+        stacks = conn.get_stacks(requester)
+
+        self.assertEqual(len(stacks), 1)
+        self.assertEqual(stacks[0]['requester'], requester)
+        self.assertEqual(stacks[0]['db_username'], db_username)
         # db_password is not persisted
-        self.assertEqual(ret[0]['db_port'], db_port)
-        self.assertEqual(ret[0]['db_schema'], db_schema)
-        self.assertEqual(ret[0]['db_stack'], db_stack)
-        self.assertEqual(ret[0]['db_env'], db_env)
+        self.assertEqual(stacks[0]['db_port'], db_port)
+        self.assertEqual(stacks[0]['db_schema'], db_schema)
+        self.assertEqual(stacks[0]['db_stack'], db_stack)
+        self.assertEqual(stacks[0]['db_env'], db_env)
+
+        schemas = conn.get_schemas(requester)
+        self.assertIsNotNone(schemas)

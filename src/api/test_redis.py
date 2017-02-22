@@ -6,6 +6,8 @@ from api.apikey import APIKey
 from api.redis import save_key, exists, get_apikeys, flushall
 from config.settings.base import get_config
 
+from api.apikeyhandler import ApiKeyHandler
+
 
 class RedisTestCase(TestCase):
 
@@ -19,7 +21,11 @@ class RedisTestCase(TestCase):
         save_key(username, apikey)
 
         # check if the APIKey exists
-        exists(apikey.access_key, apikey.get_secret_key_hash())
+        self.assertIsNotNone(exists(apikey.access_key, apikey.secret_key_clear))
+
+        handler = ApiKeyHandler()
+
+        self.assertIsNotNone(handler.validate(apikey.access_key, apikey.secret_key_clear))
 
         # get all the keys of the test user
         keys = get_apikeys(username)

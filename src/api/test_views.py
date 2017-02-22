@@ -133,4 +133,5 @@ class KeyViewTestCase(APITestCase):
                 format='json'
         )
         content = json.loads(response.content.decode('utf-8'))
+
         self.assertIsNotNone(re.match('^\d+\.\d+\.\d+$', content))
