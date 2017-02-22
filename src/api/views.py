@@ -64,7 +64,7 @@ class AMMApp(object):
                                             request.GET.get('secret_key', None)
                                           )
             if username is not None:
-                stacks = self.rancher.get_stacks(username)
+                stacks = self.rancher.get_schemas(username)
                 return self.generate_response(stacks, status=200)
 
             return self.generate_response("Invalid APIKey", status=403)
