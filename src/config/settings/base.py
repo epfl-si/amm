@@ -1,4 +1,5 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import os
 
 from django.core.exceptions import ImproperlyConfigured
@@ -15,10 +16,14 @@ def get_config(setting):
         raise ImproperlyConfigured(error_msg)
 
 
+VERSION = get_config('MAJOR_RELEASE') + '.' + get_config('MINOR_RELEASE') + '.' + get_config('BUILD_NUMBER')
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_config("SECRET_KEY")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+        get_config('DJANGO_HOST'),
+]
 
 # Application definition
 
@@ -34,7 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Custom django app
-    'api',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -115,7 +120,3 @@ CACHES = {
         }
     }
 }
-
-# LDAP Configuration
-LDAP_USER_BASE_DN = get_config('LDAP_USER_BASE_DN')
-LDAP_SERVER = get_config('LDAP_SERVER')

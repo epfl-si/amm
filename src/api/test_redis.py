@@ -1,28 +1,36 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 from django.test import TestCase
 
 from api.apikey import APIKey
 from api.redis import save_key, exists, get_apikeys, flushall
 from config.settings.base import get_config
 
+from api.apikeyhandler import ApiKeyHandler
+
 
 class RedisTestCase(TestCase):
 
     def test_redis(self):
 
-        # Create data
+        # create data
         username = get_config("TEST_USERNAME")
         apikey = APIKey.generate()
 
-        # Save an APIKey
+        # save the APIKey
         save_key(username, apikey)
 
-        # Check is APIKEY exists
-        exists(apikey.access_key, apikey.get_secret_key_hash())
+        # check if the APIKey exists
+        self.assertIsNotNone(exists(apikey.access_key, apikey.secret_key_clear))
 
-        # Return all keys of username 'greg'
+        handler = ApiKeyHandler()
+
+        self.assertIsNotNone(handler.validate(apikey.access_key, apikey.secret_key_clear))
+
+        # get all the keys of the test user
         keys = get_apikeys(username)
 
-        # Check if apikey
+        # check that the key is there
         self.assertTrue(apikey.access_key in keys)
 
         flushall(self)

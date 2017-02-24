@@ -1,3 +1,5 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 from django_redis import get_redis_connection
 
 from api.apikey import APIKey
@@ -6,12 +8,12 @@ import time
 
 
 def get_connection():
-    """ Get redis connection """
+    """ Get a redis connection """
     return get_redis_connection("default")
 
 
 def save_key(username, apikey):
-    """ Save APIKey in redis """
+    """ Save the APIKey for the given user in redis """
     id = apikey.get_id(username)
     connection = get_connection()
     mapping = {
@@ -23,7 +25,7 @@ def save_key(username, apikey):
 
 
 def get_apikeys(username):
-    """ Get all apikeys by username """
+    """ Get all the APIKeys by username """
 
     connection = get_connection()
     apikeys = []
@@ -36,7 +38,7 @@ def get_apikeys(username):
 
 
 def exists(access_key, secret_key):
-    """ Return True if the apikey exists """
+    """ Return True if the given APIkey exists """
     try:
         connection = get_connection()
         # get the key
@@ -59,4 +61,6 @@ def exists(access_key, secret_key):
 
 
 def flushall(self):
+    """ Flush the redis data """
+
     get_connection().flushall()

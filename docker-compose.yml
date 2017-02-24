@@ -1,15 +1,14 @@
+# (c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017
+---
 version: '2'
 
 services:
 
   redis:
-     image: amm/redis
-     build:
-       context: docker/redis
+    image: library/redis
 
   django:
-    image: amm/django
-    build: .
+    image: epflidevelop/amm:latest
     volumes:
       - ./src:/opt/amm/src
       - ./htmlcov:/opt/amm/htmlcov
@@ -21,19 +20,24 @@ services:
       LDAP_USER_BASE_DN: ${LDAP_USER_BASE_DN}
       LDAP_USER_SEARCH_ATTR: ${LDAP_USER_SEARCH_ATTR}
       LDAP_SERVER: ${LDAP_SERVER}
+      LDAP_USE_SSL: 'false'
       CACHE_REDIS_LOCATION: ${CACHE_REDIS_LOCATION}
       CACHE_REDIS_CLIENT_CLASS: ${CACHE_REDIS_CLIENT_CLASS}
+      AMM_AUTHENTICATOR_CLASS: mock
+      AMM_ENVIRONMENT: ${AMM_ENVIRONMENT}
+      DJANGO_WORKER_COUNT: 1
+      DJANGO_SETTINGS_MODULE: config.settings.local
+
     expose:
       - "8000"
-    depends_on:
-      - "redis"
-    command: gunicorn --reload -w 2 -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application
+    links:
+      - redis
 
   nginx:
-    image: amm/nginx
-    build:
-       context: docker/nginx
+    image: library/nginx
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "127.0.0.1:8888:80"
-    depends_on:
-      - "django"
+    links:
+      - django

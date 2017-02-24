@@ -1,7 +1,8 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import binascii
-import os
 import hashlib
+from api import utils
 
 
 class APIKey:
@@ -25,24 +26,28 @@ class APIKey:
 
     @staticmethod
     def generate_salt():
-        return binascii.hexlify(os.urandom(10)).decode("utf-8")
+        """Generate the salt"""
+        return utils.generate_password(20)
 
     def generate_access_key(self):
-        return binascii.hexlify(os.urandom(10)).decode("utf-8")
+        """Generate the access key (public part)"""
+        return utils.generate_random_b64(20)
 
     def generate_secret_key(self):
-
-        secret_key_clear_byte = binascii.hexlify(os.urandom(20))
-        self.secret_key_clear = secret_key_clear_byte.decode("utf-8")
+        """Generate the secret key (private part)"""
+        self.secret_key_clear = utils.generate_password(40)
 
     def get_id(self, username):
+        """Returns the APIKey's id"""
         return "key:%s:%s" % (username, self.access_key)
 
     def get_values(self):
+        """Returns the APIkey values as a dict"""
         return {"access_key": self.access_key,
                 "secret_key": self.secret_key_clear}
 
     def get_secret_key_hash(self):
+        """Returns the secret key hashed"""
         if self.secret_key_hash is None:
             byteshash = hashlib.pbkdf2_hmac('sha256', self.secret_key_clear.encode('utf-8'), self.salt.encode('utf-8'),
                                             1)

@@ -1,0 +1,37 @@
+# (c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017
+---
+language: python
+
+python:
+  - "3.6"
+
+sudo: required
+
+services:
+  - docker
+
+install:
+  - docker build --build-arg MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --build-arg BUILD_NUMBER=${TRAVIS_BUILD_NUMBER} --no-cache -t epflidevelop/amm:${TRAVIS_BRANCH} .;
+    docker tag $(docker images -q epflidevelop/amm:${TRAVIS_BRANCH}) epflidevelop/amm:latest
+
+script:
+  - export TEST_USERNAME="test";
+    export TEST_CORRECT_PWD="test";
+    export TEST_WRONG_PWD="test_wrong_pwd";
+    export SECRET_KEY="aslkdjflsajdlsakjlkjsfdajkfds";
+    export LDAP_USER_BASE_DN=ou=users,o=epfl,c=ch;
+    export LDAP_SERVER=localhost;
+    export LDAP_USER_SEARCH_ATTR=uid;
+    export CACHE_REDIS_LOCATION=redis://redis:6379/1;
+    export CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient;
+    export AMM_ENVIRONMENT=test;
+    docker-compose up -d
+  - docker-compose exec django ./flake8.sh
+  - docker-compose exec django coverage run --source='.' src/manage.py test --settings=config.settings.local
+
+after_success:
+  - if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
+      docker login -u="${TRAVIS_SECRET_DOCKER_USERNAME}" -p="${TRAVIS_SECRET_DOCKER_PASSWORD}";
+      docker push epflidevelop/amm:${TRAVIS_BRANCH};
+      docker logout;
+    fi
