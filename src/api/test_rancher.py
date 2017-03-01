@@ -7,6 +7,33 @@ from api import rancher
 
 class RancherTest(unittest.TestCase):
 
+    def test_get(self):
+
+        conn = rancher.Rancher()
+
+        r = conn.get("/v1-catalog/templates/idevelop:mysql")
+
+        self.assertEqual(200, r.status_code)
+
+    def test_get_template(self):
+
+        conn = rancher.Rancher()
+
+        template = "idevelop:mysql"
+
+        data = conn.get_template(template)
+
+        self.assertTrue(data["id"].startswith(template))
+
+    def test_create_mysql_stack(self):
+
+        conn = rancher.Rancher()
+
+        response = conn.create_mysql_stack()
+
+        for key, value in response.json().items():
+            print(key, "=", value)
+
     def test_create_stack(self):
 
         requester = "test1"

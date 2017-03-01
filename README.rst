@@ -2,7 +2,8 @@
 AMM
 =================
 
-## Requirements
+Requirements
+============
 
 Some variables need to be assigned correctly for the application to start:
 
@@ -18,7 +19,10 @@ Some variables need to be assigned correctly for the application to start:
 #. DJANGO_HOST: the value to accept as Host header in HTTP requests
 #. DJANGO_WORKER_COUNT: the number of worker processes
 #. DJANGO_SETTINGS_MODULE: the django configuration module to use, currently only 'config.settings.local' for local testing and 'config.settings.base' for production are supported
-
+#. RANCHER_API_URL: the base URL to access the Rancher API
+#. RANCHER_VERIFY_CERTIFICATE: if true the Rancher SSL certificate will be verified
+#. RANCHER_ACCESS_KEY: the Rancher API access key
+#. RANCHER_SECRET_KEY: the Rancher API secret key
 
 For the tests to pass, some more variables need to be assigned:
 

@@ -34,4 +34,4 @@ sudo docker build --build-arg MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --buil
 
 ** launch the test case **
 
-sudo docker-compose exec -T django ./coverage.sh
+sudo docker-compose exec django ./coverage.sh

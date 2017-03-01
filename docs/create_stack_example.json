@@ -1,0 +1,20 @@
+{
+  "system": false,
+  "type": "stack",
+  "name": "stack-name",
+  "startOnCreate": true,
+  "environment": {
+    "MYSQL_VERSION": "5.5",
+    "MYSQL_ROOT_PASSWORD": "mysql-root-password",
+    "MYSQL_DATABASE": "mysql-database",
+    "AMM_USERNAME": "mysql-user",
+    "AMM_USER_PASSWORD_HASH": "mysql-password",
+    "MAX_CONNECTIONS": "151",
+    "QUOTA_SIZE_MIB": "500",
+    "MYSQL_EXPORT_PORT": "3306"
+  },
+  "description": "stack_description",
+  "dockerCompose": "# (c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017\n---\nversion: '2'\nservices:\n  ammextras:\n    image: epflidevelop/mysql-amm-extra-features\n    volumes:\n    - /docker-entrypoint-initdb.d\n    labels:\n      io.rancher.container.start_once: true\n\n  mysql:\n    image: mysql:${MYSQL_VERSION}\n    environment:\n      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}\n      MYSQL_DATABASE: ${MYSQL_DATABASE}\n      MYSQL_ROOT_HOST: localhost\n      AMM_USER_PASSWORD_HASH: ${AMM_USER_PASSWORD_HASH}\n      AMM_USERNAME: ${AMM_USERNAME}\n    ports:\n    - ${MYSQL_EXPORT_PORT}:3306\n    #mem_limit: ${MEM_LIMIT}\n    command: --max-connections=${MAX_CONNECTIONS}\n    volumes_from:\n    - ammextras\n    volumes:\n    - mysqldata:/var/lib/mysql\n    labels:\n      io.rancher.sidekicks: ammextras\n\nvolumes:\n  mysqldata: {}\n",
+  "rancherCompose": "# (c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017\n---\n.catalog:\n  name: MySQL\n  version: v0\n  description: MySQL with resources contraints\n  uuid: mysql-0\n  minimum_rancher_version: v1.2.0\n  questions:\n    - variable: MYSQL_VERSION\n      label: MySQL version\n      description: The MySQL version to use\n      type: enum\n      options:\n        - \"5.5\"\n        - \"5.6\"\n        - \"5.7\"\n      default: \"5.5\"\n      required: true\n    - variable: MYSQL_ROOT_PASSWORD\n      label: MySQL root password\n      decription: The password that will be set for the MySQL root superuser account\n      type: password\n      required: true\n    - variable: MYSQL_DATABASE\n      label: MySQL database\n      description: The name of a database to be created on image startup\n      type: string\n      required: true\n    - variable: AMM_USERNAME\n      label: MySQL user\n      description: The name of a new user to create\n      type: string\n      required: true\n    - variable: AMM_USER_PASSWORD_HASH\n      label: MySQL password\n      description: \"The hashed password of the new user created: format is '*' + [HEX]SHA1([BIN]SHA1('string password'))\"\n      type: string\n      required: true\n#    - variable: MEM_LIMIT\n#      label: Memory limit\n#      description: Memory limit.\n#      type: int\n#      required: true\n    - variable: MAX_CONNECTIONS\n      label: Max connections\n      description: Maximum number of concurrent connections.\n      type: int\n      default: 151\n      required: true\n    - variable: QUOTA_SIZE_MIB\n      label: Quota for maximum file size\n      type: int\n      default: 500\n      required: true\n    - variable: MYSQL_EXPORT_PORT\n      label: Publicly Accessible Port\n      description: Port Published that will be used by the end-user to access this MySQL instance\n      type: int\n      default: 3306\n      required: true\n",
+  "externalId": "catalog://idevelop:mysql:7"
+}
