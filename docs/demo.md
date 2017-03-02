@@ -12,13 +12,13 @@ http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASS
 ### Créer le schema :
 
 ~~~
-http POST http://127.0.0.1:8888/v1/schemas/ access_key="ab4b2e297886fe723dfc" secret_key="IyZ+MCr1S-tkryvEJOOmiT1i58GkI4n4onKMElDA"
+http POST http://127.0.0.1:8888/v1/schemas/ access_key="737189d61b0d2b49d032" secret_key="X2QYzuP6GrZMxFLATNPM083vfIt8E7xXQ3UsmV5D"
 ~~~
 
 ### Lister les schémas :
 
 ~~~
-http GET http://127.0.0.1:8888/v1/schemas/ access_key=="ab4b2e297886fe723dfc" secret_key=="IyZ+MCr1S-tkryvEJOOmiT1i58GkI4n4onKMElDA"
+http GET http://127.0.0.1:8888/v1/schemas/ access_key=="737189d61b0d2b49d032" secret_key=="X2QYzuP6GrZMxFLATNPM083vfIt8E7xXQ3UsmV5D"
 ~~~
 
 

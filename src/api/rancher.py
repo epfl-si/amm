@@ -1,4 +1,5 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+import hashlib
 
 import requests
 import json
@@ -60,12 +61,16 @@ class Rancher(object):
 
         template = self.get_template("idevelop:mysql")
 
+        password = api.utils.generate_password(20)
+
+        password_hash = '*' + hashlib.sha1(hashlib.sha1(password).digest()).hexdigest()
+
         environment = {
             "MYSQL_VERSION": "5.5",
             "MYSQL_ROOT_PASSWORD": "",
             "MYSQL_DATABASE": api.utils.generate_random_b64(8),
             "AMM_USERNAME": api.utils.generate_random_b64(8),
-            "AMM_USER_PASSWORD_HASH": api.utils.generate_password(20),  # TODO hash with sha1
+            "AMM_USER_PASSWORD_HASH": password_hash,
             "MAX_CONNECTIONS": "151",
             "QUOTA_SIZE_MIB": "500",
             "MYSQL_EXPORT_PORT": "3306"
