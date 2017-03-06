@@ -63,11 +63,11 @@ class Rancher(object):
 
         password = api.utils.generate_password(20)
 
-        password_hash = '*' + hashlib.sha1(hashlib.sha1(password).digest()).hexdigest()
+        password_hash = '*' + hashlib.sha1(hashlib.sha1(password.encode('utf-8')).digest()).hexdigest()
 
         environment = {
             "MYSQL_VERSION": "5.5",
-            "MYSQL_ROOT_PASSWORD": "",
+            "MYSQL_ROOT_PASSWORD": api.utils.generate_password(20),
             "MYSQL_DATABASE": api.utils.generate_random_b64(8),
             "AMM_USERNAME": api.utils.generate_random_b64(8),
             "AMM_USER_PASSWORD_HASH": password_hash,

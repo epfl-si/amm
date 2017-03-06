@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo docker-compose exec django ./coverage.sh
+sudo docker-compose exec django ./bin/coverage.sh

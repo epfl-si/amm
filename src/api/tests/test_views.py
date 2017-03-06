@@ -1,14 +1,13 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
 import json
+import re
 
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from api.redis import flushall
 from config.settings.base import get_config
-
-import re
 
 
 class KeyViewTestCase(APITestCase):

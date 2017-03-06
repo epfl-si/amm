@@ -5,8 +5,7 @@ MAINTAINER IDEVELOP <personnel.idevelop@epfl.ch>
 WORKDIR /opt/amm
 
 COPY ./requirements ./requirements/
-COPY ./bin/coverage.sh ./coverage.sh
-COPY ./bin/flake8.sh ./flake8.sh
+COPY ./bin ./bin/
 COPY ./src ./src/
 
 ARG MAJOR_RELEASE

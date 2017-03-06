@@ -21,6 +21,14 @@ docker-machine create --driver virtualbox default
 eval $(docker-machine env)
 ~~~
 
+### Start docker-machine
+
+~~~
+docker-machine start
+eval $(docker-machine env)
+~~~
+
+
 ### Configure pycharm
 
 **First make sure to :**

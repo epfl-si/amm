@@ -5,7 +5,7 @@ AMM
 Requirements
 ============
 
-Some variables need to be assigned correctly for the application to start:
+Create a .env file on the project's root with the following variables :
 
 #. CACHE_REDIS_LOCATION: The django-cache connection string for the redis driver (depends on client selected)
 #. CACHE_REDIS_CLIENT_CLASS: The django-cache client class to use for the redis driver (for standalone redis use: "django_redis.client.DefaultClient" )
