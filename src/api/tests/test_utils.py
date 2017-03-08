@@ -19,3 +19,11 @@ class UtilTest(unittest.TestCase):
         password = utils.generate_password(32)
 
         self.assertEqual(32, len(password))
+
+    def test_format_connection_string(self):
+
+        connection = utils.get_connection_string("username", "password", "stack", "env", 1234, "schema")
+
+        expected = "mysql://username:password@mysql.stack.env.epfl.ch:1234/schema"
+
+        self.assertEqual(connection, expected)

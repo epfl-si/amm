@@ -1,8 +1,8 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
 import unittest
-
 from api import rancher
+from api.tests import KERMIT_SCIPER
 
 
 class RancherTest(unittest.TestCase):
@@ -28,37 +28,54 @@ class RancherTest(unittest.TestCase):
     def test_create_mysql_stack(self):
 
         conn = rancher.Rancher()
+        data = conn.create_mysql_stack(KERMIT_SCIPER)
 
-        response = conn.create_mysql_stack()
+        self.assertTrue(data["connection_string"].startswith("mysql://"))
+        self.assertTrue(data["mysql_cmd"].startswith("mysql "))
 
-        for key, value in response.json().items():
-            print(key, "=", value)
+        # Return stacks by sciper
+        conn.get_stacks(KERMIT_SCIPER)
 
-    def test_create_stack(self):
+        # Clean stacks
+        conn.clean_stacks(KERMIT_SCIPER)
 
-        requester = "test1"
-        db_username = "test2"
-        db_password = "test3"
-        db_port = 1234
-        db_schema = "test4"
-        db_stack = "test5"
-        db_env = "test"
+    def test_get_available_port(self):
 
         conn = rancher.Rancher()
+        conn.get_available_port()
 
-        stacks = conn.create_stack(requester, db_username, db_password, db_port, db_schema, db_stack, db_env)
-        self.assertIsNotNone(stacks)
+    def test_get_stacks(self):
 
-        stacks = conn.get_stacks(requester)
+        # Create new stacks
+        conn = rancher.Rancher()
 
-        self.assertEqual(len(stacks), 1)
-        self.assertEqual(stacks[0]['requester'], requester)
-        self.assertEqual(stacks[0]['db_username'], db_username)
-        # db_password is not persisted
-        self.assertEqual(stacks[0]['db_port'], db_port)
-        self.assertEqual(stacks[0]['db_schema'], db_schema)
-        self.assertEqual(stacks[0]['db_stack'], db_stack)
-        self.assertEqual(stacks[0]['db_env'], db_env)
+        conn.create_mysql_stack(KERMIT_SCIPER)
+        conn.create_mysql_stack(KERMIT_SCIPER)
 
-        schemas = conn.get_schemas(requester)
-        self.assertIsNotNone(schemas)
+        # Return stacks by sciper
+        stacks = conn.get_stacks(KERMIT_SCIPER)
+
+        # Check the number of stacks
+        self.assertEqual(len(stacks), 2)
+
+        # Clean stacks
+        conn.clean_stacks(KERMIT_SCIPER)
+
+    def test_get_schemas(self):
+
+        # Create new stacks
+        conn = rancher.Rancher()
+        conn.create_mysql_stack(KERMIT_SCIPER)
+        conn.create_mysql_stack(KERMIT_SCIPER)
+
+        # Return schemas by sciper
+        schemas = conn.get_schemas(KERMIT_SCIPER)
+
+        # Check the number of stacks
+        self.assertEqual(len(schemas), 2)
+
+        # Return stacks by sciper
+        conn.get_stacks(KERMIT_SCIPER)
+
+        # Clean stacks
+        conn.clean_stacks(KERMIT_SCIPER)

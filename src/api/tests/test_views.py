@@ -6,7 +6,9 @@ import re
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from api import rancher
 from api.redis import flushall
+from api.tests import KERMIT_SCIPER
 from config.settings.base import get_config
 
 
@@ -81,7 +83,7 @@ class KeyViewTestCase(APITestCase):
 
         content = json.loads(response.content.decode('utf-8'))
 
-        self.assertIsNotNone(re.match('^mysql://\w+:[-\+\w]+@(\w\.?)+:\d+/.+$', content))
+        self.assertIsNotNone(re.match('^mysql://\w+:[-\+\w]+@(\d+\.?)+:\d+/.+$', content['connection_string']))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -89,6 +91,10 @@ class KeyViewTestCase(APITestCase):
             'application/json'
         )
         flushall(self)
+
+        # Clean stacks
+        conn = rancher.Rancher()
+        conn.clean_stacks(KERMIT_SCIPER)
 
     def test_get_schemas(self):
         """ Test the GET method of schemas"""

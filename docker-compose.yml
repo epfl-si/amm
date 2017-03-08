@@ -11,6 +11,7 @@ services:
     image: epflidevelop/amm:latest
     volumes:
       - ./src:/opt/amm/src
+      - ./htmlcov:/opt/amm/htmlcov
       - ./bin:/opt/amm/bin
     environment:
       SECRET_KEY: ${SECRET_KEY}
