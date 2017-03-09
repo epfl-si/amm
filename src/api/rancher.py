@@ -91,9 +91,10 @@ class Rancher(object):
         """
         Generate an available port
         """
+        ports_used = self.get_ports_used()
         while True:
             new_port = randint(1, 65536)
-            if new_port not in self.get_ports_used():
+            if new_port not in ports_used:
                 return new_port
 
     def create_mysql_stack(self, sciper):
@@ -210,17 +211,32 @@ class Rancher(object):
         """
         Returns the schemas of the given users
         """
-        schemas = []
 
         stacks = self.get_stacks(sciper)
 
+        schemas = []
+
         for stack in stacks:
-            schema = utils.get_connection_string_with_ip(
+            connection_string = utils.get_connection_string_with_ip(
                 db_username=stack['environment']['AMM_USERNAME'],
-                db_password=stack['environment']['AMM_USER_PASSWORD_HASH'],
-                ip=self.get_ip_address(stack["id"]),
+                db_password=None,
+                db_ip=self.get_ip_address(stack["id"]),
                 db_port=stack['environment']['MYSQL_EXPORT_PORT'],
                 db_schema=stack['environment']['MYSQL_DATABASE'])
+
+            mysql_cmd = utils.get_mysql_client_cmd(
+                db_username=stack['environment']['AMM_USERNAME'],
+                db_password=None,
+                db_ip=self.get_ip_address(stack["id"]),
+                db_port=stack['environment']['MYSQL_EXPORT_PORT'],
+                db_schema=stack['environment']['MYSQL_DATABASE']
+            )
+
+            schema = {
+                "connection_string": connection_string,
+                "mysql_cmd": mysql_cmd
+            }
+
             schemas.append(schema)
 
         return schemas

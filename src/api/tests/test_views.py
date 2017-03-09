@@ -12,7 +12,7 @@ from api.tests import KERMIT_SCIPER
 from config.settings.base import get_config
 
 
-class KeyViewTestCase(APITestCase):
+class ViewsTestCase(APITestCase):
 
     def test_post_apikeys(self):
         """ Test the POST method of KeyView """
@@ -122,6 +122,7 @@ class KeyViewTestCase(APITestCase):
 
         content = json.loads(response.content.decode('utf-8'))
 
+        # we get a list of dicts with 1 element
         self.assertEqual(len(content), 1)
 
         self.assertEqual(response.status_code, 200)
