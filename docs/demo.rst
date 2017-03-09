@@ -8,10 +8,6 @@ Créer la clé :
 
 http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
 
-Lister les clés :
------------------
-
-http GET http://127.0.0.1:8888/v1/apikeys/ access_key=="804a5a0957d629e6bc6c" secret_key=="qKE+0EL0qqI2wn9rcc20UIj-eN2kk+bSwkdlmzN0"
 
 Créer le schema :
 -----------------
