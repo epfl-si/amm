@@ -12,12 +12,19 @@ http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASS
 Créer le schema :
 -----------------
 
-http POST http://127.0.0.1:8888/v1/schemas/ access_key="804a5a0957d629e6bc6c" secret_key="qKE+0EL0qqI2wn9rcc20UIj-eN2kk+bSwkdlmzN0"
+http POST http://127.0.0.1:8888/v1/schemas/ access_key="c49eca450e1672cef67f" secret_key="7yzQ+J5ZgEMN2IRPTK6P-+yOq68DAGX2qk9BIqVd"
+
+Mettre des données :
+--------------------
+
+CREATE TABLE demo (firstName CHAR(50), lastName CHAR(50));
+INSERT INTO demo VALUES ("Django", "Reinhardt");
+SELECT * FROM demo;
 
 Lister les schémas :
 --------------------
 
-http GET http://127.0.0.1:8888/v1/schemas/ access_key=="804a5a0957d629e6bc6c" secret_key=="qKE+0EL0qqI2wn9rcc20UIj-eN2kk+bSwkdlmzN0"
+http GET http://127.0.0.1:8888/v1/schemas/ access_key=="c49eca450e1672cef67f" secret_key=="7yzQ+J5ZgEMN2IRPTK6P-+yOq68DAGX2qk9BIqVd"
 
 Misc :
 ------
