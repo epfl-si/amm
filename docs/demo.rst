@@ -1,42 +1,35 @@
-Config :
---------
-
-source ./demo.config
-
-Créer la clé :
+0. Prérequis :
 --------------
+
+* lancer **sudo docker-compose up -d** depuis le répertoire du projet
+* définir à la racine du projet un fichier **demo.config** avec les informations suivantes :
+    * USERNAME=le_username_gaspar
+    * PASSWORD=le_password
+* lancer la commande : **source ./demo.config** pour setter les variables d'environnement
+
+
+1. Créer la clé :
+-----------------
 
 http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
 
-
-Créer le schema :
------------------
-
-http POST http://127.0.0.1:8888/v1/schemas/ access_key="c49eca450e1672cef67f" secret_key="7yzQ+J5ZgEMN2IRPTK6P-+yOq68DAGX2qk9BIqVd"
-
-Mettre des données :
+2. Créer le schema :
 --------------------
+
+(mettre les valeurs de $ACCESS_KEY et $SECRET_KEY obtenues à l'étape 1)
+
+http POST http://127.0.0.1:8888/v1/schemas/ access_key="cd4e7db84351a3f42e4a" secret_key="ynTMkUPOKDQtRWjrUfYAgtjZRPmvlGIkmG+YobW8"
+
+3. Mettre des données :
+-----------------------
 
 CREATE TABLE demo (firstName CHAR(50), lastName CHAR(50));
 INSERT INTO demo VALUES ("Django", "Reinhardt");
 SELECT * FROM demo;
 
-Lister les schémas :
---------------------
+4. Lister les schémas :
+-----------------------
 
-http GET http://127.0.0.1:8888/v1/schemas/ access_key=="c49eca450e1672cef67f" secret_key=="7yzQ+J5ZgEMN2IRPTK6P-+yOq68DAGX2qk9BIqVd"
+(mettre les valeurs de $ACCESS_KEY et $SECRET_KEY obtenues à l'étape 1)
 
-Misc :
-------
-
-**redis-cli**
-
-sudo docker-compose exec redis redis-cli
-
-**docker build**
-
-sudo docker build --build-arg MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --build-arg BUILD_NUMBER=5 --no-cache -t epflidevelop/amm .
-
-**launch the test case**
-
-sudo docker-compose exec django ./coverage.sh
+http GET http://127.0.0.1:8888/v1/schemas/ access_key=="cd4e7db84351a3f42e4a" secret_key=="ynTMkUPOKDQtRWjrUfYAgtjZRPmvlGIkmG+YobW8"

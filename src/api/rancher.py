@@ -200,6 +200,7 @@ class Rancher(object):
         response = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/")
         stacks = response.json()["data"]
 
+        # TODO use a real requests, don't go through all the stacks
         for stack in stacks:
             tag = stack["group"]
             if tag and 'owner:' + sciper in tag:
