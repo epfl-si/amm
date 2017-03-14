@@ -14,6 +14,12 @@ from config.settings.base import get_config
 
 class ViewsTestCase(APITestCase):
 
+    def setUp(self):
+        flushall(self)
+
+    def tearDown(self):
+        flushall(self)
+
     def test_post_apikeys(self):
         """ Test the POST method of KeyView """
 
@@ -33,7 +39,6 @@ class ViewsTestCase(APITestCase):
             response['content-type'],
             'application/json'
         )
-        flushall(self)
 
     def test_get_apikeys(self):
         """ Test the GET method of KeyView """
@@ -61,7 +66,6 @@ class ViewsTestCase(APITestCase):
             response['content-type'],
             'application/json'
         )
-        flushall(self)
 
     def test_post_schemas(self):
         """ Test the POST method of Schemas """
@@ -90,7 +94,6 @@ class ViewsTestCase(APITestCase):
             response['content-type'],
             'application/json'
         )
-        flushall(self)
 
         # Clean stacks
         conn = rancher.Rancher()
@@ -99,6 +102,7 @@ class ViewsTestCase(APITestCase):
     def test_get_schemas(self):
         """ Test the GET method of schemas"""
 
+        # create an API key
         response = self.client.post(
             reverse('apikeys'),
             data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
@@ -113,6 +117,7 @@ class ViewsTestCase(APITestCase):
                   "secret_key": content["secret_key"]},
             format='json'
         )
+
         response = self.client.get(
             reverse('schemas'),
             data={"access_key": content["access_key"],
@@ -130,7 +135,10 @@ class ViewsTestCase(APITestCase):
             response['content-type'],
             'application/json'
         )
-        flushall(self)
+
+        # Clean stacks
+        conn = rancher.Rancher()
+        conn.clean_stacks(KERMIT_SCIPER)
 
     def test_get_version(self):
         """ Test the GET method of Version """

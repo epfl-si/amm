@@ -11,7 +11,7 @@ authenticator = auth.get_configured_authenticator()
 ammapp = views.AMMApp(authenticator, apikey_handler, rancher_api)
 
 urlpatterns = [
-    url(r'^apikeys/$', ammapp.keys, name="apikeys"),
-    url(r'^schemas/$', ammapp.schemas, name="schemas"),
-    url(r'^version/$', ammapp.version, name='version'),
+    url(r'^apikeys/$', views.KeysView.as_view(), name="apikeys"),
+    url(r'^schemas/$', views.SchemasView.as_view(), name="schemas"),
+    url(r'^version/$', views.VersionView.as_view(), name='version'),
 ]
