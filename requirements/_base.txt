@@ -5,3 +5,4 @@ django-redis==4.7.0
 ldap3==2.2.0
 gunicorn==19.6.0
 requests==2.13.0
+django-rest-swagger==2.1.2

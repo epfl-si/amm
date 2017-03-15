@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # Third librairies
     'rest_framework',
+    'rest_framework_swagger',
 
     # Custom django app
     'api.apps.ApiConfig',

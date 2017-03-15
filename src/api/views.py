@@ -1,8 +1,10 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 import auth
@@ -10,6 +12,15 @@ from api.apikeyhandler import ApiKeyHandler
 from api.rancher import Rancher
 from api.utils import get_sciper
 from config.settings import base
+
+
+@api_view()
+def api_root(request, format=None):
+    return Response({
+        'apikeys': reverse('apikeys', request=request, format=format),
+        'schemas': reverse('schemas', request=request, format=format),
+        'version': reverse('version', request=request, format=format)
+    })
 
 
 class CommonView(APIView):
