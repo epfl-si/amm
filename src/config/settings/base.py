@@ -1,11 +1,14 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
 import os
 
 from django.core.exceptions import ImproperlyConfigured
+from unipath import Path
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+
+BASE_DIR = Path(__file__).ancestor(4)
+SRC_DIR = Path(__file__).ancestor(3)
 
 
 def get_config(setting):
@@ -109,6 +112,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = SRC_DIR.child('static')
 
 CACHES = {
     "default": {
