@@ -24,8 +24,7 @@ class APIKey:
     def __str__(self):
         return self.access_key + self.get_secret_key_hash()
 
-    @staticmethod
-    def generate_salt():
+    def generate_salt(self):
         """Generate the salt"""
         return utils.generate_password(20)
 
@@ -49,7 +48,9 @@ class APIKey:
     def get_secret_key_hash(self):
         """Returns the secret key hashed"""
         if self.secret_key_hash is None:
-            byteshash = hashlib.pbkdf2_hmac('sha256', self.secret_key_clear.encode('utf-8'), self.salt.encode('utf-8'),
+            byteshash = hashlib.pbkdf2_hmac('sha256',
+                                            self.secret_key_clear.encode('utf-8'),
+                                            self.salt.encode('utf-8'),
                                             1)
             self.secret_key_hash = binascii.hexlify(byteshash).decode('utf-8')
         return self.secret_key_hash

@@ -25,6 +25,6 @@ class ApiKeyHandler(object):
 
     def generate_keys(self, username):
         """Generate an APIKey for the given user"""
-        thekey = api.apikey.APIKey.generate()
-        api.redis.save_key(username, thekey)
-        return thekey
+        the_key = api.apikey.APIKey.generate()
+        api.redis.save_key(username, the_key)
+        return the_key
