@@ -42,9 +42,9 @@ class KeysView(CommonView):
         )
         if username is not None:
             keys = self.apikey_handler.get_keys(username)
-            return Response(keys, status=200)
+            return Response(keys, status=status.HTTP_200_OK)
 
-        return Response("Invalid APIKey", status=403)
+        return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request):
 
@@ -52,9 +52,9 @@ class KeysView(CommonView):
 
         if self.authenticator.authenticate(data['username'], data['password']):
             thekey = self.apikey_handler.generate_keys(data['username'])
-            return Response(thekey.get_values(), status=200)
+            return Response(thekey.get_values(), status=status.HTTP_200_OK)
         else:
-            return Response("Authentication failed", status=401)
+            return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SchemasView(CommonView):
@@ -69,9 +69,9 @@ class SchemasView(CommonView):
         if username:
             sciper = get_sciper(username)
             stacks = self.rancher.get_schemas(sciper)
-            return Response(stacks, status=200)
+            return Response(stacks, status=status.HTTP_200_OK)
 
-        return Response("Invalid APIKey", status=403)
+        return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request):
         """POST method for shemas"""
@@ -93,9 +93,9 @@ class SchemasView(CommonView):
             response["connection_string"] = data["connection_string"]
             response["mysql_cmd"] = data["mysql_cmd"]
 
-            return Response(response, status=200)
+            return Response(response, status=status.HTTP_200_OK)
 
-        return Response("Invalid APIKeys", status=403)
+        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
 
 
 class VersionView(APIView):
