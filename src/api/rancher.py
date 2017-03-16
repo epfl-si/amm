@@ -11,54 +11,58 @@ import api.utils
 from api import utils
 from config.settings.base import get_config
 
-
 # TODO get this dynamically
 ENVIRONMENT_ID = "1a9"
 
 
-class Rancher(object):
+class Rancher:
+
     def __init__(self):
         pass
+
+    @staticmethod
+    def init_http_call(url, prefix=True):
+        """
+        Init http call
+        """
+        if prefix:
+                url = get_config("RANCHER_API_URL") + url
+
+        parameters = {
+            'verify' : get_config("RANCHER_VERIFY_CERTIFICATE").lower() == "true",
+            'auth' : HTTPBasicAuth(
+                get_config("RANCHER_ACCESS_KEY"),
+                get_config("RANCHER_SECRET_KEY")
+            )
+        }
+
+        return url, parameters
+
 
     def get(self, url, prefix=True):
         """
         Do an authenticated GET at the given URL and return the response
         """
+        url, parameters = Rancher.init_http_call(url, prefix)
 
-        if prefix:
-            url = get_config("RANCHER_API_URL") + url
-
-        return requests.get(url,
-                            verify=get_config("RANCHER_VERIFY_CERTIFICATE").lower() == "true",
-                            auth=HTTPBasicAuth(
-                                get_config("RANCHER_ACCESS_KEY"),
-                                get_config("RANCHER_SECRET_KEY")))
+        return requests.get(url, **parameters)
 
     def post(self, url, data, prefix=True):
         """
         Do an authenticated POST at the given URL and return the response
         """
+        url, parameters = Rancher.init_http_call(url, prefix)
 
-        if prefix:
-            url = get_config("RANCHER_API_URL") + url
-
-        return requests.post(url,
-                             data=data,
-                             verify=get_config("RANCHER_VERIFY_CERTIFICATE").lower() == "true",
-                             auth=HTTPBasicAuth(
-                                 get_config("RANCHER_ACCESS_KEY"),
-                                 get_config("RANCHER_SECRET_KEY")))
+        return requests.post(url, data=data, **parameters)
 
     def delete(self, url, prefix=True):
+        """
+            Do an authenticated DELETE at the given URL and return the response
+        """
+        url, parameters = Rancher.init_http_call(url, prefix)
 
-        if prefix:
-            url = get_config("RANCHER_API_URL") + url
+        return requests.delete(url, **parameters)
 
-        return requests.delete(url,
-                               verify=get_config("RANCHER_VERIFY_CERTIFICATE").lower() == "true",
-                               auth=HTTPBasicAuth(
-                                 get_config("RANCHER_ACCESS_KEY"),
-                                 get_config("RANCHER_SECRET_KEY")))
 
     def get_template(self, template):
         """
@@ -66,26 +70,26 @@ class Rancher(object):
         """
 
         # first we retrieve the available versions for this template
-        data = self.get("/v1-catalog/templates/" + template).json()
+        data = Rancher.get("/v1-catalog/templates/" + template).json()
 
         # we want the default version
         version = data['defaultVersion']
 
         url = data['versionLinks'][version]
 
-        return self.get(url, prefix=False).json()
+        return Rancher.get(url, prefix=False).json()
 
     def get_ports_used(self):
         """
         Return the list of ports used
         """
-        ports = []
+        ports_used = []
         response = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/ports")
         ports = response.json()["data"]
         for current_port in ports:
             if "publicPort" in current_port:
-                ports.append(str(current_port["publicPort"]))
-        return ports
+                ports_used.append(str(current_port["publicPort"]))
+        return ports_used
 
     def get_available_port(self):
         """
@@ -97,20 +101,14 @@ class Rancher(object):
             if new_port not in ports_used:
                 return new_port
 
-    def create_mysql_stack(self, sciper):
+
+    def _get_environment(self, password):
         """
-        Create a MySQL stack with default options
+        Return environment information
         """
-
-        data = {}
-
-        template = self.get_template("idevelop:mysql")
-
-        password = api.utils.generate_password(20)
-
         password_hash = '*' + hashlib.sha1(hashlib.sha1(password.encode('utf-8')).digest()).hexdigest()
 
-        environment = {
+        return {
             "MYSQL_VERSION": "5.5",
             "MYSQL_ROOT_PASSWORD": api.utils.generate_password(20),
             "MYSQL_DATABASE": api.utils.generate_random_b64(8),
@@ -120,6 +118,13 @@ class Rancher(object):
             "QUOTA_SIZE_MIB": "500",
             "MYSQL_EXPORT_PORT": self.get_available_port()
         }
+
+    def _get_paload(self, environment, sciper):
+        """
+        Return payload of stack
+        """
+
+        template = self.get_template("idevelop:mysql")
 
         payload = {
             "system": False,
@@ -134,42 +139,48 @@ class Rancher(object):
             "group": "owner:" + sciper
         }
 
-        response = self.post("/v2-beta/stacks", data=json.dumps(payload))
+    def _create_mysql_stack(self, sciper, password):
+        """
+        Create a MySQL stack with default options
+        """
+        environment = self._get_environment(password=password)
+        payload = self._get_payload(
+            environment=environment,
+            sciper=sciper
+        )
 
-        data["response"] = response
-        data["db_password"] = password
-        data["db_username"] = environment["AMM_USERNAME"]
-        data["db_schema"] = environment["MYSQL_DATABASE"]
-        data["db_port"] = environment["MYSQL_EXPORT_PORT"]
-        data["stack"] = payload["name"]
+        mysql_stack =  self.post("/v2-beta/stacks", data=json.dumps(payload))
 
         # wait a bit for the stack to be created
         sleep(5)
 
-        stack_data = data["response"].json()
+        return mysql_stack, payload, environment
 
-        stack_id = stack_data["id"]
+    def create_mysql_stack(self, sciper):
 
-        ip = self.get_ip_address(stack_id)
+        password = api.utils.generate_password(20)
 
-        connection_string = utils.get_connection_string_with_ip(
+        mysql_stack, payload, environment = self._create_mysql_stack(sciper, password)
+
+        data = { "response" : mysql_stack,
+                 "db_password": password,
+                 "db_username": environment["AMM_USERNAME"],
+                 "db_schema": environment["MYSQL_DATABASE"],
+                 "db_port": environment["MYSQL_EXPORT_PORT"],
+                 "stack": payload["name"]
+        }
+
+        parameters = [
             data["db_username"],
             data["db_password"],
-            ip,
+            self.get_ip_address(data["response"].json()["id"]),
             data["db_port"],
             data["db_schema"]
-        )
+        ]
 
-        mysql_cmd = utils.get_mysql_client_cmd(
-            data["db_username"],
-            data["db_password"],
-            ip,
-            data["db_port"],
-            data["db_schema"]
-        )
-
-        data["connection_string"] = connection_string
-        data["mysql_cmd"] = mysql_cmd
+        # todo When we will replace ip by host we could replace *parameters by *data
+        data["connection_string"] = utils.get_connection_string_with_ip(*parameters)
+        data["mysql_cmd"] = utils.get_mysql_client_cmd(*parameters)
 
         return data
 
@@ -197,9 +208,8 @@ class Rancher(object):
         Returns the stacks of the given users
         """
         user_stacks = []
-        response = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/")
-        stacks = response.json()["data"]
 
+        stacks = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/").json()["data"]
         for stack in stacks:
             tag = stack["group"]
             if tag and 'owner:' + sciper in tag:
@@ -211,33 +221,24 @@ class Rancher(object):
         """
         Returns the schemas of the given users
         """
-
-        stacks = self.get_stacks(sciper)
-
         schemas = []
 
-        for stack in stacks:
-            connection_string = utils.get_connection_string_with_ip(
-                db_username=stack['environment']['AMM_USERNAME'],
-                db_password=None,
-                db_ip=self.get_ip_address(stack["id"]),
-                db_port=stack['environment']['MYSQL_EXPORT_PORT'],
-                db_schema=stack['environment']['MYSQL_DATABASE'])
+        for stack in self.get_stacks(sciper):
 
-            mysql_cmd = utils.get_mysql_client_cmd(
-                db_username=stack['environment']['AMM_USERNAME'],
-                db_password=None,
-                db_ip=self.get_ip_address(stack["id"]),
-                db_port=stack['environment']['MYSQL_EXPORT_PORT'],
-                db_schema=stack['environment']['MYSQL_DATABASE']
+            parameters = [
+                stack['environment']['AMM_USERNAME'],
+                None,
+                self.get_ip_address(stack["id"]),
+                stack['environment']['MYSQL_EXPORT_PORT'],
+                stack['environment']['MYSQL_DATABASE']
+            ]
+
+            schemas.append(
+                {
+                    "connection_string": utils.get_connection_string_with_ip(*parameters),
+                    "mysql_cmd": utils.get_mysql_client_cmd(*parameters)
+                }
             )
-
-            schema = {
-                "connection_string": connection_string,
-                "mysql_cmd": mysql_cmd
-            }
-
-            schemas.append(schema)
 
         return schemas
 

@@ -13,6 +13,7 @@ class APIKey:
         self.secret_key_hash = None
         self.secret_key_clear = None
 
+    # todo : constructor
     @staticmethod
     def generate():
         new = APIKey()
@@ -25,28 +26,40 @@ class APIKey:
         return self.access_key + self.get_secret_key_hash()
 
     def generate_salt(self):
-        """Generate the salt"""
+        """
+        Generate the salt
+        """
         return utils.generate_password(20)
 
     def generate_access_key(self):
-        """Generate the access key (public part)"""
+        """
+        Generate the access key (public part)
+        """
         return utils.generate_random_b64(20)
 
     def generate_secret_key(self):
-        """Generate the secret key (private part)"""
+        """
+        Generate the secret key (private part)
+        """
         self.secret_key_clear = utils.generate_password(40)
 
     def get_id(self, username):
-        """Returns the APIKey's id"""
+        """
+        Returns the APIKey's id
+        """
         return "key:%s:%s" % (username, self.access_key)
 
     def get_values(self):
-        """Returns the APIkey values as a dict"""
+        """
+        Returns the APIkey values as a dict
+        """
         return {"access_key": self.access_key,
                 "secret_key": self.secret_key_clear}
 
     def get_secret_key_hash(self):
-        """Returns the secret key hashed"""
+        """
+        Returns the secret key hashed
+        """
         if self.secret_key_hash is None:
             byteshash = hashlib.pbkdf2_hmac('sha256',
                                             self.secret_key_clear.encode('utf-8'),

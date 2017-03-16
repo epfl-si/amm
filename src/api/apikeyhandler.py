@@ -4,7 +4,7 @@ import api.redis
 import api.apikey
 
 
-class ApiKeyHandler(object):
+class ApiKeyHandler:
     def __init__(self):
         pass
 
