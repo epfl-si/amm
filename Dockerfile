@@ -33,6 +33,7 @@ ENV \
     DJANGO_SETTINGS_MODULE=config.settings.local
 
 RUN pip install --no-cache-dir -r requirements/local.txt
+RUN python src/manage.py collectstatic
 
 ENTRYPOINT [ "bash" ]
 CMD [ "-c", "gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application" ]

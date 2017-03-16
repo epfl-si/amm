@@ -6,18 +6,18 @@ source ./demo.config
 Créer la clé :
 --------------
 
-http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
+http POST http://127.0.0.1:8000/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
 
 
 Créer le schema :
 -----------------
 
-http POST http://127.0.0.1:8888/v1/schemas/ access_key="22924b850ea0e5475af3" secret_key="H1D8NzpflXhl+rhxOamEpJ-XsFjJ-zOk804RV2dn"
+http POST http://127.0.0.1:8000/v1/schemas/ access_key="22924b850ea0e5475af3" secret_key="H1D8NzpflXhl+rhxOamEpJ-XsFjJ-zOk804RV2dn"
 
 Lister les schémas :
 --------------------
 
-http GET http://127.0.0.1:8888/v1/schemas/ access_key=="22924b850ea0e5475af3" secret_key=="H1D8NzpflXhl+rhxOamEpJ-XsFjJ-zOk804RV2dn"
+http GET http://127.0.0.1:8000/v1/schemas/ access_key=="22924b850ea0e5475af3" secret_key=="H1D8NzpflXhl+rhxOamEpJ-XsFjJ-zOk804RV2dn"
 
 v1/schemas/?access_key=22924b850ea0e5475af3&secret_key=H1D8NzpflXhl+rhxOamEpJ-XsFjJ-zOk804RV2dn
 

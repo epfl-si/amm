@@ -7,8 +7,7 @@ from time import sleep
 import requests
 from requests.auth import HTTPBasicAuth
 
-import api.utils
-from api import utils
+from api.utils import generate_password, generate_random_b64, get_connection_string_with_ip, get_mysql_client_cmd
 from config.settings.base import get_config
 
 # TODO get this dynamically
@@ -16,9 +15,6 @@ ENVIRONMENT_ID = "1a9"
 
 
 class Rancher:
-
-    def __init__(self):
-        pass
 
     @staticmethod
     def init_http_call(url, prefix=True):
@@ -38,47 +34,47 @@ class Rancher:
 
         return url, parameters
 
-    @staticmethod
-    def get(url, prefix=True):
+    @classmethod
+    def get(cls, url, prefix=True):
         """
         Do an authenticated GET at the given URL and return the response
         """
-        url, parameters = Rancher.init_http_call(url, prefix)
+        url, parameters = cls.init_http_call(url, prefix)
 
         return requests.get(url, **parameters)
 
-    @staticmethod
-    def post(url, data, prefix=True):
+    @classmethod
+    def post(cls, url, data, prefix=True):
         """
         Do an authenticated POST at the given URL and return the response
         """
-        url, parameters = Rancher.init_http_call(url, prefix)
+        url, parameters = cls.init_http_call(url, prefix)
 
         return requests.post(url, data=data, **parameters)
 
-    @staticmethod
-    def delete(url, prefix=True):
+    @classmethod
+    def delete(cls, url, prefix=True):
         """
-            Do an authenticated DELETE at the given URL and return the response
+        Do an authenticated DELETE at the given URL and return the response
         """
-        url, parameters = Rancher.init_http_call(url, prefix)
+        url, parameters = cls.init_http_call(url, prefix)
 
         return requests.delete(url, **parameters)
 
-    @staticmethod
-    def get_template(template):
+    @classmethod
+    def get_template(cls, template):
         """
         Returns a dict containing the given template data
         """
         # first we retrieve the available versions for this template
-        data = Rancher.get("/v1-catalog/templates/" + template).json()
+        data = cls.get("/v1-catalog/templates/" + template).json()
 
         # we want the default version
         version = data['defaultVersion']
 
         url = data['versionLinks'][version]
 
-        return Rancher.get(url, prefix=False).json()
+        return cls.get(url, prefix=False).json()
 
     @classmethod
     def get_ports_used(cls):
@@ -112,9 +108,9 @@ class Rancher:
 
         return {
             "MYSQL_VERSION": "5.5",
-            "MYSQL_ROOT_PASSWORD": api.utils.generate_password(20),
-            "MYSQL_DATABASE": api.utils.generate_random_b64(8),
-            "AMM_USERNAME": api.utils.generate_random_b64(8),
+            "MYSQL_ROOT_PASSWORD": generate_password(20),
+            "MYSQL_DATABASE": generate_random_b64(8),
+            "AMM_USERNAME": generate_random_b64(8),
             "AMM_USER_PASSWORD_HASH": password_hash,
             "MAX_CONNECTIONS": "151",
             "QUOTA_SIZE_MIB": "500",
@@ -122,17 +118,17 @@ class Rancher:
         }
 
     @classmethod
-    def _get_paload(cls, environment, sciper):
+    def _get_payload(cls, environment, sciper):
         """
         Return payload of stack
         """
 
         template = cls.get_template("idevelop:mysql")
 
-        payload = {
+        return {
             "system": False,
             "type": "stack",
-            "name": "mysql-" + api.utils.generate_random_b64(8),
+            "name": "mysql-" + generate_random_b64(8),
             "startOnCreate": True,
             "environment": environment,
             "description": "",
@@ -142,18 +138,15 @@ class Rancher:
             "group": "owner:" + sciper
         }
 
+
     @classmethod
     def _create_mysql_stack(cls, sciper, password):
         """
         Create a MySQL stack with default options
         """
         environment = cls._get_environment(password=password)
-        payload = cls._get_payload(
-            environment=environment,
-            sciper=sciper
-        )
-
-        mysql_stack =  cls.post("/v2-beta/stacks", data=json.dumps(payload))
+        payload = cls._get_payload(environment=environment, sciper=sciper)
+        mysql_stack = cls.post("/v2-beta/stacks", data=json.dumps(payload))
 
         # wait a bit for the stack to be created
         sleep(5)
@@ -163,7 +156,7 @@ class Rancher:
     @classmethod
     def create_mysql_stack(cls, sciper):
 
-        password = api.utils.generate_password(20)
+        password = generate_password(20)
 
         mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password)
 
@@ -178,14 +171,14 @@ class Rancher:
         parameters = [
             data["db_username"],
             data["db_password"],
-            self.get_ip_address(data["response"].json()["id"]),
+            cls.get_ip_address(data["response"].json()["id"]),
             data["db_port"],
             data["db_schema"]
         ]
 
         # todo When we will replace ip by host we could replace *parameters by *data
-        data["connection_string"] = utils.get_connection_string_with_ip(*parameters)
-        data["mysql_cmd"] = utils.get_mysql_client_cmd(*parameters)
+        data["connection_string"] = get_connection_string_with_ip(*parameters)
+        data["mysql_cmd"] = get_mysql_client_cmd(*parameters)
 
         return data
 
@@ -243,8 +236,8 @@ class Rancher:
 
             schemas.append(
                 {
-                    "connection_string": utils.get_connection_string_with_ip(*parameters),
-                    "mysql_cmd": utils.get_mysql_client_cmd(*parameters)
+                    "connection_string": get_connection_string_with_ip(*parameters),
+                    "mysql_cmd": get_mysql_client_cmd(*parameters)
                 }
             )
 

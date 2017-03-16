@@ -3,7 +3,7 @@
 from django.test import TestCase
 
 from api.apikey import APIKey
-from api.redis import save_key, exists, get_apikeys, flushall
+from api.redis import save_key, exists, get_apikeys, flush_all
 from config.settings.base import get_config
 
 from api.apikeyhandler import ApiKeyHandler
@@ -33,7 +33,7 @@ class RedisTestCase(TestCase):
         # check that the key is there
         self.assertTrue(apikey.access_key in keys)
 
-        flushall(self)
+        flush_all()
 
     def test_not_exists(self):
 

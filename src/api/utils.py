@@ -6,16 +6,19 @@ import binascii
 
 
 def generate_random_b64(length):
-    """ Generate a random string encoded with base 64 """
+    """
+    Generate a random string encoded with base 64
+    """
 
     return binascii.hexlify(os.urandom(int(length / 2))).decode("utf-8")
 
 
 def generate_password(length):
-    """ Generate a random password """
+    """
+    Generate a random password
+    """
 
     chars = string.ascii_letters + string.digits + '-+'
-
     password = ''
 
     for i in range(length):
@@ -26,7 +29,6 @@ def generate_password(length):
 
 
 def get_connection_string(db_username, db_password, db_stack, db_env, db_port, db_schema):
-
     """
     Returns a connection string according to the given variables.
     """
@@ -39,7 +41,6 @@ def get_connection_string(db_username, db_password, db_stack, db_env, db_port, d
 
 
 def get_connection_string_with_ip(db_username, db_password, db_ip, db_port, db_schema):
-
     """
     Returns a connection string according to the given variables.
     """
@@ -55,7 +56,6 @@ def get_connection_string_with_ip(db_username, db_password, db_ip, db_port, db_s
 
 
 def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
-
     """
     Returns a connection string according to the given variables
     """
@@ -68,9 +68,13 @@ def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
     return cmd
 
 
+# todo : Faire un vrai appel LDAP pour récupérer le sciper a partir du username
 def get_sciper(username):
-        """ Return the sciper of user """
-        if username == 'kermit':
-            return "133134"
-        else:
-            return "42"
+    """
+    Return the sciper of user
+    """
+
+    if username == 'kermit':
+        return "133134"
+    else:
+        return "42"

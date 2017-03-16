@@ -40,7 +40,7 @@ class KeysView(CommonView):
             request.GET.get('access_key', None),
             request.GET.get('secret_key', None)
         )
-        if username is not None:
+        if username:
             keys = self.apikey_handler.get_keys(username)
             return Response(keys, status=status.HTTP_200_OK)
 

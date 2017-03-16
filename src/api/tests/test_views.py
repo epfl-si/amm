@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from api import rancher
-from api.redis import flushall
+from api.redis import flush_all
 from api.tests import KERMIT_SCIPER
 from config.settings.base import get_config
 
@@ -15,10 +15,10 @@ from config.settings.base import get_config
 class ViewsTestCase(APITestCase):
 
     def setUp(self):
-        flushall(self)
+        flush_all()
 
     def tearDown(self):
-        flushall(self)
+        flush_all()
 
     def test_post_apikeys(self):
         """ Test the POST method of KeyView """
