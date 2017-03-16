@@ -38,8 +38,8 @@ class Rancher:
 
         return url, parameters
 
-
-    def get(self, url, prefix=True):
+    @staticmethod
+    def get(url, prefix=True):
         """
         Do an authenticated GET at the given URL and return the response
         """
@@ -47,7 +47,8 @@ class Rancher:
 
         return requests.get(url, **parameters)
 
-    def post(self, url, data, prefix=True):
+    @staticmethod
+    def post(url, data, prefix=True):
         """
         Do an authenticated POST at the given URL and return the response
         """
@@ -55,7 +56,8 @@ class Rancher:
 
         return requests.post(url, data=data, **parameters)
 
-    def delete(self, url, prefix=True):
+    @staticmethod
+    def delete(url, prefix=True):
         """
             Do an authenticated DELETE at the given URL and return the response
         """
@@ -63,12 +65,11 @@ class Rancher:
 
         return requests.delete(url, **parameters)
 
-
-    def get_template(self, template):
+    @staticmethod
+    def get_template(template):
         """
         Returns a dict containing the given template data
         """
-
         # first we retrieve the available versions for this template
         data = Rancher.get("/v1-catalog/templates/" + template).json()
 
@@ -79,30 +80,31 @@ class Rancher:
 
         return Rancher.get(url, prefix=False).json()
 
-    def get_ports_used(self):
+    @classmethod
+    def get_ports_used(cls):
         """
         Return the list of ports used
         """
         ports_used = []
-        response = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/ports")
-        ports = response.json()["data"]
+        ports = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/ports").json()["data"]
         for current_port in ports:
             if "publicPort" in current_port:
                 ports_used.append(str(current_port["publicPort"]))
         return ports_used
 
-    def get_available_port(self):
+    @classmethod
+    def get_available_port(cls):
         """
         Generate an available port
         """
-        ports_used = self.get_ports_used()
+        ports_used = cls.get_ports_used()
         while True:
             new_port = randint(1, 65536)
             if new_port not in ports_used:
                 return new_port
 
-
-    def _get_environment(self, password):
+    @classmethod
+    def _get_environment(cls, password):
         """
         Return environment information
         """
@@ -116,15 +118,16 @@ class Rancher:
             "AMM_USER_PASSWORD_HASH": password_hash,
             "MAX_CONNECTIONS": "151",
             "QUOTA_SIZE_MIB": "500",
-            "MYSQL_EXPORT_PORT": self.get_available_port()
+            "MYSQL_EXPORT_PORT": cls.get_available_port()
         }
 
-    def _get_paload(self, environment, sciper):
+    @classmethod
+    def _get_paload(cls, environment, sciper):
         """
         Return payload of stack
         """
 
-        template = self.get_template("idevelop:mysql")
+        template = cls.get_template("idevelop:mysql")
 
         payload = {
             "system": False,
@@ -139,28 +142,30 @@ class Rancher:
             "group": "owner:" + sciper
         }
 
-    def _create_mysql_stack(self, sciper, password):
+    @classmethod
+    def _create_mysql_stack(cls, sciper, password):
         """
         Create a MySQL stack with default options
         """
-        environment = self._get_environment(password=password)
-        payload = self._get_payload(
+        environment = cls._get_environment(password=password)
+        payload = cls._get_payload(
             environment=environment,
             sciper=sciper
         )
 
-        mysql_stack =  self.post("/v2-beta/stacks", data=json.dumps(payload))
+        mysql_stack =  cls.post("/v2-beta/stacks", data=json.dumps(payload))
 
         # wait a bit for the stack to be created
         sleep(5)
 
         return mysql_stack, payload, environment
 
-    def create_mysql_stack(self, sciper):
+    @classmethod
+    def create_mysql_stack(cls, sciper):
 
         password = api.utils.generate_password(20)
 
-        mysql_stack, payload, environment = self._create_mysql_stack(sciper, password)
+        mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password)
 
         data = { "response" : mysql_stack,
                  "db_password": password,
@@ -184,11 +189,12 @@ class Rancher:
 
         return data
 
-    def get_ip_address(self, stack_id):
+    @classmethod
+    def get_ip_address(cls, stack_id):
         """
         Return ip address
         """
-        services_response = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack_id + "/services")
+        services_response = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack_id + "/services")
 
         if len(services_response.json()["data"]) != 1:
             # This stack returns many services
@@ -197,19 +203,20 @@ class Rancher:
         else:
             service_id = services_response.json()["data"][0]["id"]
 
-        service_response = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/services/" + service_id)
+        service_response = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/services/" + service_id)
 
         ip_address = service_response.json()["publicEndpoints"][0]["ipAddress"]
 
         return ip_address
 
-    def get_stacks(self, sciper):
+    @classmethod
+    def get_stacks(cls, sciper):
         """
         Returns the stacks of the given users
         """
         user_stacks = []
 
-        stacks = self.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/").json()["data"]
+        stacks = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/").json()["data"]
         for stack in stacks:
             tag = stack["group"]
             if tag and 'owner:' + sciper in tag:
@@ -217,18 +224,19 @@ class Rancher:
 
         return user_stacks
 
-    def get_schemas(self, sciper):
+    @classmethod
+    def get_schemas(cls, sciper):
         """
         Returns the schemas of the given users
         """
         schemas = []
 
-        for stack in self.get_stacks(sciper):
+        for stack in cls.get_stacks(sciper):
 
             parameters = [
                 stack['environment']['AMM_USERNAME'],
                 None,
-                self.get_ip_address(stack["id"]),
+                cls.get_ip_address(stack["id"]),
                 stack['environment']['MYSQL_EXPORT_PORT'],
                 stack['environment']['MYSQL_DATABASE']
             ]
@@ -242,23 +250,25 @@ class Rancher:
 
         return schemas
 
-    def delete_stack(self, stack_id):
+    @classmethod
+    def delete_stack(cls, stack_id):
         """
         Delete the stack 'stack_id'
         """
-        self.delete("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack_id)
+        cls.delete("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack_id)
 
-    def clean_stacks(self, sciper):
+    @classmethod
+    def clean_stacks(cls, sciper):
         """
         Delete all stacks created by user 'sciper'
         """
 
         # Return stacks by sciper
-        stacks = self.get_stacks(sciper)
+        stacks = cls.get_stacks(sciper)
 
         sleep(10)
 
         # Delete all stacks
         for stack in stacks:
             stack_id = stack["id"]
-            self.delete_stack(stack_id)
+            cls.delete_stack(stack_id)
