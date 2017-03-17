@@ -35,6 +35,11 @@ class CommonView(APIView):
 class KeysView(CommonView):
 
     def get(self, request):
+
+        """
+        Returns the user's API keys
+        """
+
         # first we check the key
         username = self.apikey_handler.validate(
             request.GET.get('access_key', None),
@@ -48,6 +53,10 @@ class KeysView(CommonView):
 
     def post(self, request):
 
+        """
+        Create a new API key
+        """
+
         data = JSONParser().parse(request)
 
         if self.authenticator.authenticate(data['username'], data['password']):
@@ -60,7 +69,11 @@ class KeysView(CommonView):
 class SchemasView(CommonView):
 
     def get(self, request):
-        """GET method for shemas"""
+
+        """
+        Returns the user's schemas
+
+        """
 
         username = self.apikey_handler.validate(
             request.GET.get('access_key', None),
@@ -74,7 +87,9 @@ class SchemasView(CommonView):
         return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request):
-        """POST method for shemas"""
+        """
+        Create a new schema
+        """
 
         data = JSONParser().parse(request)
 
@@ -101,6 +116,9 @@ class SchemasView(CommonView):
 class VersionView(APIView):
 
     def get(self, request):
-        """GET method for version"""
+
+        """
+        Returns the current API version
+        """
 
         return Response(base.VERSION, status=status.HTTP_201_CREATED)
