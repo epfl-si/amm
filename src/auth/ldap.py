@@ -10,13 +10,25 @@ class Authenticator(object):
     """ Class to authenticate users using LDAP(S) """
 
     def __init__(self):
-        server = base.get_config('LDAP_SERVER')
-        scheme = 'ldaps' if base.get_config('LDAP_USE_SSL') == 'true' else 'ldap'
+        self.ldap_server = base.get_config('LDAP_SERVER')
+        self.protocol = 'ldaps' if base.get_config('LDAP_USE_SSL') == 'true' else 'ldap'
 
         self.use_ssl = True if base.get_config('LDAP_USE_SSL') == 'true' else False
-        self.uri = scheme + '://' + server
-        self.userdn = base.get_config('LDAP_USER_BASE_DN')
+        self.uri = self.protocol + '://' + self.ldap_server
+        self.dn = base.get_config('LDAP_USER_BASE_DN')
         self.user_attr = base.get_config('LDAP_USER_SEARCH_ATTR')
+
+    def get_user_dn(self, username):
+
+        server = ldap3.Server('ldap://' + self.ldap_server + '.epfl.ch')
+        connection = ldap3.Connection(server)
+        connection.open()
+
+        connection.search(
+            search_base=self.dn,
+            search_filter='(' + self.user_attr + '=' + username + ')'
+        )
+        return connection.response[0]['dn']
 
     def authenticate(self, username, password):
         """ Authenticate the user with a bind on the LDAP server """
@@ -28,13 +40,13 @@ class Authenticator(object):
         if not re.match("^[A-Za-z0-9_-]*$", username):
             return False
 
-        dn = self.user_attr + "=" + username + "," + self.userdn
+        user_dn = self.search(username)
 
-        s = ldap3.Server(
+        server = ldap3.Server(
                 self.uri,
                 use_ssl=self.use_ssl
             )
 
-        c = ldap3.Connection(s, user=dn, password=password)
+        connection = ldap3.Connection(server, user=user_dn, password=password)
 
-        return c.bind()
+        return connection.bind()
