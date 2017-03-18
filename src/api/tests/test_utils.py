@@ -3,7 +3,7 @@
 import unittest
 
 from api import utils
-# from config.settings.base import get_config
+from api.utils import get_sciper
 
 
 class UtilTest(unittest.TestCase):
@@ -27,3 +27,8 @@ class UtilTest(unittest.TestCase):
         expected = "mysql://username:password@mysql.stack.env.epfl.ch:1234/schema"
 
         self.assertEqual(connection, expected)
+
+    def test_get_sciper(self):
+
+        sciper = get_sciper(username='kermit')
+        self.assertEqual(sciper, '133134')

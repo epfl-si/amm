@@ -4,6 +4,8 @@ import os
 import string
 import binascii
 
+import ldap3
+
 
 def generate_random_b64(length):
     """ Generate a random string encoded with base 64 """
@@ -68,9 +70,16 @@ def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
     return cmd
 
 
-def get_sciper(username):
-        """ Return the sciper of user """
-        if username == 'kermit':
-            return "133134"
-        else:
-            return "42"
+def get_sciper(username, ldap_server='scoldap', ldap_base='o=epfl,c=ch'):
+    """ Return the sciper of user """
+
+    server = ldap3.Server('ldap://' + ldap_server)
+    connection = ldap3.Connection(server)
+    connection.open()
+
+    connection.search(
+        search_base=ldap_base,
+        search_filter='(uid=' + username + ')',
+        attributes=['uniqueIdentifier']
+    )
+    return connection.response[0]['attributes']['uniqueIdentifier'][0]
