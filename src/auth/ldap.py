@@ -20,7 +20,7 @@ class Authenticator(object):
 
     def get_user_dn(self, username):
 
-        server = ldap3.Server('ldap://' + self.ldap_server + '.epfl.ch')
+        server = ldap3.Server('ldap://' + self.ldap_server)
         connection = ldap3.Connection(server)
         connection.open()
 
@@ -40,7 +40,7 @@ class Authenticator(object):
         if not re.match("^[A-Za-z0-9_-]*$", username):
             return False
 
-        user_dn = self.search(username)
+        user_dn = self.get_user_dn(username)
 
         server = ldap3.Server(
                 self.uri,
