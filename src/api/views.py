@@ -35,7 +35,7 @@ class CommonView(APIView):
 class KeysView(CommonView):
 
     def get_serializer(self):
-        return KeySerializer
+        return KeySerializer()
 
     def get(self, request):
 
@@ -55,35 +55,17 @@ class KeysView(CommonView):
         return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request):
-
         """
         Create a new API key
         """
+        serializer = KeySerializer(data=request.data)
 
-        data = request.data
+        if serializer.is_valid():
+            key = serializer.save()
 
-        import sys
-
-        if self.authenticator.authenticate(data['username'], data['password']):
-
-            the_key = self.apikey_handler.generate_keys(data['username'])
-
-            serializer = KeySerializer(data=the_key.get_values())
-
-            serializer.is_valid()
-
+            return Response(key.get_values(), status=status.HTTP_200_OK)
         else:
-            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        # data = JSONParser().parse(request)
-        #
-        # if self.authenticator.authenticate(data['username'], data['password']):
-        #     the_key = self.apikey_handler.generate_keys(data['username'])
-        #     return Response(the_key.get_values(), status=status.HTTP_200_OK)
-        # else:
-        #     return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
+            return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SchemasView(CommonView):
