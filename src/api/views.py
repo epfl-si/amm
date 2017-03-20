@@ -1,5 +1,4 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
@@ -10,6 +9,7 @@ from rest_framework.views import APIView
 import auth
 from api.apikeyhandler import ApiKeyHandler
 from api.rancher import Rancher
+from api.serializers import KeySerializer
 from api.utils import get_sciper
 from config.settings import base
 
@@ -34,6 +34,9 @@ class CommonView(APIView):
 
 class KeysView(CommonView):
 
+    def get_serializer(self):
+        return KeySerializer
+
     def get(self, request):
 
         """
@@ -57,13 +60,30 @@ class KeysView(CommonView):
         Create a new API key
         """
 
-        data = JSONParser().parse(request)
+        data = request.data
+
+        import sys
 
         if self.authenticator.authenticate(data['username'], data['password']):
-            thekey = self.apikey_handler.generate_keys(data['username'])
-            return Response(thekey.get_values(), status=status.HTTP_200_OK)
+
+            the_key = self.apikey_handler.generate_keys(data['username'])
+
+            serializer = KeySerializer(data=the_key.get_values())
+
+            serializer.is_valid()
+
         else:
-            return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # data = JSONParser().parse(request)
+        #
+        # if self.authenticator.authenticate(data['username'], data['password']):
+        #     the_key = self.apikey_handler.generate_keys(data['username'])
+        #     return Response(the_key.get_values(), status=status.HTTP_200_OK)
+        # else:
+        #     return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SchemasView(CommonView):
@@ -121,4 +141,4 @@ class VersionView(APIView):
         Returns the current API version
         """
 
-        return Response(base.VERSION, status=status.HTTP_201_CREATED)
+        return Response(base.VERSION, status=status.HTTP_200_OK)
