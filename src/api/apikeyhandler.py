@@ -1,30 +1,36 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+from api.apikey import APIKey
+from api.redis import exists, get_apikeys, save_key
 
-import api.redis
-import api.apikey
 
+class ApiKeyHandler:
 
-class ApiKeyHandler(object):
-    def __init__(self):
-        pass
-
-    def validate(self, access, secret):
-        """Check that the APIkey is valid"""
+    @staticmethod
+    def validate(access, secret):
+        """
+        Check that the APIkey is valid
+        """
         if access is None or secret is None:
             return None
 
-        username = api.redis.exists(access, secret)
+        username = exists(access, secret)
 
         if username:
             return username
         return None
 
-    def get_keys(self, username):
-        """Returns the APIKeys of the given user"""
-        return api.redis.get_apikeys(username=username)
+    @staticmethod
+    def get_keys(username):
+        """
+        Returns the APIKeys of the given user
+        """
+        return get_apikeys(username=username)
 
-    def generate_keys(self, username):
-        """Generate an APIKey for the given user"""
-        thekey = api.apikey.APIKey.generate()
-        api.redis.save_key(username, thekey)
-        return thekey
+    @staticmethod
+    def generate_keys(username):
+        """
+        Generate an APIKey for the given user
+        """
+        the_key = APIKey.generate()
+        save_key(username, the_key)
+        return the_key

@@ -1,102 +1,124 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
-import django.http
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 
+import auth
+from api.apikeyhandler import ApiKeyHandler
+from api.rancher import Rancher
 from api.utils import get_sciper
 from config.settings import base
 
 
-class AMMApp(object):
-    def __init__(self, authenticator, apikey_handler, rancher):
-        self.authenticator = authenticator
-        self.apikey_handler = apikey_handler
-        self.rancher = rancher
+@api_view()
+def api_root(request, format=None):
+    return Response({
+        'apikeys': reverse('apikeys', request=request, format=format),
+        'schemas': reverse('schemas', request=request, format=format),
+        'version': reverse('version', request=request, format=format)
+    })
 
-    def generate_response(self, data, **kwargs):
-        """generate the JSON response"""
 
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        return django.http.HttpResponse(content, **kwargs)
+class CommonView(APIView):
 
-    @csrf_exempt
-    def keys(self, request):
-        """ API for managing the keys """
+    def __init__(self):
 
-        # with GET we return the user's keys
-        if request.method == 'GET':
+        self.apikey_handler = ApiKeyHandler()
+        self.rancher = Rancher()
+        self.authenticator = auth.get_configured_authenticator()
 
-            # first we check the key
-            username = self.apikey_handler.validate(
-                                            request.GET.get('access_key', None),
-                                            request.GET.get('secret_key', None)
-                                          )
-            if username is not None:
-                keys = self.apikey_handler.get_keys(username)
-                return self.generate_response(keys, status=200)
 
-            return self.generate_response("Invalid APIKey", status=403)
+class KeysView(CommonView):
 
-        # with POST we create a new key
-        if request.method == 'POST':
+    def get(self, request):
 
-            data = JSONParser().parse(request)
+        """
+        Returns the user's API keys
+        """
 
-            if self.authenticator.authenticate(data['username'], data['password']):
-                thekey = self.apikey_handler.generate_keys(data['username'])
-                return self.generate_response(thekey.get_values(), status=200)
-            else:
-                return self.generate_response("Authentication failed", status=401)
+        # first we check the key
+        username = self.apikey_handler.validate(
+            request.GET.get('access_key', None),
+            request.GET.get('secret_key', None)
+        )
+        if username:
+            keys = self.apikey_handler.get_keys(username)
+            return Response(keys, status=status.HTTP_200_OK)
 
-        return self.generate_response("Expecting GET or POST method", status=400)
+        return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
-    @csrf_exempt
-    def schemas(self, request):
-        """ API for managing schemas """
+    def post(self, request):
 
-        # with GET we return the user's schemas
-        if request.method == 'GET':
-            username = self.apikey_handler.validate(
-                                            request.GET.get('access_key', None),
-                                            request.GET.get('secret_key', None)
-                                          )
-            if username:
-                sciper = get_sciper(username)
-                stacks = self.rancher.get_schemas(sciper)
-                return self.generate_response(stacks, status=200)
+        """
+        Create a new API key
+        """
 
-            return self.generate_response("Invalid APIKey", status=403)
+        data = JSONParser().parse(request)
 
-        # with POST we create a new schema
-        if request.method == 'POST':
+        if self.authenticator.authenticate(data['username'], data['password']):
+            thekey = self.apikey_handler.generate_keys(data['username'])
+            return Response(thekey.get_values(), status=status.HTTP_200_OK)
+        else:
+            return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
 
-            data = JSONParser().parse(request)
 
-            username = self.apikey_handler.validate(
-                                            data.get('access_key', None),
-                                            data.get('secret_key', None)
-                                          )
-            if username:
-                response = {}
+class SchemasView(CommonView):
 
-                sciper = get_sciper(username)
+    def get(self, request):
 
-                data = self.rancher.create_mysql_stack(sciper)
-                response["connection_string"] = data["connection_string"]
-                response["mysql_cmd"] = data["mysql_cmd"]
+        """
+        Returns the user's schemas
 
-                return self.generate_response(response, status=200)
+        """
 
-            return self.generate_response("Invalid APIKeys", status=403)
+        username = self.apikey_handler.validate(
+            request.GET.get('access_key', None),
+            request.GET.get('secret_key', None)
+        )
+        if username:
+            sciper = get_sciper(username)
+            stacks = self.rancher.get_schemas(sciper)
+            return Response(stacks, status=status.HTTP_200_OK)
 
-        return self.generate_response("Expecting GET or POST method", status=400)
+        return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
-    @csrf_exempt
-    def version(self, request):
-        """ Return the API version number """
-        if request.method == 'GET':
-            return self.generate_response(base.VERSION, status=200)
-        return self.generate_response("Expecting GET method", status=400)
+    def post(self, request):
+        """
+        Create a new schema
+        """
+
+        data = JSONParser().parse(request)
+
+        username = self.apikey_handler.validate(
+            data.get('access_key', None),
+            data.get('secret_key', None)
+        )
+
+        if username:
+
+            response = {}
+
+            sciper = get_sciper(username)
+
+            data = self.rancher.create_mysql_stack(sciper)
+            response["connection_string"] = data["connection_string"]
+            response["mysql_cmd"] = data["mysql_cmd"]
+
+            return Response(response, status=status.HTTP_200_OK)
+
+        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+
+
+class VersionView(APIView):
+
+    def get(self, request):
+
+        """
+        Returns the current API version
+        """
+
+        return Response(base.VERSION, status=status.HTTP_201_CREATED)

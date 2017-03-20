@@ -6,7 +6,7 @@ import ldap3
 from config.settings import base
 
 
-class Authenticator(object):
+class Authenticator:
     """ Class to authenticate users using LDAP(S) """
 
     def __init__(self):

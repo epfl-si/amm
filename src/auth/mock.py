@@ -3,7 +3,7 @@
 from config.settings import base
 
 
-class Authenticator(object):
+class Authenticator:
 
     def authenticate(self, username, password):
 

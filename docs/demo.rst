@@ -11,14 +11,14 @@
 1. Créer la clé :
 -----------------
 
-http POST http://127.0.0.1:8888/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
+http POST http://127.0.0.1:8000/v1/apikeys/ username="$USERNAME" password="$PASSWORD"
 
 2. Créer le schema :
 --------------------
 
 (mettre les valeurs de $ACCESS_KEY et $SECRET_KEY obtenues à l'étape 1)
 
-http POST http://127.0.0.1:8888/v1/schemas/ access_key="cd4e7db84351a3f42e4a" secret_key="ynTMkUPOKDQtRWjrUfYAgtjZRPmvlGIkmG+YobW8"
+http POST http://127.0.0.1:8000/v1/schemas/ access_key="cd4e7db84351a3f42e4a" secret_key="ynTMkUPOKDQtRWjrUfYAgtjZRPmvlGIkmG+YobW8"
 
 3. Mettre des données :
 -----------------------
@@ -32,4 +32,4 @@ SELECT * FROM demo;
 
 (mettre les valeurs de $ACCESS_KEY et $SECRET_KEY obtenues à l'étape 1)
 
-http GET http://127.0.0.1:8888/v1/schemas/ access_key=="cd4e7db84351a3f42e4a" secret_key=="ynTMkUPOKDQtRWjrUfYAgtjZRPmvlGIkmG+YobW8"
+http GET http://127.0.0.1:8000/v1/schemas/ access_key=="cd4e7db84351a3f42e4a" secret_key=="ynTMkUPOKDQtRWjrUfYAgtjZRPmvlGIkmG+YobW8"
