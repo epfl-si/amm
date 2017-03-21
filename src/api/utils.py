@@ -69,7 +69,8 @@ def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
 
     return cmd
 
-def get_sciper(username, ldap_server='scoldap', ldap_base='o=epfl,c=ch'):
+
+def get_sciper(username, ldap_server='scoldap.epfl.ch', ldap_base='o=epfl,c=ch'):
     """ Return the sciper of user """
 
     server = ldap3.Server('ldap://' + ldap_server)

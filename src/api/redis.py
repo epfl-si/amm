@@ -1,10 +1,9 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+import time
 
 from django_redis import get_redis_connection
 
-from api.apikey import APIKey
-
-import time
+from .apikey import APIKey
 
 
 def get_connection():

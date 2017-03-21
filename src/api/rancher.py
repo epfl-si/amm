@@ -1,32 +1,33 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import hashlib
 import json
+import requests
+
 from random import randint
 from time import sleep
-
-import requests
 from requests.auth import HTTPBasicAuth
 
-from api.utils import generate_password, generate_random_b64, get_connection_string_with_ip, get_mysql_client_cmd
 from config.settings.base import get_config
+
+from .utils import generate_password, generate_random_b64, get_connection_string_with_ip, get_mysql_client_cmd
 
 # TODO get this dynamically
 ENVIRONMENT_ID = "1a9"
 
 
 class Rancher:
-
     @staticmethod
     def init_http_call(url, prefix=True):
         """
         Init http call
         """
         if prefix:
-                url = get_config("RANCHER_API_URL") + url
+            url = get_config("RANCHER_API_URL") + url
 
         parameters = {
-            'verify' : get_config("RANCHER_VERIFY_CERTIFICATE").lower() == "true",
-            'auth' : HTTPBasicAuth(
+            'verify': get_config("RANCHER_VERIFY_CERTIFICATE").lower() == "true",
+            'auth': HTTPBasicAuth(
                 get_config("RANCHER_ACCESS_KEY"),
                 get_config("RANCHER_SECRET_KEY")
             )
@@ -138,7 +139,6 @@ class Rancher:
             "group": "owner:" + sciper
         }
 
-
     @classmethod
     def _create_mysql_stack(cls, sciper, password):
         """
@@ -160,12 +160,13 @@ class Rancher:
 
         mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password)
 
-        data = { "response" : mysql_stack,
-                 "db_password": password,
-                 "db_username": environment["AMM_USERNAME"],
-                 "db_schema": environment["MYSQL_DATABASE"],
-                 "db_port": environment["MYSQL_EXPORT_PORT"],
-                 "stack": payload["name"]
+        data = {
+            "response": mysql_stack,
+            "db_password": password,
+            "db_username": environment["AMM_USERNAME"],
+            "db_schema": environment["MYSQL_DATABASE"],
+            "db_port": environment["MYSQL_EXPORT_PORT"],
+            "stack": payload["name"]
         }
 
         parameters = [
@@ -226,7 +227,6 @@ class Rancher:
         schemas = []
 
         for stack in cls.get_stacks(sciper):
-
             parameters = [
                 stack['environment']['AMM_USERNAME'],
                 None,

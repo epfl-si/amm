@@ -1,17 +1,18 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
-import auth
-from api.apikeyhandler import ApiKeyHandler
-from api.rancher import Rancher
-from api.serializers import KeySerializer
-from api.utils import get_sciper
 from config.settings import base
+
+from .apikeyhandler import ApiKeyHandler
+from .filters import APIKeyFilterBackend
+from .rancher import Rancher
+from .serializers import KeySerializer, SchemaSerializer
+from .utils import get_sciper
 
 
 @api_view()
@@ -29,18 +30,28 @@ class CommonView(APIView):
 
         self.apikey_handler = ApiKeyHandler()
         self.rancher = Rancher()
-        self.authenticator = auth.get_configured_authenticator()
 
 
 class KeysView(CommonView):
 
+    filter_backends = (APIKeyFilterBackend,)
+
     def get_serializer(self):
+        """
+        Define the serializer for API Keys view
+        Used by swagger documentation
+        """
         return KeySerializer()
 
     def get(self, request):
-
         """
         Returns the user's API keys
+        ---
+        responseMessages:
+          - code: 200
+            message: OK
+          - code: 403
+            message: Invalid APIKey
         """
 
         # first we check the key
@@ -48,6 +59,7 @@ class KeysView(CommonView):
             request.GET.get('access_key', None),
             request.GET.get('secret_key', None)
         )
+
         if username:
             keys = self.apikey_handler.get_keys(username)
             return Response(keys, status=status.HTTP_200_OK)
@@ -57,6 +69,12 @@ class KeysView(CommonView):
     def post(self, request):
         """
         Create a new API key
+        ---
+        responseMessages:
+        - code: 200
+          message: OK
+        - code: 401
+          message: Authentication failed
         """
         serializer = KeySerializer(data=request.data)
 
@@ -70,11 +88,24 @@ class KeysView(CommonView):
 
 class SchemasView(CommonView):
 
-    def get(self, request):
+    filter_backends = (APIKeyFilterBackend,)
 
+    def get_serializer(self):
+        """
+        Define the schema serializer
+        Used by swagger documentation
+        """
+        return SchemaSerializer()
+
+    def get(self, request):
         """
         Returns the user's schemas
-
+        ---
+        responseMessages:
+        - code: 200
+          message: OK
+        - code: 403
+          message: Invalid APIKey
         """
 
         username = self.apikey_handler.validate(
@@ -91,36 +122,31 @@ class SchemasView(CommonView):
     def post(self, request):
         """
         Create a new schema
+        ---
+        responseMessages:
+        - code: 200
+          message: OK
+        - code: 403
+          message: Invalid APIKey
         """
+        serializer = SchemaSerializer(data=request.data)
 
-        data = JSONParser().parse(request)
+        if serializer.is_valid():
+            schema = serializer.save()
 
-        username = self.apikey_handler.validate(
-            data.get('access_key', None),
-            data.get('secret_key', None)
-        )
-
-        if username:
-
-            response = {}
-
-            sciper = get_sciper(username)
-
-            data = self.rancher.create_mysql_stack(sciper)
-            response["connection_string"] = data["connection_string"]
-            response["mysql_cmd"] = data["mysql_cmd"]
-
-            return Response(response, status=status.HTTP_200_OK)
-
-        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+            return Response(schema, status=status.HTTP_200_OK)
+        else:
+            return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
 
 
 class VersionView(APIView):
 
     def get(self, request):
-
         """
         Returns the current API version
+        ---
+        responseMessages:
+        - code: 200
+          message: OK
         """
-
         return Response(base.VERSION, status=status.HTTP_200_OK)

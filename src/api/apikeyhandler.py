@@ -1,6 +1,6 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-from api.apikey import APIKey
-from api.redis import exists, get_apikeys, save_key
+from .apikey import APIKey
+from .redis import exists, get_apikeys, save_key
 
 
 class ApiKeyHandler:

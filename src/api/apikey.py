@@ -8,6 +8,7 @@ from api import utils
 # exemple : generate_secret_key et generate_access_key
 # méthode static, methode de classe, méthode d'instance à définir proprement
 
+
 class APIKey:
 
     # todo : constructeur qui construit rien

@@ -1,11 +1,16 @@
+import auth
+
 from rest_framework import serializers
 
-import auth
-from api.apikeyhandler import ApiKeyHandler
+from .apikeyhandler import ApiKeyHandler
+from .rancher import Rancher
+from .utils import get_sciper
 
 
 class KeySerializer(serializers.Serializer):
-
+    """
+    API Key Serializer
+    """
     username = serializers.CharField(max_length=256)
     password = serializers.CharField(max_length=256)
 
@@ -29,21 +34,37 @@ class KeySerializer(serializers.Serializer):
 
     def create(self, validated_data):
 
-        apikey_handler = ApiKeyHandler()
-
-        key = apikey_handler.generate_keys(validated_data["username"])
-
+        key = ApiKeyHandler.generate_keys(validated_data["username"])
         return key
 
 
 class SchemaSerializer(serializers.Serializer):
-
+    """
+    Schema Serializer
+    """
     access_key = serializers.CharField(max_length=256)
     secret_key = serializers.CharField(max_length=256)
 
+    def validate(self, attrs):
+
+        access_key = attrs.get('access_key')
+        secret_key = attrs.get('secret_key')
+
+        result = {}
+        username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
+        if username:
+            result["username"] = username
+
+        return result
+
     def create(self, validated_data):
 
-        the_key = self.apikey_handler.generate_keys(validated_data['username'])
+        # Ldap search to find sciper from username
+        sciper = get_sciper(validated_data["username"])
 
-        return the_key
+        schema = Rancher.create_mysql_stack(sciper)
 
+        return {
+            "connection_string": schema["connection_string"],
+            "mysql_cmd": schema["mysql_cmd"]
+        }
