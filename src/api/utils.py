@@ -24,7 +24,6 @@ def generate_password(length):
     password = ''
 
     for i in range(length):
-
         password += chars[int(os.urandom(1)[0]) % len(chars)]
 
     return password

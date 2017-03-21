@@ -6,9 +6,7 @@ from api.tests import KERMIT_SCIPER
 
 
 class RancherTest(unittest.TestCase):
-
     def test_get(self):
-
         conn = rancher.Rancher()
 
         r = conn.get("/v1-catalog/templates/idevelop:mysql")
@@ -16,7 +14,6 @@ class RancherTest(unittest.TestCase):
         self.assertEqual(200, r.status_code)
 
     def test_get_template(self):
-
         conn = rancher.Rancher()
 
         template = "idevelop:mysql"
@@ -26,7 +23,6 @@ class RancherTest(unittest.TestCase):
         self.assertTrue(data["id"].startswith(template))
 
     def test_create_mysql_stack(self):
-
         conn = rancher.Rancher()
         data = conn.create_mysql_stack(KERMIT_SCIPER)
 
@@ -40,12 +36,10 @@ class RancherTest(unittest.TestCase):
         conn.clean_stacks(KERMIT_SCIPER)
 
     def test_get_available_port(self):
-
         conn = rancher.Rancher()
         conn.get_available_port()
 
     def test_get_stacks(self):
-
         # Create new stacks
         conn = rancher.Rancher()
 
@@ -62,7 +56,6 @@ class RancherTest(unittest.TestCase):
         conn.clean_stacks(KERMIT_SCIPER)
 
     def test_get_schemas(self):
-
         # Create new stacks
         conn = rancher.Rancher()
         conn.create_mysql_stack(KERMIT_SCIPER)

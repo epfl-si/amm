@@ -4,7 +4,6 @@ from .redis import exists, get_apikeys, save_key
 
 
 class ApiKeyHandler:
-
     @staticmethod
     def validate(access, secret):
         """

@@ -4,13 +4,13 @@ import binascii
 import hashlib
 from api import utils
 
+
 # todo : incohérence entre nos méthodes
 # exemple : generate_secret_key et generate_access_key
 # méthode static, methode de classe, méthode d'instance à définir proprement
 
 
 class APIKey:
-
     # todo : constructeur qui construit rien
     def __init__(self):
         self.access_key = None

@@ -10,9 +10,7 @@ from api.apikeyhandler import ApiKeyHandler
 
 
 class RedisTestCase(TestCase):
-
     def test_redis(self):
-
         # create data
         username = get_config("TEST_USERNAME")
         apikey = APIKey.generate()
@@ -36,6 +34,5 @@ class RedisTestCase(TestCase):
         flush_all()
 
     def test_not_exists(self):
-
         # Check is APIKEY exists
         self.assertFalse(exists("1234", "4321"))

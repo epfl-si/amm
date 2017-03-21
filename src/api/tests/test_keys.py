@@ -7,7 +7,6 @@ from config.settings.base import get_config
 
 
 class KeyTestCase(TestCase):
-
     def test_generate(self):
         # generate 100 keys and check the format
         for index in range(100):

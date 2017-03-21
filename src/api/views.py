@@ -25,15 +25,12 @@ def api_root(request, format=None):
 
 
 class CommonView(APIView):
-
     def __init__(self):
-
         self.apikey_handler = ApiKeyHandler()
         self.rancher = Rancher()
 
 
 class KeysView(CommonView):
-
     filter_backends = (APIKeyFilterBackend,)
 
     def get_serializer(self):
@@ -87,7 +84,6 @@ class KeysView(CommonView):
 
 
 class SchemasView(CommonView):
-
     filter_backends = (APIKeyFilterBackend,)
 
     def get_serializer(self):
@@ -140,7 +136,6 @@ class SchemasView(CommonView):
 
 
 class VersionView(APIView):
-
     def get(self, request):
         """
         Returns the current API version

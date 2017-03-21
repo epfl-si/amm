@@ -46,7 +46,6 @@ class SchemaSerializer(serializers.Serializer):
     secret_key = serializers.CharField(max_length=256)
 
     def validate(self, attrs):
-
         access_key = attrs.get('access_key')
         secret_key = attrs.get('secret_key')
 
@@ -58,7 +57,6 @@ class SchemaSerializer(serializers.Serializer):
         return result
 
     def create(self, validated_data):
-
         # Ldap search to find sciper from username
         sciper = get_sciper(validated_data["username"])
 

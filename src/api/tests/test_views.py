@@ -13,7 +13,6 @@ from config.settings.base import get_config
 
 
 class ViewsTestCase(APITestCase):
-
     def setUp(self):
         flush_all()
 
@@ -143,8 +142,8 @@ class ViewsTestCase(APITestCase):
     def test_get_version(self):
         """ Test the GET method of Version """
         response = self.client.get(
-                reverse('version'),
-                format='json'
+            reverse('version'),
+            format='json'
         )
         content = json.loads(response.content.decode('utf-8'))
 
