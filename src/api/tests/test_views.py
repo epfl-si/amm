@@ -3,6 +3,7 @@
 import json
 import re
 
+from django.test import tag
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -13,6 +14,7 @@ from config.settings.base import get_config
 
 
 class ViewsTestCase(APITestCase):
+
     def setUp(self):
         flush_all()
 
@@ -20,7 +22,9 @@ class ViewsTestCase(APITestCase):
         flush_all()
 
     def test_post_apikeys(self):
-        """ Test the POST method of KeyView """
+        """
+        Test the POST method of KeyView
+        """
 
         response = self.client.post(
             reverse('apikeys'),
@@ -66,6 +70,7 @@ class ViewsTestCase(APITestCase):
             'application/json'
         )
 
+    @tag('rancher')
     def test_post_schemas(self):
         """ Test the POST method of Schemas """
 
@@ -98,6 +103,7 @@ class ViewsTestCase(APITestCase):
         conn = rancher.Rancher()
         conn.clean_stacks(KERMIT_SCIPER)
 
+    @tag('rancher')
     def test_get_schemas(self):
         """ Test the GET method of schemas"""
 

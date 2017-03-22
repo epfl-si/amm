@@ -20,7 +20,7 @@ def save_key(username, apikey):
     id = apikey.get_id(username)
     connection = get_connection()
     mapping = {
-        'secret': apikey.get_secret_key_hash(),
+        'secret': apikey.secret_key_hash,
         'salt': apikey.salt.encode('utf-8'),
         'created': time.time(),
     }
@@ -53,12 +53,9 @@ def exists(access_key, secret_key):
         key_str, username, access_key = key.split(':')
         salt = connection.hget(key, 'salt').decode('utf-8')
 
-        apikey = APIKey()
-        apikey.secret_key_clear = secret_key
-        apikey.salt = salt
-        apikey.access_key = access_key
+        apikey = APIKey(access_key=access_key, secret_key=secret_key, salt=salt)
 
-        if key and get_connection().hget(key, 'secret').decode("utf-8") == apikey.get_secret_key_hash():
+        if key and get_connection().hget(key, 'secret').decode("utf-8") == apikey.secret_key_hash:
             return username
         return False
     except:

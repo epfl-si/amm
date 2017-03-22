@@ -30,6 +30,6 @@ class ApiKeyHandler:
         """
         Generate an APIKey for the given user
         """
-        the_key = APIKey.generate()
+        the_key = APIKey()
         save_key(username, the_key)
         return the_key

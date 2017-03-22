@@ -1,11 +1,16 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
 import unittest
+
+from django.test import tag
+
 from api import rancher
 from api.tests import KERMIT_SCIPER
 
 
 class RancherTest(unittest.TestCase):
+
+    @tag('rancher')
     def test_get(self):
         conn = rancher.Rancher()
 
@@ -13,6 +18,7 @@ class RancherTest(unittest.TestCase):
 
         self.assertEqual(200, r.status_code)
 
+    @tag('rancher')
     def test_get_template(self):
         conn = rancher.Rancher()
 
@@ -22,6 +28,7 @@ class RancherTest(unittest.TestCase):
 
         self.assertTrue(data["id"].startswith(template))
 
+    @tag('rancher')
     def test_create_mysql_stack(self):
         conn = rancher.Rancher()
         data = conn.create_mysql_stack(KERMIT_SCIPER)
@@ -35,10 +42,12 @@ class RancherTest(unittest.TestCase):
         # Clean stacks
         conn.clean_stacks(KERMIT_SCIPER)
 
+    @tag('rancher')
     def test_get_available_port(self):
         conn = rancher.Rancher()
         conn.get_available_port()
 
+    @tag('rancher')
     def test_get_stacks(self):
         # Create new stacks
         conn = rancher.Rancher()
@@ -55,6 +64,7 @@ class RancherTest(unittest.TestCase):
         # Clean stacks
         conn.clean_stacks(KERMIT_SCIPER)
 
+    @tag('rancher')
     def test_get_schemas(self):
         # Create new stacks
         conn = rancher.Rancher()

@@ -47,7 +47,6 @@ def get_connection_string_with_ip(db_username, db_password, db_ip, db_port, db_s
         connection = "mysql://%s:%s@%s:%s/%s" % (db_username, db_password, db_ip, db_port, db_schema)
     else:
         connection = "mysql://%s@%s:%s/%s" % (db_username, db_ip, db_port, db_schema)
-
     return connection
 
 
@@ -76,3 +75,14 @@ def get_sciper(username, ldap_server='scoldap.epfl.ch', ldap_base='o=epfl,c=ch')
         attributes=['uniqueIdentifier']
     )
     return connection.response[0]['attributes']['uniqueIdentifier'][0]
+
+
+def old_debug(string_to_display):
+    import sys
+    sys.stderr.write("**************************************************")
+    sys.stderr.write("**************************************************")
+    sys.stderr.write("**************************************************")
+    sys.stderr.write(str(string_to_display))
+    sys.stderr.write("**************************************************")
+    sys.stderr.write("**************************************************")
+    sys.stderr.write("**************************************************")

@@ -1,3 +1,4 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 import auth
 
 from rest_framework import serializers
@@ -28,7 +29,7 @@ class KeySerializer(serializers.Serializer):
                 result["username"] = username
 
         if not result:
-            raise serializers.AuthenticationFailed()
+            raise serializers.ValidationError("Authentication failed", code='authorization')
 
         return result
 
@@ -55,7 +56,7 @@ class SchemaSerializer(serializers.Serializer):
             result["username"] = username
 
         if not result:
-            raise serializers.AuthenticationFailed()
+            raise serializers.ValidationError("Invalid APIKeys", code='authorization')
 
         return result
 

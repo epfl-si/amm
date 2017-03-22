@@ -1,52 +1,62 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
 import binascii
 import hashlib
 from api import utils
 
 
-# todo : incohérence entre nos méthodes
-# exemple : generate_secret_key et generate_access_key
-# méthode static, methode de classe, méthode d'instance à définir proprement
-
-
 class APIKey:
-    # todo : constructeur qui construit rien
-    def __init__(self):
-        self.access_key = None
-        self.salt = None
+
+    def __init__(self, access_key=None, secret_key=None, salt=None):
+
         self.secret_key_hash = None
-        self.secret_key_clear = None
 
-    # todo : methode qui fait le travail du constructeur
-    @staticmethod
-    def generate():
-        new = APIKey()
-        new.salt = new.generate_salt()
-        new.access_key = new.generate_access_key()
-        new.generate_secret_key()
-        return new
+        if access_key and secret_key and salt:
+            self.access_key = access_key
+            self.salt = salt
+            self.secret_key_clear = secret_key
+        else:
+            self.__generate()
 
-    def __str__(self):
-        return self.access_key + self.get_secret_key_hash()
+        self.__set_secret_key_hash()
 
-    def generate_salt(self):
+    def __generate(self):
+        self.__generate_salt()
+        self.__generate_access_key()
+        self.__generate_secret_key()
+
+    def __generate_salt(self):
         """
         Generate the salt
         """
-        return utils.generate_password(20)
+        self.salt = utils.generate_password(20)
 
-    def generate_access_key(self):
+    def __generate_access_key(self):
         """
         Generate the access key (public part)
         """
-        return utils.generate_random_b64(20)
+        self.access_key = utils.generate_random_b64(20)
 
-    def generate_secret_key(self):
+    def __generate_secret_key(self):
         """
         Generate the secret key (private part)
         """
         self.secret_key_clear = utils.generate_password(40)
+
+    def __set_secret_key_hash(self):
+        """
+        Returns the secret key hashed
+        """
+        if self.secret_key_hash is None:
+            bytes_hash = hashlib.pbkdf2_hmac(
+                'sha256',
+                self.secret_key_clear.encode('utf-8'),
+                self.salt.encode('utf-8'),
+                1
+            )
+            self.secret_key_hash = binascii.hexlify(bytes_hash).decode('utf-8')
+
+    def __str__(self):
+        return self.access_key + self.secret_key_hash
 
     def get_id(self, username):
         """
@@ -60,15 +70,3 @@ class APIKey:
         """
         return {"access_key": self.access_key,
                 "secret_key": self.secret_key_clear}
-
-    def get_secret_key_hash(self):
-        """
-        Returns the secret key hashed
-        """
-        if self.secret_key_hash is None:
-            byteshash = hashlib.pbkdf2_hmac('sha256',
-                                            self.secret_key_clear.encode('utf-8'),
-                                            self.salt.encode('utf-8'),
-                                            1)
-            self.secret_key_hash = binascii.hexlify(byteshash).decode('utf-8')
-        return self.secret_key_hash

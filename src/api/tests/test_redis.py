@@ -10,26 +10,27 @@ from api.apikeyhandler import ApiKeyHandler
 
 
 class RedisTestCase(TestCase):
+
     def test_redis(self):
         # create data
         username = get_config("TEST_USERNAME")
-        apikey = APIKey.generate()
+        api_key = APIKey()
 
         # save the APIKey
-        save_key(username, apikey)
+        save_key(username, api_key)
 
         # check if the APIKey exists
-        self.assertIsNotNone(exists(apikey.access_key, apikey.secret_key_clear))
+        self.assertIsNotNone(exists(api_key.access_key, api_key.secret_key_clear))
 
         handler = ApiKeyHandler()
 
-        self.assertIsNotNone(handler.validate(apikey.access_key, apikey.secret_key_clear))
+        self.assertIsNotNone(handler.validate(api_key.access_key, api_key.secret_key_clear))
 
         # get all the keys of the test user
         keys = get_apikeys(username)
 
         # check that the key is there
-        self.assertTrue(apikey.access_key in keys)
+        self.assertTrue(api_key.access_key in keys)
 
         flush_all()
 
