@@ -2,6 +2,8 @@
 
 import unittest
 
+from django.test import tag
+
 from api import utils
 from api.utils import get_sciper
 
@@ -24,6 +26,7 @@ class UtilTest(unittest.TestCase):
 
         self.assertEqual(connection, expected)
 
+    @tag('ldap')
     def test_get_sciper(self):
         sciper = get_sciper(username='kermit')
         self.assertEqual(sciper, '133134')

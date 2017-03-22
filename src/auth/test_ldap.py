@@ -2,17 +2,21 @@
 
 import unittest
 
+from django.test import tag
+
 from auth.ldap import Authenticator
 from config.settings.base import get_config
 
 
 class LDAPTest(unittest.TestCase):
 
+    @tag('ldap')
     def test_get_user_dn(self):
         auth = Authenticator()
         user_dn = auth.get_user_dn(username='kermit')
         self.assertEqual(user_dn, "uid=kermit,ou=users,o=epfl,c=ch")
 
+    @tag('ldap')
     def test_authenticate(self):
         auth = Authenticator()
         username = get_config('TEST_USERNAME')
