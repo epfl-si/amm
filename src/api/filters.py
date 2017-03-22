@@ -13,14 +13,20 @@ class APIKeyFilterBackend(BaseFilterBackend):
         return [
             coreapi.Field(
                 name='access_key',
-                location='query',
                 required=True,
-                type='string'
+                location='query',
+                schema='schema',
+                description='',
+                type='string',
+                example='ex',
             ),
             coreapi.Field(
                 name='secret_key',
-                location='query',
                 required=True,
-                type='string'
+                location='query',
+                schema='schema',
+                description='',
+                type='string',
+                example='ex',
             ),
         ]

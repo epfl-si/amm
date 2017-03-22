@@ -44,7 +44,7 @@ class KeysView(CommonView):
         """
         Returns the user's API keys
         ---
-        responseMessages:
+        Response messages:
           - code: 200
             message: OK
           - code: 403
@@ -67,7 +67,7 @@ class KeysView(CommonView):
         """
         Create a new API key
         ---
-        responseMessages:
+        Response messages:
         - code: 200
           message: OK
         - code: 401
@@ -97,7 +97,7 @@ class SchemasView(CommonView):
         """
         Returns the user's schemas
         ---
-        responseMessages:
+        Response messages:
         - code: 200
           message: OK
         - code: 403
@@ -119,7 +119,7 @@ class SchemasView(CommonView):
         """
         Create a new schema
         ---
-        responseMessages:
+        Response messages:
         - code: 200
           message: OK
         - code: 403
@@ -140,7 +140,7 @@ class VersionView(APIView):
         """
         Returns the current API version
         ---
-        responseMessages:
+        Response messages:
         - code: 200
           message: OK
         """
