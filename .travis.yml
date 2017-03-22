@@ -27,7 +27,7 @@ script:
     export AMM_ENVIRONMENT=test;
     docker-compose up -d
   - docker-compose exec django ./flake8.sh
-  - docker-compose exec django coverage run --source='.' src/manage.py test --settings=config.settings.local
+  - docker-compose exec django coverage run --source='.' src/manage.py test --settings=config.settings.local --exclude-tag=rancher
 
 after_success:
   - if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
