@@ -28,7 +28,7 @@ class KeySerializer(serializers.Serializer):
                 result["username"] = username
 
         if not result:
-            raise serializers.ValidationError("Authentication failed", code='authorization')
+            raise serializers.AuthenticationFailed()
 
         return result
 
@@ -53,6 +53,9 @@ class SchemaSerializer(serializers.Serializer):
         username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
         if username:
             result["username"] = username
+
+        if not result:
+            raise serializers.AuthenticationFailed()
 
         return result
 
