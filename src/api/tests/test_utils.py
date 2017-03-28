@@ -5,7 +5,7 @@ import unittest
 from django.test import tag
 
 from api import utils
-from api.utils import get_sciper
+from api.utils import get_sciper, get_units
 
 
 class UtilTest(unittest.TestCase):
@@ -30,3 +30,11 @@ class UtilTest(unittest.TestCase):
     def test_get_sciper(self):
         sciper = get_sciper(username='kermit')
         self.assertEqual(sciper, '133134')
+
+    @tag('ldap')
+    def test_get_units(self):
+        units = get_units(username='charmier')
+        self.assertEqual(len(units), 1)
+        units = get_units(username='ebreton')
+        self.assertEqual(len(units), 3)
+

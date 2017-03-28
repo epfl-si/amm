@@ -77,6 +77,29 @@ def get_sciper(username, ldap_server='scoldap.epfl.ch', ldap_base='o=epfl,c=ch')
     return connection.response[0]['attributes']['uniqueIdentifier'][0]
 
 
+def get_units(username, ldap_server='ldap.epfl.ch', ldap_base='o=epfl,c=ch'):
+    """
+    Return the units list of user.
+    """
+    units = []
+    server = ldap3.Server('ldap://' + ldap_server)
+    connection = ldap3.Connection(server)
+    connection.open()
+
+    connection.search(
+        search_base=ldap_base,
+        search_filter='(uid=' + username + '@*)',
+        attributes=['uid']
+    )
+
+    for index in range(len(connection.response)):
+        uid_list = connection.response[index]['attributes']['uid']
+        for uid in uid_list:
+            if '@' in uid:
+                units.append(uid.split('@')[1])
+    return units
+
+
 def old_debug(string_to_display):
     import sys
     sys.stderr.write("**************************************************")
