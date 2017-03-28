@@ -35,8 +35,6 @@ ENV \
 RUN pip install --no-cache-dir -r requirements/local.txt
 RUN python ./src/manage.py collectstatic --no-input
 
-# TODO check why we cannot have an entry point when
-# using Intellij docker integration
-#
-# ENTRYPOINT [ "bash" ]
-CMD [ "gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application" ]
+# NOTE : if we have an ENTRYPOINT here Pycharm docker-compose
+# integration doesn't work
+CMD gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile config.wsgi:application
