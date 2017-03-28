@@ -15,7 +15,7 @@ class Authenticator:
 
         self.use_ssl = True if base.get_config('LDAP_USE_SSL') == 'true' else False
         self.uri = self.protocol + '://' + self.ldap_server
-        self.dn = base.get_config('LDAP_USER_BASE_DN')
+        self.dn = base.get_config('LDAP_BASE_DN')
         self.user_attr = base.get_config('LDAP_USER_SEARCH_ATTR')
 
     def get_user_dn(self, username):

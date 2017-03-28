@@ -17,7 +17,7 @@ ENV \
     TEST_CORRECT_PWD=dummy \
     TEST_WRONG_PWD=dummy \
     TEST_USERNAME=dummy \
-    LDAP_USER_BASE_DN=ou=users,o=epfl,c=ch \
+    LDAP_BASE_DN=o=epfl,c=ch \
     LDAP_SERVER=scoldap.epfl.ch \
     LDAP_USER_SEARCH_ATTR=uid \
     LDAP_USE_SSL=true \

@@ -119,14 +119,14 @@ class Rancher:
         }
 
     @classmethod
-    def _get_payload(cls, environment, sciper):
+    def _get_payload(cls, environment, sciper, unit):
         """
         Return payload of stack
         """
 
         template = cls.get_template("idevelop:mysql")
 
-        return {
+        payload = {
             "system": False,
             "type": "stack",
             "name": "mysql-" + generate_random_b64(8),
@@ -136,16 +136,21 @@ class Rancher:
             "dockerCompose": template["files"]["docker-compose.yml"],
             "rancherCompose": template["files"]["rancher-compose.yml"],
             "externalId": "catalog://" + template["id"],
-            "group": "owner:" + sciper
+            "group": "owner:" + sciper,
         }
 
+        if unit:
+            payload["group"] = "unit:" + unit
+
+        return payload
+
     @classmethod
-    def _create_mysql_stack(cls, sciper, password):
+    def _create_mysql_stack(cls, sciper, password, unit):
         """
         Create a MySQL stack with default options
         """
         environment = cls._get_environment(password=password)
-        payload = cls._get_payload(environment=environment, sciper=sciper)
+        payload = cls._get_payload(environment=environment, sciper=sciper, unit=unit)
         mysql_stack = cls.post("/v2-beta/stacks", data=json.dumps(payload))
 
         # wait a bit for the stack to be created
@@ -154,11 +159,11 @@ class Rancher:
         return mysql_stack, payload, environment
 
     @classmethod
-    def create_mysql_stack(cls, sciper):
+    def create_mysql_stack(cls, sciper, unit):
 
         password = generate_password(20)
 
-        mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password)
+        mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password, unit)
 
         data = {
             "response": mysql_stack,

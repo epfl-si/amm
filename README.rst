@@ -11,7 +11,7 @@ Create a .env file on the project's root with the following variables :
 #. CACHE_REDIS_CLIENT_CLASS: The django-cache client class to use for the redis driver (for standalone redis use: "django_redis.client.DefaultClient" )
 #. SECRET_KEY: django secret key
 #. LDAP_USER_SEARCH_ATTR: the LDAP user search attribute
-#. LDAP_USER_BASE_DN: The BaseDN for ldap user search
+#. LDAP_BASE_DN: The BaseDN for ldap user search
 #. LDAP_SERVER: The LDAP server to bind to
 #. LDAP_USE_SSL: Whether to use 'ldaps' or 'ldap' (no support for starttls), use 'ldaps' only if set to 'true' any other value is false
 #. AMM_ENVIRONMENT: the amm environment
