@@ -4,6 +4,7 @@ import os
 import string
 import binascii
 import ldap3
+from config.settings import base
 
 
 def generate_random_b64(length):
@@ -61,10 +62,14 @@ def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
     return cmd
 
 
-def get_sciper(username, ldap_server='scoldap.epfl.ch', ldap_base='o=epfl,c=ch'):
+def get_sciper(username):
     """
     Return the sciper of user
     """
+
+    ldap_server = base.get_config('LDAP_SERVER')
+    ldap_base = base.get_config('LDAP_BASE_DN')
+
     server = ldap3.Server('ldap://' + ldap_server)
     connection = ldap3.Connection(server)
     connection.open()
@@ -77,10 +82,14 @@ def get_sciper(username, ldap_server='scoldap.epfl.ch', ldap_base='o=epfl,c=ch')
     return connection.response[0]['attributes']['uniqueIdentifier'][0]
 
 
-def get_units(username, ldap_server='ldap.epfl.ch', ldap_base='o=epfl,c=ch'):
+def get_units(username):
     """
     Return the units list of user.
     """
+
+    ldap_server = base.get_config('LDAP_SERVER')
+    ldap_base = base.get_config('LDAP_BASE_DN')
+
     units = []
     server = ldap3.Server('ldap://' + ldap_server)
     connection = ldap3.Connection(server)
