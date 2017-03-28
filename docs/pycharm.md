@@ -40,7 +40,6 @@ eval $(docker-machine env)
 
 File > Settings > Build, Execution, Deployment > Docker
 
-
 * API URL:
   * value of: **echo $DOCKER_HOST**
   
@@ -53,6 +52,6 @@ File > Settings > Build, Execution, Deployment > Docker
 File > Settings > Project:amm > Project Interpreter
 
 * Click on the Settings wheel and select "Add Remote"
-* Select "Docker"
-* Server: Select the previously configured Docker server
-* Image name: epflidevelop/amm
+* Select "Docker Compose"
+* Configuration file(s) : select your docker-compose.yml file
+* Click OK and wait for the indexes to be rebuild (can take several minutes)
