@@ -128,5 +128,6 @@ CACHES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'EXCEPTION_HANDLER': 'api.api_exception_handler.api_exception_handler',
 }

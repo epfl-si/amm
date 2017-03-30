@@ -82,30 +82,32 @@ def get_sciper(username):
     return connection.response[0]['attributes']['uniqueIdentifier'][0]
 
 
-def get_units(username):
+def get_units(username, ldap_server='ldap.epfl.ch', ldap_base='o=epfl,c=ch'):
     """
     Return the units list of user.
     """
-
-    ldap_server = base.get_config('LDAP_SERVER')
-    ldap_base = base.get_config('LDAP_BASE_DN')
-
     units = []
     server = ldap3.Server('ldap://' + ldap_server)
     connection = ldap3.Connection(server)
     connection.open()
 
+    # Search the user dn
     connection.search(
         search_base=ldap_base,
         search_filter='(uid=' + username + '@*)',
-        attributes=['uid']
     )
 
+    # For each user dn give me the unit
+    dn_list = []
     for index in range(len(connection.response)):
-        uid_list = connection.response[index]['attributes']['uid']
-        for uid in uid_list:
-            if '@' in uid:
-                units.append(uid.split('@')[1])
+        dn_list.append(connection.response[index]['dn'])
+
+    # For each unit search unit information and give me the unit id
+    for dn in dn_list:
+        unit = dn.split(",ou=")[1]
+        connection.search(search_base=ldap_base, search_filter='(ou=' + unit + ')', attributes=['uniqueidentifier'])
+        units.append(connection.response[0]['attributes']['uniqueIdentifier'][0])
+
     return units
 
 

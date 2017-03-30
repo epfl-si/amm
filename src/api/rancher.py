@@ -136,11 +136,8 @@ class Rancher:
             "dockerCompose": template["files"]["docker-compose.yml"],
             "rancherCompose": template["files"]["rancher-compose.yml"],
             "externalId": "catalog://" + template["id"],
-            "group": "owner:" + sciper,
+            "group": "owner:" + sciper + "," + "unit:" + unit
         }
-
-        if unit:
-            payload["group"] = "unit:" + unit
 
         return payload
 
@@ -202,7 +199,8 @@ class Rancher:
         else:
             service_id = services_response.json()["data"][0]["id"]
 
-        service_response = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/services/" + service_id)
+        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/services/" + service_id
+        service_response = cls.get(url)
 
         ip_address = service_response.json()["publicEndpoints"][0]["ipAddress"]
 

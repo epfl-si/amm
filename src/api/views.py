@@ -127,9 +127,8 @@ class SchemasView(CommonView):
         """
         serializer = SchemaSerializer(data=request.data)
 
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             schema = serializer.save()
-
             return Response(schema, status=status.HTTP_200_OK)
         else:
             return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)

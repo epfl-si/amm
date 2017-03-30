@@ -34,11 +34,13 @@ class UtilTest(unittest.TestCase):
 
     @tag('ldap')
     def test_get_units(self):
+
         units = get_units(username=base.get_config('TEST_USERNAME'))
         self.assertEqual(len(units), 1)
-        self.assertEqual("idevelop", units[0])
+        self.assertEqual('13030', units[0])
 
         units = get_units(username='ebreton')
-
         self.assertEqual(len(units), 3)
-
+        self.assertEqual('13029', units[0])
+        self.assertEqual('13030', units[1])
+        self.assertEqual('13051', units[2])

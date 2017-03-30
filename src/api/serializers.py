@@ -45,9 +45,11 @@ class SchemaSerializer(serializers.Serializer):
     """
     access_key = serializers.CharField(max_length=256)
     secret_key = serializers.CharField(max_length=256)
-    unit = serializers.CharField(max_length=256)
+    unit = serializers.CharField(max_length=256, required=False)
 
     def validate(self, attrs):
+        result = {}
+
         access_key = attrs.get('access_key')
         secret_key = attrs.get('secret_key')
 
@@ -55,24 +57,29 @@ class SchemaSerializer(serializers.Serializer):
         if 'unit' in attrs:
             unit = attrs.get('unit')
 
-        result = {}
         username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
         if username:
             result["username"] = username
 
-            if not unit:
-                units = get_units(username)
+            units = get_units(username)
 
+            if not unit:
                 if len(units) > 1:
-                    return serializers.ValidationError("User has more one unit", code='authorization')
+                    raise serializers.ValidationError("User has more one unit", code='invalid')
                 if len(units) < 1:
-                    return serializers.ValidationError("User has no unit", code='authorization')
+                    raise serializers.ValidationError("User has no unit", code='invalid')
                 elif len(units) == 1:
                     unit = units[0]
                     result["unit"] = unit
 
-        if not result:
-            raise serializers.ValidationError("Invalid APIKeys", code='authorization')
+            elif unit not in units:
+                raise serializers.ValidationError("Bad unit", code='invalid')
+
+            else:
+                result["unit"] = unit
+
+        if 'username' not in result or 'unit' not in result:
+            raise serializers.ValidationError("Invalid APIKeys", code='invalid')
 
         return result
 

@@ -10,6 +10,9 @@ from api.tests import KERMIT_SCIPER
 
 class RancherTest(unittest.TestCase):
 
+    def setUp(self):
+        self.idevelop_id = "13030"
+
     @tag('rancher')
     def test_get(self):
         conn = rancher.Rancher()
@@ -31,7 +34,7 @@ class RancherTest(unittest.TestCase):
     @tag('rancher')
     def test_create_mysql_stack(self):
         conn = rancher.Rancher()
-        data = conn.create_mysql_stack(KERMIT_SCIPER)
+        data = conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
 
         self.assertTrue(data["connection_string"].startswith("mysql://"))
         self.assertTrue(data["mysql_cmd"].startswith("mysql "))
@@ -52,8 +55,8 @@ class RancherTest(unittest.TestCase):
         # Create new stacks
         conn = rancher.Rancher()
 
-        conn.create_mysql_stack(KERMIT_SCIPER)
-        conn.create_mysql_stack(KERMIT_SCIPER)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
 
         # Return stacks by sciper
         stacks = conn.get_stacks(KERMIT_SCIPER)
@@ -68,8 +71,8 @@ class RancherTest(unittest.TestCase):
     def test_get_schemas(self):
         # Create new stacks
         conn = rancher.Rancher()
-        conn.create_mysql_stack(KERMIT_SCIPER)
-        conn.create_mysql_stack(KERMIT_SCIPER)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
 
         # Return schemas by sciper
         schemas = conn.get_schemas(KERMIT_SCIPER)
