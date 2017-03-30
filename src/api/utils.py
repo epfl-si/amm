@@ -82,12 +82,13 @@ def get_sciper(username):
     return connection.response[0]['attributes']['uniqueIdentifier'][0]
 
 
-def get_units(username, ldap_server='ldap.epfl.ch', ldap_base='o=epfl,c=ch'):
+def get_units(username):
     """
     Return the units list of user.
     """
+    ldap_base = base.get_config('LDAP_BASE_DN')
     units = []
-    server = ldap3.Server('ldap://' + ldap_server)
+    server = ldap3.Server('ldap://' + base.get_config('LDAP_SERVER_FOR_SEARCH'))
     connection = ldap3.Connection(server)
     connection.open()
 
