@@ -47,6 +47,27 @@ class SchemaSerializer(serializers.Serializer):
     secret_key = serializers.CharField(max_length=256)
     unit = serializers.CharField(max_length=256, required=False)
 
+    @staticmethod
+    def _manage_units(username, unit, result):
+
+        units = get_units(username)
+
+        if not unit:
+            if len(units) > 1:
+                raise serializers.ValidationError("User has more one unit", code='invalid')
+            if len(units) < 1:
+                raise serializers.ValidationError("User has no unit", code='invalid')
+            elif len(units) == 1:
+                unit = units[0]
+                result["unit"] = unit
+
+        elif unit not in units:
+            raise serializers.ValidationError("Bad unit", code='invalid')
+
+        else:
+            result["unit"] = unit
+        return result
+
     def validate(self, attrs):
         result = {}
 
@@ -61,22 +82,7 @@ class SchemaSerializer(serializers.Serializer):
         if username:
             result["username"] = username
 
-            units = get_units(username)
-
-            if not unit:
-                if len(units) > 1:
-                    raise serializers.ValidationError("User has more one unit", code='invalid')
-                if len(units) < 1:
-                    raise serializers.ValidationError("User has no unit", code='invalid')
-                elif len(units) == 1:
-                    unit = units[0]
-                    result["unit"] = unit
-
-            elif unit not in units:
-                raise serializers.ValidationError("Bad unit", code='invalid')
-
-            else:
-                result["unit"] = unit
+            result = SchemaSerializer._manage_units(username, unit, result)
 
         if 'username' not in result or 'unit' not in result:
             raise serializers.ValidationError("Invalid APIKeys", code='invalid')

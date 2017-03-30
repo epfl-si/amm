@@ -19,6 +19,7 @@ ENV \
     TEST_USERNAME=dummy \
     LDAP_BASE_DN=o=epfl,c=ch \
     LDAP_SERVER=scoldap.epfl.ch \
+    LDAP_SERVER_FOR_SEARCH=ldap.epfl.ch \
     LDAP_USER_SEARCH_ATTR=uid \
     LDAP_USE_SSL=true \
     CACHE_REDIS_LOCATION=redis://redis:6379/1 \
@@ -37,8 +38,8 @@ RUN python ./src/manage.py collectstatic --no-input
 
 # NOTE : if we have an ENTRYPOINT here Pycharm docker-compose
 # integration doesn't work
-#CMD gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile config.wsgi:application
+CMD gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile config.wsgi:application
 
 
-ENTRYPOINT [ "bash" ]
-CMD ["-c", "gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application" ]
+# ENTRYPOINT [ "bash" ]
+# CMD ["-c", "gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application" ]
