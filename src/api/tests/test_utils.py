@@ -21,9 +21,18 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(32, len(password))
 
     def test_format_connection_string(self):
-        connection = utils.get_connection_string("username", "password", "stack", "env", 1234, "schema")
+        """
+        Example:
+        mysql://aa2ea71b:-CxMbtSVdPcY88MH3Vo7@mysql-78bc59f0.db.rsaas.epfl.ch:12068/98c321cb
+        """
+        connection = utils.get_connection_string(
+            db_username="username",
+            db_password="password",
+            db_host="mysql-schema-id.db.rsaas.epfl.ch",
+            db_port="port",
+            db_schema="schema")
 
-        expected = "mysql://username:password@mysql.stack.env.epfl.ch:1234/schema"
+        expected = "mysql://username:password@mysql-schema-id.db.rsaas.epfl.ch:port/schema"
 
         self.assertEqual(connection, expected)
 

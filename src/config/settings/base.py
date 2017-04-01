@@ -28,6 +28,8 @@ ALLOWED_HOSTS = [
         get_config('DJANGO_HOST'),
 ]
 
+DOMAIN = ".db.rsaas.epfl.ch"
+
 # Application definition
 
 INSTALLED_APPS = [

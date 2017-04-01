@@ -6,11 +6,13 @@ import requests
 
 from random import randint
 from time import sleep
+
+from django.conf import settings
 from requests.auth import HTTPBasicAuth
 
 from config.settings.base import get_config
 
-from .utils import generate_password, generate_random_b64, get_connection_string_with_ip, get_mysql_client_cmd
+from .utils import generate_password, generate_random_b64, get_mysql_client_cmd, get_connection_string
 
 # TODO get this dynamically
 ENVIRONMENT_ID = "1a9"
@@ -168,6 +170,7 @@ class Rancher:
             "db_password": password,
             "db_username": environment["AMM_USERNAME"],
             "db_schema": environment["MYSQL_DATABASE"],
+            "db_host": payload["name"] + settings.DOMAIN,
             "db_port": environment["MYSQL_EXPORT_PORT"],
             "stack": payload["name"]
         }
@@ -175,37 +178,15 @@ class Rancher:
         parameters = [
             data["db_username"],
             data["db_password"],
-            cls.get_ip_address(data["response"].json()["id"]),
+            data["db_host"],
             data["db_port"],
             data["db_schema"]
         ]
 
-        # todo When we will replace ip by host we could replace *parameters by *data
-        data["connection_string"] = get_connection_string_with_ip(*parameters)
+        data["connection_string"] = get_connection_string(*parameters)
         data["mysql_cmd"] = get_mysql_client_cmd(*parameters)
 
         return data
-
-    @classmethod
-    def get_ip_address(cls, stack_id):
-        """
-        Return ip address
-        """
-        services_response = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack_id + "/services")
-
-        if len(services_response.json()["data"]) != 1:
-            # This stack returns many services
-            # How to know which service should be used
-            pass
-        else:
-            service_id = services_response.json()["data"][0]["id"]
-
-        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/services/" + service_id
-        service_response = cls.get(url)
-
-        ip_address = service_response.json()["publicEndpoints"][0]["ipAddress"]
-
-        return ip_address
 
     @classmethod
     def validate(cls, schema_id, sciper):
@@ -268,13 +249,13 @@ class Rancher:
         parameters = [
             stack['environment']['AMM_USERNAME'],
             None,
-            cls.get_ip_address(stack["id"]),
+            name_stack + settings.DOMAIN,
             stack['environment']['MYSQL_EXPORT_PORT'],
             stack['environment']['MYSQL_DATABASE']
         ]
 
         schema = {
-            "connection_string": get_connection_string_with_ip(*parameters),
+            "connection_string": get_connection_string(*parameters),
             "mysql_cmd": get_mysql_client_cmd(*parameters),
 
             # Example of stack['group'] = 'owner:133134,unit:1303'
@@ -290,17 +271,18 @@ class Rancher:
         schemas = []
 
         for stack in cls.get_stacks(sciper):
+
             parameters = [
                 stack['environment']['AMM_USERNAME'],
                 None,
-                cls.get_ip_address(stack["id"]),
+                stack["name"] + settings.DOMAIN,
                 stack['environment']['MYSQL_EXPORT_PORT'],
                 stack['environment']['MYSQL_DATABASE']
             ]
 
             schemas.append(
                 {
-                    "connection_string": get_connection_string_with_ip(*parameters),
+                    "connection_string": get_connection_string(*parameters),
                     "mysql_cmd": get_mysql_client_cmd(*parameters)
                 }
             )
@@ -315,17 +297,18 @@ class Rancher:
         schemas = []
 
         for stack in cls.get_stacks_by_unit(unit_id):
+
             parameters = [
                 stack['environment']['AMM_USERNAME'],
                 None,
-                cls.get_ip_address(stack["id"]),
+                stack["name"] + settings.DOMAIN,
                 stack['environment']['MYSQL_EXPORT_PORT'],
                 stack['environment']['MYSQL_DATABASE']
             ]
 
             schemas.append(
                 {
-                    "connection_string": get_connection_string_with_ip(*parameters),
+                    "connection_string": get_connection_string(*parameters),
                     "mysql_cmd": get_mysql_client_cmd(*parameters),
                     # Example of stack['group'] = 'owner:133134,unit:1303'
                     "unit": stack['group'].split(',unit:')[1]

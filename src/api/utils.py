@@ -27,27 +27,19 @@ def generate_password(length):
     return password
 
 
-def get_connection_string(db_username, db_password, db_stack, db_env, db_port, db_schema):
+def get_connection_string(db_username, db_password, db_host, db_port, db_schema):
     """
     Returns a connection string according to the given variables.
+    Format:
+    mysql://username:password@mysql.db_stack.env.epfl.ch:1234/db_schema
+    Example:
+    mysql://aa2ea71b:-CxMbtSVdPcY88MH3Vo7@mysql-78bc59f0.db.rsaas.epfl.ch:12068/98c321cb
     """
-    # mysql://username:password@mysql.db_stack.env.epfl.ch:1234/db_schema
-    connection = "mysql://%s:%s@mysql.%s.%s.epfl.ch:%s/%s" % (db_username, db_password, db_stack,
-                                                              db_env, db_port, db_schema)
-
-    return connection
-
-
-def get_connection_string_with_ip(db_username, db_password, db_ip, db_port, db_schema):
-    """
-    Returns a connection string according to the given variables.
-    """
-    # mysql://username:password@mysql.db_stack.env.epfl.ch:1234/db_schema
 
     if db_password:
-        connection = "mysql://%s:%s@%s:%s/%s" % (db_username, db_password, db_ip, db_port, db_schema)
+        connection = "mysql://%s:%s@%s:%s/%s" % (db_username, db_password, db_host, db_port, db_schema)
     else:
-        connection = "mysql://%s@%s:%s/%s" % (db_username, db_ip, db_port, db_schema)
+        connection = "mysql://%s@%s:%s/%s" % (db_username, db_host, db_port, db_schema)
     return connection
 
 

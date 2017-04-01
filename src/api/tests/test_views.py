@@ -91,7 +91,8 @@ class ViewsTestCase(APITestCase):
 
         content = json.loads(response.content.decode('utf-8'))
 
-        self.assertIsNotNone(re.match('^mysql://\w+:[-\+\w]+@(\d+\.?)+:\d+/.+$', content['connection_string']))
+        "mysql://aa2ea71b:-CxMbtSVdPcY88MH3Vo7@mysql-78bc59f0.db.rsaas.epfl.ch:12068/98c321cb"
+        self.assertIsNotNone(re.match('^mysql://\w+:[-\+\w]+@[-\.\w]+:\d+/.+$', content['connection_string']))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
