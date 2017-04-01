@@ -1,4 +1,5 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
+
 import auth
 
 from rest_framework import serializers
@@ -16,6 +17,9 @@ class KeySerializer(serializers.Serializer):
     password = serializers.CharField(max_length=256)
 
     def validate(self, attrs):
+        """
+        Validate the user authentication
+        """
         username = attrs.get('username')
         password = attrs.get('password')
 
@@ -34,9 +38,10 @@ class KeySerializer(serializers.Serializer):
         return result
 
     def create(self, validated_data):
-
-        key = ApiKeyHandler.generate_keys(validated_data["username"])
-        return key
+        """
+        Create the APIKeys
+        """
+        return ApiKeyHandler.generate_keys(validated_data["username"])
 
 
 class SchemaSerializer(serializers.Serializer):
@@ -49,7 +54,10 @@ class SchemaSerializer(serializers.Serializer):
 
     @staticmethod
     def _manage_units(username, unit, result):
-
+        """
+        Manage unit
+        """
+        # Return all the unit of user
         units = get_units(username)
 
         if not unit:
@@ -69,27 +77,43 @@ class SchemaSerializer(serializers.Serializer):
         return result
 
     def validate(self, attrs):
+        """
+        Validate the APIKeys and the unit (if the unit is given)
+        """
         result = {}
 
-        access_key = attrs.get('access_key')
-        secret_key = attrs.get('secret_key')
+        if self.partial:
 
-        unit = None
-        if 'unit' in attrs:
-            unit = attrs.get('unit')
+            if 'unit' in attrs:
+                unit = attrs.get('unit')
+                result["unit"] = unit
+            return result
 
-        username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
-        if username:
-            result["username"] = username
+        else:
+            access_key = attrs.get('access_key')
+            secret_key = attrs.get('secret_key')
 
-            result = SchemaSerializer._manage_units(username, unit, result)
+            unit = None
+            if 'unit' in attrs:
+                unit = attrs.get('unit')
 
-        if 'username' not in result or 'unit' not in result:
-            raise serializers.ValidationError("Invalid APIKeys", code='invalid')
+            username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
 
-        return result
+            if username:
+                result["username"] = username
+
+                result = SchemaSerializer._manage_units(username, unit, result)
+
+            if 'username' not in result or 'unit' not in result:
+                raise serializers.ValidationError("Invalid APIKeys", code='invalid')
+
+            return result
 
     def create(self, validated_data):
+        """
+        Now we have validated data. So we can create schema.
+        """
+
         # Ldap search to find sciper from username
         sciper = get_sciper(validated_data["username"])
 
@@ -103,3 +127,17 @@ class SchemaSerializer(serializers.Serializer):
             "connection_string": schema["connection_string"],
             "mysql_cmd": schema["mysql_cmd"]
         }
+
+    def update(self, schema_id, validated_data):
+        """
+        Now we have validated data. So we can update schema.
+        """
+        schema = Rancher.get_schema(schema_id)
+
+        unit = None
+        if "unit" in validated_data:
+            unit = validated_data['unit']
+
+        schema['unit'] = unit
+
+        return schema

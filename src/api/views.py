@@ -1,5 +1,7 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
+from django.utils.datastructures import MultiValueDictKeyError
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -18,9 +20,10 @@ from .utils import get_sciper
 @api_view()
 def api_root(request, format=None):
     return Response({
-        'apikeys': reverse('apikeys', request=request, format=format),
-        'schemas': reverse('schemas', request=request, format=format),
-        'version': reverse('version', request=request, format=format)
+        'apikeys': reverse('apikey-list', request=request, format=format),
+        'schemas': reverse('schema-list', request=request, format=format),
+        'version': reverse('version-detail', request=request, format=format),
+        'schemas-by-unit': reverse('schema-list-by-unit', args=["13030"], request=request, format=format),
     })
 
 
@@ -30,7 +33,55 @@ class CommonView(APIView):
         self.rancher = Rancher()
 
 
-class KeysView(CommonView):
+class UnitList(CommonView):
+
+    def get(self, request):
+        """
+        Return http response with 404 status
+        """
+        return Response("Units not found", status=status.HTTP_404_NOT_FOUND)
+
+
+class UnitDetail(CommonView):
+
+    def get(self, request, unit_id):
+        """
+        Return http response with 404 status
+        """
+        return Response("Unit not found", status=status.HTTP_404_NOT_FOUND)
+
+
+class SchemaListByUnit(CommonView):
+
+    def get(self, request, unit_id):
+        """
+        Return the list of schemas by unit
+        ---
+        Response messages:
+          - code: 200
+            message: OK
+          - code: 403
+            message: Invalid APIKey
+          - code 404
+            message: Access key or secret key no found
+        """
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+                schemas = Rancher.get_schemas_by_unit(unit_id)
+                return Response(schemas, status=status.HTTP_200_OK)
+
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
+
+
+class APIKeyList(CommonView):
+
     filter_backends = (APIKeyFilterBackend,)
 
     def get_serializer(self):
@@ -49,19 +100,24 @@ class KeysView(CommonView):
             message: OK
           - code: 403
             message: Invalid APIKey
+          - code: 404
+            message: Access key or secret key no found
         """
 
-        # first we check the key
-        username = self.apikey_handler.validate(
-            request.GET.get('access_key', None),
-            request.GET.get('secret_key', None)
-        )
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
 
-        if username:
-            keys = self.apikey_handler.get_keys(username)
-            return Response(keys, status=status.HTTP_200_OK)
+            if username:
+                keys = self.apikey_handler.get_keys(username)
+                return Response(keys, status=status.HTTP_200_OK)
 
-        return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         """
@@ -77,13 +133,72 @@ class KeysView(CommonView):
 
         if serializer.is_valid():
             key = serializer.save()
-
             return Response(key.get_values(), status=status.HTTP_200_OK)
-        else:
-            return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
 
 
-class SchemasView(CommonView):
+class SchemaDetail(CommonView):
+
+    filter_backends = (APIKeyFilterBackend,)
+
+    def get(self, request, schema_id):
+        """
+        Return the schema 'schema_id'
+        ---
+        Response messages:
+        - code: 200
+        message: OK
+        - code: 403
+        message: Invalid APIKey
+        - code: 403
+        message: Schema doesn't belong to this user
+        - code: 404
+        message: Access key or secret key no found
+        """
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+                sciper = get_sciper(username)
+
+                # Check if the schema belongs to the user
+                if Rancher.validate(schema_id, sciper):
+
+                    # Get the complete information of schema
+                    schema = Rancher.get_schema(schema_id)
+                    return Response(schema, status=status.HTTP_200_OK)
+
+                return Response("Schema doesn't belong to this user", status=status.HTTP_403_FORBIDDEN)
+
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, schema_id):
+        """
+        Update partially the schema 'schema_id'
+        ---
+        Response messages:
+        - code: 200
+        message: OK
+        - code: 403
+        message: Invalid APIKey
+        """
+        serializer = SchemaSerializer(instance=schema_id, data=request.data, partial=True)
+        if serializer.is_valid():
+            # update
+            schema = serializer.save()
+            return Response(schema, status=status.HTTP_200_OK)
+
+        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+
+
+class SchemaList(CommonView):
+
     filter_backends = (APIKeyFilterBackend,)
 
     def get_serializer(self):
@@ -102,18 +217,23 @@ class SchemasView(CommonView):
           message: OK
         - code: 403
           message: Invalid APIKey
+        - code 404
+          message: Access key or secret key no found
         """
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+                sciper = get_sciper(username)
+                stacks = self.rancher.get_schemas(sciper)
+                return Response(stacks, status=status.HTTP_200_OK)
 
-        username = self.apikey_handler.validate(
-            request.GET.get('access_key', None),
-            request.GET.get('secret_key', None)
-        )
-        if username:
-            sciper = get_sciper(username)
-            stacks = self.rancher.get_schemas(sciper)
-            return Response(stacks, status=status.HTTP_200_OK)
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
-        return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         """
@@ -130,11 +250,12 @@ class SchemasView(CommonView):
         if serializer.is_valid(raise_exception=True):
             schema = serializer.save()
             return Response(schema, status=status.HTTP_200_OK)
-        else:
-            return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+
+        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
 
 
-class VersionView(APIView):
+class VersionDetail(APIView):
+
     def get(self, request):
         """
         Returns the current API version

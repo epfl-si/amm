@@ -27,7 +27,7 @@ class ViewsTestCase(APITestCase):
         """
 
         response = self.client.post(
-            reverse('apikeys'),
+            reverse('apikey-list'),
             data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
             format='json'
         )
@@ -47,7 +47,7 @@ class ViewsTestCase(APITestCase):
         """ Test the GET method of KeyView """
 
         response = self.client.post(
-            reverse('apikeys'),
+            reverse('apikey-list'),
             data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
             format='json'
         )
@@ -55,7 +55,7 @@ class ViewsTestCase(APITestCase):
         content = json.loads(response.content.decode('utf-8'))
 
         response = self.client.get(
-            reverse('apikeys'),
+            reverse('apikey-list'),
             data={"access_key": content["access_key"],
                   "secret_key": content["secret_key"]},
             format='json'
@@ -75,7 +75,7 @@ class ViewsTestCase(APITestCase):
         """ Test the POST method of Schemas """
 
         response = self.client.post(
-            reverse('apikeys'),
+            reverse('apikey-list'),
             data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
             format='json'
         )
@@ -83,7 +83,7 @@ class ViewsTestCase(APITestCase):
         content = json.loads(response.content.decode('utf-8'))
 
         response = self.client.post(
-            reverse('schemas'),
+            reverse('schema-list'),
             data={"access_key": content["access_key"],
                   "secret_key": content["secret_key"]},
             format='json'
@@ -109,7 +109,7 @@ class ViewsTestCase(APITestCase):
 
         # create an API key
         response = self.client.post(
-            reverse('apikeys'),
+            reverse('apikey-list'),
             data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
             format='json'
         )
@@ -117,14 +117,14 @@ class ViewsTestCase(APITestCase):
         content = json.loads(response.content.decode('utf-8'))
 
         self.client.post(
-            reverse('schemas'),
+            reverse('schema-list'),
             data={"access_key": content["access_key"],
                   "secret_key": content["secret_key"]},
             format='json'
         )
 
         response = self.client.get(
-            reverse('schemas'),
+            reverse('schema-list'),
             data={"access_key": content["access_key"],
                   "secret_key": content["secret_key"]},
             format='json'
@@ -148,7 +148,7 @@ class ViewsTestCase(APITestCase):
     def test_get_version(self):
         """ Test the GET method of Version """
         response = self.client.get(
-            reverse('version'),
+            reverse('version-detail'),
             format='json'
         )
         content = json.loads(response.content.decode('utf-8'))

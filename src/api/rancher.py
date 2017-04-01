@@ -17,6 +17,7 @@ ENVIRONMENT_ID = "1a9"
 
 
 class Rancher:
+
     @staticmethod
     def init_http_call(url, prefix=True):
         """
@@ -207,6 +208,19 @@ class Rancher:
         return ip_address
 
     @classmethod
+    def validate(cls, schema_id, sciper):
+        """
+        Check if the schema 'schema_id' belongs to user (id = sciper)
+        """
+        stack_name = "mysql-" + schema_id
+        user_stacks = cls.get_stacks(sciper)
+
+        for stack in user_stacks:
+            if stack['name'] == stack_name:
+                return True
+        return False
+
+    @classmethod
     def get_stacks(cls, sciper):
         """
         Returns the stacks of the given users
@@ -214,6 +228,10 @@ class Rancher:
         user_stacks = []
 
         # TODO use a real requests, don't go through all the stacks
+        # Example :
+        # /v2-beta/projects/1a9/stacks/?group_like=%25unit%3A13030
+        # /v2-beta/projects/ + ENVIRONMENT_ID + "/stacks/?group_like=%25unit%3A<unit-id>
+
         stacks = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/").json()["data"]
         for stack in stacks:
             tag = stack["group"]
@@ -223,9 +241,51 @@ class Rancher:
         return user_stacks
 
     @classmethod
+    def get_stacks_by_unit(cls, unit_id):
+        """
+        Returns the stacks filter by unit 'unit_id'
+        """
+        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?group_like=%25unit%3A" + unit_id
+        return cls.get(url).json()["data"]
+
+    @classmethod
+    def get_stack(cls, name_stack):
+        """
+        Return the stack whith the name 'name_stack'
+        Example :
+        /v2-beta/projects/1a9/stacks/?name=mysql-e9608f8f
+        """
+        return cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?name=" + name_stack).json()["data"]
+
+    @classmethod
+    def get_schema(cls, schema_id):
+        """
+        Returns the schema of the given user
+        """
+        name_stack = "mysql-" + schema_id
+        stack = cls.get_stack(name_stack=name_stack)[0]
+
+        parameters = [
+            stack['environment']['AMM_USERNAME'],
+            None,
+            cls.get_ip_address(stack["id"]),
+            stack['environment']['MYSQL_EXPORT_PORT'],
+            stack['environment']['MYSQL_DATABASE']
+        ]
+
+        schema = {
+            "connection_string": get_connection_string_with_ip(*parameters),
+            "mysql_cmd": get_mysql_client_cmd(*parameters),
+
+            # Example of stack['group'] = 'owner:133134,unit:1303'
+            "unit": stack['group'].split(',unit:')[1]
+        }
+        return schema
+
+    @classmethod
     def get_schemas(cls, sciper):
         """
-        Returns the schemas of the given users
+        Returns the schemas of the given user
         """
         schemas = []
 
@@ -245,6 +305,32 @@ class Rancher:
                 }
             )
 
+        return schemas
+
+    @classmethod
+    def get_schemas_by_unit(cls, unit_id):
+        """
+        Get all schemas filter by unit 'unit_id'
+        """
+        schemas = []
+
+        for stack in cls.get_stacks_by_unit(unit_id):
+            parameters = [
+                stack['environment']['AMM_USERNAME'],
+                None,
+                cls.get_ip_address(stack["id"]),
+                stack['environment']['MYSQL_EXPORT_PORT'],
+                stack['environment']['MYSQL_DATABASE']
+            ]
+
+            schemas.append(
+                {
+                    "connection_string": get_connection_string_with_ip(*parameters),
+                    "mysql_cmd": get_mysql_client_cmd(*parameters),
+                    # Example of stack['group'] = 'owner:133134,unit:1303'
+                    "unit": stack['group'].split(',unit:')[1]
+                }
+            )
         return schemas
 
     @classmethod
