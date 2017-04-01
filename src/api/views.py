@@ -79,6 +79,28 @@ class SchemaListByUnit(CommonView):
         except MultiValueDictKeyError:
             return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
 
+    def post(self, request, unit_id):
+        """
+        Create a new schema
+        ---
+        Response messages:
+        - code: 200
+          message: OK
+        - code: 403
+          message: Invalid APIKey
+        """
+
+        data = request.data
+        data["unit"] = unit_id
+
+        serializer = SchemaSerializer(data=data)
+
+        if serializer.is_valid(raise_exception=True):
+            schema = serializer.save()
+            return Response(schema, status=status.HTTP_200_OK)
+
+        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+
 
 class APIKeyList(CommonView):
 

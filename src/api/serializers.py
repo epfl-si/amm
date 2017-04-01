@@ -125,7 +125,8 @@ class SchemaSerializer(serializers.Serializer):
 
         return {
             "connection_string": schema["connection_string"],
-            "mysql_cmd": schema["mysql_cmd"]
+            "mysql_cmd": schema["mysql_cmd"],
+            "unit": schema["unit"]
         }
 
     def update(self, schema_id, validated_data):

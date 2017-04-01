@@ -172,7 +172,8 @@ class Rancher:
             "db_schema": environment["MYSQL_DATABASE"],
             "db_host": payload["name"] + settings.DOMAIN,
             "db_port": environment["MYSQL_EXPORT_PORT"],
-            "stack": payload["name"]
+            "stack": payload["name"],
+            "unit": unit
         }
 
         parameters = [
@@ -283,7 +284,9 @@ class Rancher:
             schemas.append(
                 {
                     "connection_string": get_connection_string(*parameters),
-                    "mysql_cmd": get_mysql_client_cmd(*parameters)
+                    "mysql_cmd": get_mysql_client_cmd(*parameters),
+                    # Example of stack['group'] = 'owner:133134,unit:13030'
+                    "unit": stack['group'].split(',unit:')[1]
                 }
             )
 
@@ -310,8 +313,7 @@ class Rancher:
                 {
                     "connection_string": get_connection_string(*parameters),
                     "mysql_cmd": get_mysql_client_cmd(*parameters),
-                    # Example of stack['group'] = 'owner:133134,unit:1303'
-                    "unit": stack['group'].split(',unit:')[1]
+                    "unit": unit_id
                 }
             )
         return schemas
