@@ -195,7 +195,7 @@ class Rancher:
         Check if the schema 'schema_id' belongs to user (id = sciper)
         """
         stack_name = "mysql-" + schema_id
-        user_stacks = cls.get_stacks(sciper)
+        user_stacks = cls.get_stacks_by_user(sciper)
 
         for stack in user_stacks:
             if stack['name'] == stack_name:
@@ -203,24 +203,12 @@ class Rancher:
         return False
 
     @classmethod
-    def get_stacks(cls, sciper):
+    def get_stacks_by_user(cls, user_id):
         """
         Returns the stacks of the given users
         """
-        user_stacks = []
-
-        # TODO use a real requests, don't go through all the stacks
-        # Example :
-        # /v2-beta/projects/1a9/stacks/?group_like=%25unit%3A13030
-        # /v2-beta/projects/ + ENVIRONMENT_ID + "/stacks/?group_like=%25unit%3A<unit-id>
-
-        stacks = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/").json()["data"]
-        for stack in stacks:
-            tag = stack["group"]
-            if tag and 'owner:' + sciper in tag:
-                user_stacks.append(stack)
-
-        return user_stacks
+        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?group_like=owner%3A" + user_id + "%25"
+        return cls.get(url).json()["data"]
 
     @classmethod
     def get_stacks_by_unit(cls, unit_id):
@@ -228,6 +216,15 @@ class Rancher:
         Returns the stacks filter by unit 'unit_id'
         """
         url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?group_like=%25unit%3A" + unit_id
+        return cls.get(url).json()["data"]
+
+    @classmethod
+    def get_stacks_by_unit_and_user(cls, unit_id, user_id):
+        """
+        Returns the stacks filter by unit 'unit_id' and user 'user_id'
+        """
+        url = "/v2-beta/projects/" + ENVIRONMENT_ID
+        url += "/stacks/?group_like=owner%3A" + user_id + "%2Cunit%3A" + unit_id
         return cls.get(url).json()["data"]
 
     @classmethod
@@ -265,14 +262,11 @@ class Rancher:
         return schema
 
     @classmethod
-    def get_schemas(cls, sciper):
-        """
-        Returns the schemas of the given user
-        """
+    def __get_schemas(cls, stacks):
+
         schemas = []
 
-        for stack in cls.get_stacks(sciper):
-
+        for stack in stacks:
             parameters = [
                 stack['environment']['AMM_USERNAME'],
                 None,
@@ -293,30 +287,36 @@ class Rancher:
         return schemas
 
     @classmethod
+    def get_schemas_by_user(cls, sciper):
+        """
+        Returns the schemas of the given user
+        """
+        schemas = cls.__get_schemas(stacks=cls.get_stacks_by_user(sciper))
+        return schemas
+
+    @classmethod
     def get_schemas_by_unit(cls, unit_id):
         """
-        Get all schemas filter by unit 'unit_id'
+        Returns all schemas filter by unit 'unit_id'
         """
-        schemas = []
-
-        for stack in cls.get_stacks_by_unit(unit_id):
-
-            parameters = [
-                stack['environment']['AMM_USERNAME'],
-                None,
-                stack["name"] + settings.DOMAIN,
-                stack['environment']['MYSQL_EXPORT_PORT'],
-                stack['environment']['MYSQL_DATABASE']
-            ]
-
-            schemas.append(
-                {
-                    "connection_string": get_connection_string(*parameters),
-                    "mysql_cmd": get_mysql_client_cmd(*parameters),
-                    "unit": unit_id
-                }
-            )
+        schemas = cls.__get_schemas(stacks=cls.get_stacks_by_unit(unit_id))
         return schemas
+
+    @classmethod
+    def get_schemas_by_unit_and_user(cls, unit_id, user_id):
+        """
+        Returns all schemas filter by unit 'unit_id' and user 'user_id'
+        """
+        schemas = cls.__get_schemas(stacks=cls.get_stacks_by_unit_and_user(unit_id, user_id))
+        return schemas
+
+    @classmethod
+    def delete_schema(cls, schema_id):
+        """
+        Delete schema 'schema_id'
+        """
+        stack_id = cls.get_stack(name_stack="mysql-" + schema_id)[0]['id']
+        cls.delete_stack(stack_id)
 
     @classmethod
     def delete_stack(cls, stack_id):
@@ -332,7 +332,7 @@ class Rancher:
         """
 
         # Return stacks by sciper
-        stacks = cls.get_stacks(sciper)
+        stacks = cls.get_stacks_by_user(sciper)
 
         sleep(10)
 

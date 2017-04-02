@@ -14,15 +14,17 @@ from .apikeyhandler import ApiKeyHandler
 from .filters import APIKeyFilterBackend
 from .rancher import Rancher
 from .serializers import KeySerializer, SchemaSerializer
-from .utils import get_sciper
+from .utils import get_sciper, get_units, get_username
+from .accred import is_db_admin
 
 
 @api_view()
 def api_root(request, format=None):
     return Response({
+        'version': reverse('version-detail', request=request, format=format),
         'apikeys': reverse('apikey-list', request=request, format=format),
         'schemas': reverse('schema-list', request=request, format=format),
-        'version': reverse('version-detail', request=request, format=format),
+        'schemas-by-user': reverse('schema-list-by-user', args=["133134"], request=request, format=format),
         'schemas-by-unit': reverse('schema-list-by-unit', args=["13030"], request=request, format=format),
     })
 
@@ -31,6 +33,24 @@ class CommonView(APIView):
     def __init__(self):
         self.apikey_handler = ApiKeyHandler()
         self.rancher = Rancher()
+
+
+class UserList(CommonView):
+
+    def get(self, request):
+        """
+        Return http response with 404 status
+        """
+        return Response("Users not found", status=status.HTTP_404_NOT_FOUND)
+
+
+class UserDetail(CommonView):
+
+    def get(self, request, user_id):
+        """
+        Return http response with 404 status
+        """
+        return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
 
 class UnitList(CommonView):
@@ -51,55 +71,17 @@ class UnitDetail(CommonView):
         return Response("Unit not found", status=status.HTTP_404_NOT_FOUND)
 
 
-class SchemaListByUnit(CommonView):
+class VersionDetail(APIView):
 
-    def get(self, request, unit_id):
+    def get(self, request):
         """
-        Return the list of schemas by unit
-        ---
-        Response messages:
-          - code: 200
-            message: OK
-          - code: 403
-            message: Invalid APIKey
-          - code 404
-            message: Access key or secret key no found
-        """
-        try:
-            username = self.apikey_handler.validate(
-                request.query_params['access_key'],
-                request.query_params['secret_key']
-            )
-            if username:
-                schemas = Rancher.get_schemas_by_unit(unit_id)
-                return Response(schemas, status=status.HTTP_200_OK)
-
-            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
-
-        except MultiValueDictKeyError:
-            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
-
-    def post(self, request, unit_id):
-        """
-        Create a new schema
+        Returns the current API version
         ---
         Response messages:
         - code: 200
           message: OK
-        - code: 403
-          message: Invalid APIKey
         """
-
-        data = request.data
-        data["unit"] = unit_id
-
-        serializer = SchemaSerializer(data=data)
-
-        if serializer.is_valid(raise_exception=True):
-            schema = serializer.save()
-            return Response(schema, status=status.HTTP_200_OK)
-
-        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+        return Response(base.VERSION, status=status.HTTP_200_OK)
 
 
 class APIKeyList(CommonView):
@@ -186,11 +168,17 @@ class SchemaDetail(CommonView):
             if username:
                 sciper = get_sciper(username)
 
-                # Check if the schema belongs to the user
-                if Rancher.validate(schema_id, sciper):
+                # Get the complete information of schema
+                schema = Rancher.get_schema(schema_id)
 
-                    # Get the complete information of schema
-                    schema = Rancher.get_schema(schema_id)
+                # Get the unit of the schema
+                unit_id = schema["unit"]
+
+                # Check if the schema belongs to the user
+                # Or
+                # Check if the user is dbadmin of the schema's unit
+                if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
+
                     return Response(schema, status=status.HTTP_200_OK)
 
                 return Response("Schema doesn't belong to this user", status=status.HTTP_403_FORBIDDEN)
@@ -217,6 +205,40 @@ class SchemaDetail(CommonView):
             return Response(schema, status=status.HTTP_200_OK)
 
         return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, schema_id):
+        """
+        Delete the schema 'schema_id'
+        """
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+                sciper = get_sciper(username)
+
+                # Get the complete information of schema
+                schema = Rancher.get_schema(schema_id)
+
+                # Get the unit of the schema
+                unit_id = schema["unit"]
+
+                # Check if the schema belongs to the user
+                # Or
+                # Check if the user is dbadmin of the schema's unit
+                if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
+
+                    # Get the complete information of schema
+                    Rancher.delete_schema(schema_id)
+                    return Response("The schema " + schema_id + " has been deleted", status=status.HTTP_200_OK)
+
+                return Response("Schema doesn't belong to this user", status=status.HTTP_403_FORBIDDEN)
+
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
 
 
 class SchemaList(CommonView):
@@ -249,7 +271,7 @@ class SchemaList(CommonView):
             )
             if username:
                 sciper = get_sciper(username)
-                stacks = self.rancher.get_schemas(sciper)
+                stacks = self.rancher.get_schemas_by_user(sciper)
                 return Response(stacks, status=status.HTTP_200_OK)
 
             return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
@@ -267,6 +289,7 @@ class SchemaList(CommonView):
         - code: 403
           message: Invalid APIKey
         """
+
         serializer = SchemaSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
@@ -276,14 +299,105 @@ class SchemaList(CommonView):
         return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
 
 
-class VersionDetail(APIView):
+class SchemaListByUser(CommonView):
 
-    def get(self, request):
+    def get(self, request, user_id):
+
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+
+                sciper = get_sciper(username)
+
+                username_parameter = get_username(user_id)
+                units = get_units(username=username_parameter)
+                if len(units) == 1:
+                    unit_id = units[0]
+
+                    if user_id != sciper and not is_db_admin(user_id=sciper, unit_id=unit_id):
+                        # PROBLEM
+                        pass
+                    else:
+                        if user_id == sciper:
+                            schemas = Rancher.get_schemas_by_user(sciper)
+
+                        elif is_db_admin(user_id=sciper, unit_id=unit_id):
+                            schemas = Rancher.get_schemas_by_unit_and_user(unit_id=unit_id, user_id=user_id)
+
+                        return Response(schemas, status=status.HTTP_200_OK)
+
+                else:
+                    # Quoi faire si user_id a plusieurs units ?
+                    pass
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
+
+
+class SchemaListByUnit(CommonView):
+
+    def get(self, request, unit_id):
         """
-        Returns the current API version
+        Return the list of schemas by unit
+        ---
+        Response messages:
+          - code: 200
+            message: OK
+          - code: 403
+            message: Invalid APIKey
+          - code 404
+            message: Access key or secret key no found
+        """
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+
+                sciper = get_sciper(username)
+                user_units = get_units(username)
+
+                # Check if user belongs to unit
+                # Or
+                # Check if the user is dbadmin of this unit
+                if (str(unit_id) not in user_units) and (not is_db_admin(user_id=sciper, unit_id=unit_id)):
+                    return Response("User not authorised in this unit", status=status.HTTP_403_FORBIDDEN)
+
+                else:
+                    if unit_id in user_units:
+                        schemas = Rancher.get_schemas_by_unit_and_user(unit_id, sciper)
+                    elif is_db_admin(user_id=sciper, unit_id=unit_id):
+                        schemas = Rancher.get_schemas_by_unit(unit_id)
+
+                return Response(schemas, status=status.HTTP_200_OK)
+
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, unit_id):
+        """
+        Create a new schema
         ---
         Response messages:
         - code: 200
           message: OK
+        - code: 403
+          message: Invalid APIKey
         """
-        return Response(base.VERSION, status=status.HTTP_200_OK)
+
+        data = request.data
+        data["unit"] = unit_id
+
+        serializer = SchemaSerializer(data=data)
+
+        if serializer.is_valid(raise_exception=True):
+            schema = serializer.save()
+            return Response(schema, status=status.HTTP_200_OK)
+
+        return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)

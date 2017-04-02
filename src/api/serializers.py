@@ -4,6 +4,7 @@ import auth
 
 from rest_framework import serializers
 
+from api.accred import is_db_admin
 from .apikeyhandler import ApiKeyHandler
 from .rancher import Rancher
 from .utils import get_sciper, get_units
@@ -57,6 +58,7 @@ class SchemaSerializer(serializers.Serializer):
         """
         Manage unit
         """
+
         # Return all the unit of user
         units = get_units(username)
 
@@ -82,26 +84,42 @@ class SchemaSerializer(serializers.Serializer):
         """
         result = {}
 
+        # Get required parameters
+        access_key = attrs.get('access_key')
+        secret_key = attrs.get('secret_key')
+
+        # Check API Keys exist and return username
+        username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
+
+        # Unit is given ?
+        unit = None
+        if 'unit' in attrs:
+            unit = attrs.get('unit')
+
+        # Manage PATCH
         if self.partial:
 
-            if 'unit' in attrs:
-                unit = attrs.get('unit')
+            if unit:
                 result["unit"] = unit
-            return result
+            else:
+                raise serializers.ValidationError("Unit not found", code='invalid')
 
+            schema_id = self.instance
+            sciper = get_sciper(username)
+
+            if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit):
+                return result
+            else:
+                raise serializers.ValidationError("User is not authorized to acces to this schema", code='invalid')
+
+        # Manage POST
         else:
-            access_key = attrs.get('access_key')
-            secret_key = attrs.get('secret_key')
-
-            unit = None
-            if 'unit' in attrs:
-                unit = attrs.get('unit')
-
-            username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
 
             if username:
                 result["username"] = username
 
+                # If unit is given, check if user belongs to this unit
+                # If no unit is given, try to associate schema and unit
                 result = SchemaSerializer._manage_units(username, unit, result)
 
             if 'username' not in result or 'unit' not in result:
@@ -135,10 +153,7 @@ class SchemaSerializer(serializers.Serializer):
         """
         schema = Rancher.get_schema(schema_id)
 
-        unit = None
         if "unit" in validated_data:
-            unit = validated_data['unit']
-
-        schema['unit'] = unit
+            schema['unit'] = validated_data['unit']
 
         return schema

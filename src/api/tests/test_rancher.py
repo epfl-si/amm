@@ -40,7 +40,7 @@ class RancherTest(unittest.TestCase):
         self.assertTrue(data["mysql_cmd"].startswith("mysql "))
 
         # Return stacks by sciper
-        conn.get_stacks(KERMIT_SCIPER)
+        conn.get_stacks_by_user(KERMIT_SCIPER)
 
         # Clean stacks
         conn.clean_stacks(KERMIT_SCIPER)
@@ -59,7 +59,7 @@ class RancherTest(unittest.TestCase):
         conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
 
         # Return stacks by sciper
-        stacks = conn.get_stacks(KERMIT_SCIPER)
+        stacks = conn.get_stacks_by_user(KERMIT_SCIPER)
 
         # Check the number of stacks
         self.assertEqual(len(stacks), 2)
@@ -75,13 +75,13 @@ class RancherTest(unittest.TestCase):
         conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
 
         # Return schemas by sciper
-        schemas = conn.get_schemas(KERMIT_SCIPER)
+        schemas = conn.get_schemas_by_user(KERMIT_SCIPER)
 
         # Check the number of stacks
         self.assertEqual(len(schemas), 2)
 
         # Return stacks by sciper
-        conn.get_stacks(KERMIT_SCIPER)
+        conn.get_stacks_by_user(KERMIT_SCIPER)
 
         # Clean stacks
         conn.clean_stacks(KERMIT_SCIPER)

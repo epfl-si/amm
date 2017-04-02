@@ -74,9 +74,28 @@ def get_sciper(username):
     return connection.response[0]['attributes']['uniqueIdentifier'][0]
 
 
+def get_username(sciper):
+    """
+    return username of user
+    """
+    ldap_server = base.get_config('LDAP_SERVER')
+    ldap_base = base.get_config('LDAP_BASE_DN')
+
+    server = ldap3.Server('ldap://' + ldap_server)
+    connection = ldap3.Connection(server)
+    connection.open()
+
+    connection.search(
+        search_base=ldap_base,
+        search_filter='(uniqueIdentifier=' + sciper + ')',
+        attributes=['uid']
+    )
+    return connection.response[0]['attributes']['uid'][0]
+
+
 def get_units(username):
     """
-    Return the units list of user.
+    Return all units of user 'username'
     """
     ldap_base = base.get_config('LDAP_BASE_DN')
     units = []
