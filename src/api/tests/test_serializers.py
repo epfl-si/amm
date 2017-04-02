@@ -1,6 +1,7 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 import unittest
 
+from django.test import tag
 from rest_framework.exceptions import ValidationError
 
 from api.serializers import SchemaSerializer
@@ -8,6 +9,7 @@ from api.serializers import SchemaSerializer
 
 class SchemaSerializerTest(unittest.TestCase):
 
+    @tag('ldap')
     def test_manage_units(self):
 
         # User has only one unit
