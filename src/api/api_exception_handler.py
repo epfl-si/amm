@@ -1,9 +1,9 @@
+"""(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.views import exception_handler
 
 
 def api_exception_handler(exc, context):
-
     # Call REST framework's default exception handler first,
     # to get the standard error response.
     response = exception_handler(exc, context)

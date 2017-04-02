@@ -4,5 +4,6 @@ from django.test import TestCase
 
 
 class KeyTestCase(TestCase):
-    def get_version(self):
+
+    def test_get_version(self):
         self.assertEqual("0.1.5", settings.VERSION)

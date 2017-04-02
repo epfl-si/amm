@@ -1,5 +1,4 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
 import os
 import string
 import binascii
@@ -54,54 +53,39 @@ def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
     return cmd
 
 
-def get_sciper(username):
+def _get_LDAP_connection():
     """
-    Return the sciper of user
+    Return a LDAP connection
     """
-
-    ldap_server = base.get_config('LDAP_SERVER')
+    ldap_server = base.get_config('LDAP_SERVER_FOR_SEARCH')
     ldap_base = base.get_config('LDAP_BASE_DN')
 
     server = ldap3.Server('ldap://' + ldap_server)
     connection = ldap3.Connection(server)
     connection.open()
 
-    connection.search(
-        search_base=ldap_base,
-        search_filter='(uid=' + username + ')',
-        attributes=['uniqueIdentifier']
-    )
-    return connection.response[0]['attributes']['uniqueIdentifier'][0]
+    return connection, ldap_base
 
 
-def get_username(sciper):
+def LDAP_search(pattern_search, attribute):
     """
-    return username of user
+    Do a LDAP search
     """
-    ldap_server = base.get_config('LDAP_SERVER')
-    ldap_base = base.get_config('LDAP_BASE_DN')
-
-    server = ldap3.Server('ldap://' + ldap_server)
-    connection = ldap3.Connection(server)
-    connection.open()
+    connection, ldap_base = _get_LDAP_connection()
 
     connection.search(
         search_base=ldap_base,
-        search_filter='(uniqueIdentifier=' + sciper + ')',
-        attributes=['uid']
+        search_filter=pattern_search,
+        attributes=[attribute]
     )
-    return connection.response[0]['attributes']['uid'][0]
+    return connection.response[0]['attributes'][attribute][0]
 
 
 def get_units(username):
     """
     Return all units of user 'username'
     """
-    ldap_base = base.get_config('LDAP_BASE_DN')
-    units = []
-    server = ldap3.Server('ldap://' + base.get_config('LDAP_SERVER_FOR_SEARCH'))
-    connection = ldap3.Connection(server)
-    connection.open()
+    connection, ldap_base = _get_LDAP_connection()
 
     # Search the user dn
     connection.search(
@@ -110,10 +94,9 @@ def get_units(username):
     )
 
     # For each user dn give me the unit
-    dn_list = []
-    for index in range(len(connection.response)):
-        dn_list.append(connection.response[index]['dn'])
+    dn_list = [connection.response[index]['dn'] for index in range(len(connection.response))]
 
+    units = []
     # For each unit search unit information and give me the unit id
     for dn in dn_list:
         unit = dn.split(",ou=")[1]
@@ -121,6 +104,26 @@ def get_units(username):
         units.append(connection.response[0]['attributes']['uniqueIdentifier'][0])
 
     return units
+
+
+def get_sciper(username):
+    """
+    Return the sciper of user
+    """
+    return LDAP_search(
+        pattern_search='(uid=' + username + ')',
+        attribute='uniqueIdentifier'
+    )
+
+
+def get_username(sciper):
+    """
+    return username of user
+    """
+    return LDAP_search(
+        pattern_search='(uniqueIdentifier=' + sciper + ')',
+        attribute='uid'
+    )
 
 
 def old_debug(string_to_display):

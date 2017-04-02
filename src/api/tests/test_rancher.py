@@ -1,5 +1,4 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
 import unittest
 
 from django.test import tag
@@ -44,6 +43,12 @@ class RancherTest(unittest.TestCase):
 
         # Clean stacks
         conn.clean_stacks(KERMIT_SCIPER)
+
+    @tag('rancher')
+    def test_get_ports_used(self):
+        conn = rancher.Rancher()
+        ports_used = conn.get_ports_used()
+        self.assertTrue(ports_used, list)
 
     @tag('rancher')
     def test_get_available_port(self):

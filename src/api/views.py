@@ -15,7 +15,7 @@ from .filters import APIKeyFilterBackend
 from .rancher import Rancher
 from .serializers import KeySerializer, SchemaSerializer
 from .utils import get_sciper, get_units, get_username
-from .accred import is_db_admin
+from .accred import is_db_admin, get_accreditations_units
 
 
 @api_view()
@@ -146,9 +146,9 @@ class SchemaDetail(CommonView):
 
     filter_backends = (APIKeyFilterBackend,)
 
-    def get(self, request, schema_id):
+    def _do_action(self, request, schema_id, http_method):
         """
-        Return the schema 'schema_id'
+        Do http_method [GET or DELETE]
         ---
         Response messages:
         - code: 200
@@ -156,7 +156,7 @@ class SchemaDetail(CommonView):
         - code: 403
         message: Invalid APIKey
         - code: 403
-        message: Schema doesn't belong to this user
+        message: This user isn't allowed to access to the schema
         - code: 404
         message: Access key or secret key no found
         """
@@ -179,14 +179,51 @@ class SchemaDetail(CommonView):
                 # Check if the user is dbadmin of the schema's unit
                 if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
 
-                    return Response(schema, status=status.HTTP_200_OK)
+                    if http_method == 'get':
+                        return Response(schema, status=status.HTTP_200_OK)
 
-                return Response("Schema doesn't belong to this user", status=status.HTTP_403_FORBIDDEN)
+                    elif http_method == 'delete':
+                        Rancher.delete_schema(schema_id)
+                        return Response("The schema " + schema_id + " has been deleted", status=status.HTTP_200_OK)
+
+                return Response("This user isn't allowed to access to the schema", status=status.HTTP_403_FORBIDDEN)
 
             return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
         except MultiValueDictKeyError:
             return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, schema_id):
+        """
+        Return the schema 'schema_id'
+        ---
+        Response messages:
+        - code: 200
+        message: OK
+        - code: 403
+        message: Invalid APIKey
+        - code: 403
+        message: This user isn't allowed to access to the schema
+        - code: 404
+        message: Access key or secret key no found
+        """
+        self._do_action(request, schema_id, http_method='get')
+
+    def delete(self, request, schema_id):
+        """
+        Delete the schema 'schema_id'
+        ---
+        Response messages:
+        - code: 200
+        message: OK
+        - code: 403
+        message: Invalid APIKey
+        - code: 403
+        message: This user isn't allowed to access to the schema
+        - code: 404
+        message: Access key or secret key no found
+        """
+        self._do_action(request, schema_id, http_method='delete')
 
     def patch(self, request, schema_id):
         """
@@ -205,40 +242,6 @@ class SchemaDetail(CommonView):
             return Response(schema, status=status.HTTP_200_OK)
 
         return Response("Invalid APIKeys", status=status.HTTP_403_FORBIDDEN)
-
-    def delete(self, request, schema_id):
-        """
-        Delete the schema 'schema_id'
-        """
-        try:
-            username = self.apikey_handler.validate(
-                request.query_params['access_key'],
-                request.query_params['secret_key']
-            )
-            if username:
-                sciper = get_sciper(username)
-
-                # Get the complete information of schema
-                schema = Rancher.get_schema(schema_id)
-
-                # Get the unit of the schema
-                unit_id = schema["unit"]
-
-                # Check if the schema belongs to the user
-                # Or
-                # Check if the user is dbadmin of the schema's unit
-                if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
-
-                    # Get the complete information of schema
-                    Rancher.delete_schema(schema_id)
-                    return Response("The schema " + schema_id + " has been deleted", status=status.HTTP_200_OK)
-
-                return Response("Schema doesn't belong to this user", status=status.HTTP_403_FORBIDDEN)
-
-            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
-
-        except MultiValueDictKeyError:
-            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
 
 
 class SchemaList(CommonView):
@@ -302,7 +305,19 @@ class SchemaList(CommonView):
 class SchemaListByUser(CommonView):
 
     def get(self, request, user_id):
-
+        """
+        Return the list of schemas by user
+        ---
+        Response messages:
+          - code: 200
+            message: OK
+          - code: 403
+            message: Invalid APIKey
+          - code: 403
+            message: This user isn't allowed to access to these schemas
+          - code 404
+            message: Access key or secret key no found
+        """
         try:
             username = self.apikey_handler.validate(
                 request.query_params['access_key'],
@@ -310,28 +325,32 @@ class SchemaListByUser(CommonView):
             )
             if username:
 
+                # if the user is the user in URL parameter
                 sciper = get_sciper(username)
-
-                username_parameter = get_username(user_id)
-                units = get_units(username=username_parameter)
-                if len(units) == 1:
-                    unit_id = units[0]
-
-                    if user_id != sciper and not is_db_admin(user_id=sciper, unit_id=unit_id):
-                        # PROBLEM
-                        pass
-                    else:
-                        if user_id == sciper:
-                            schemas = Rancher.get_schemas_by_user(sciper)
-
-                        elif is_db_admin(user_id=sciper, unit_id=unit_id):
-                            schemas = Rancher.get_schemas_by_unit_and_user(unit_id=unit_id, user_id=user_id)
-
-                        return Response(schemas, status=status.HTTP_200_OK)
+                if user_id == sciper:
+                    schemas = Rancher.get_schemas_by_user(sciper)
+                    return Response(schemas, status=status.HTTP_200_OK)
 
                 else:
-                    # Quoi faire si user_id a plusieurs units ?
-                    pass
+                    units = get_accreditations_units(username=get_username(user_id))
+
+                    # if the user is dbadmin
+                    if len(units) == 1:
+
+                        unit_id = units[0]
+
+                        if is_db_admin(user_id=sciper, unit_id=unit_id):
+                            schemas = Rancher.get_schemas_by_unit_and_user(unit_id=unit_id, user_id=user_id)
+                            return Response(schemas, status=status.HTTP_200_OK)
+
+                    elif len(units) > 1:
+                        pass
+
+                    else:
+                        return Response("This user isn't allowed to access to these schemas",
+                                        status=status.HTTP_403_FORBIDDEN)
+
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
 
         except MultiValueDictKeyError:
             return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)

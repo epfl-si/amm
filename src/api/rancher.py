@@ -1,5 +1,4 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
 import hashlib
 import json
 import requests
@@ -85,12 +84,8 @@ class Rancher:
         """
         Return the list of ports used
         """
-        ports_used = []
         ports = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/ports").json()["data"]
-        for current_port in ports:
-            if "publicPort" in current_port:
-                ports_used.append(str(current_port["publicPort"]))
-        return ports_used
+        return [str(current_port["publicPort"]) for current_port in ports]
 
     @classmethod
     def get_available_port(cls):
@@ -197,10 +192,7 @@ class Rancher:
         stack_name = "mysql-" + schema_id
         user_stacks = cls.get_stacks_by_user(sciper)
 
-        for stack in user_stacks:
-            if stack['name'] == stack_name:
-                return True
-        return False
+        return stack_name in [stack['name'] for stack in user_stacks]
 
     @classmethod
     def get_stacks_by_user(cls, user_id):
