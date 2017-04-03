@@ -241,7 +241,7 @@ class SchemaDetail(CommonView):
         message: Invalid APIKey
         """
         serializer = SchemaSerializer(instance=schema_id, data=request.data, partial=True)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             # update
             schema = serializer.save()
             return Response(schema, status=status.HTTP_200_OK)

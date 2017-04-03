@@ -78,7 +78,24 @@ def LDAP_search(pattern_search, attribute):
         search_filter=pattern_search,
         attributes=[attribute]
     )
-    return connection.response[0]['attributes'][attribute][0]
+    return connection.response
+
+
+def is_unit_exist(unit_id):
+    """
+    Return True if the unit 'unid_id' exists.
+    Otherwise return False
+    """
+    attribute = 'objectClass'
+    response = LDAP_search(
+        pattern_search="(uniqueidentifier=" + unit_id + ")",
+        attribute=attribute
+    )
+
+    try:
+        return 'EPFLorganizationalUnit' in response[0]['attributes'][attribute]
+    except Exception as error:
+        return False
 
 
 def get_units(username):
@@ -110,20 +127,24 @@ def get_sciper(username):
     """
     Return the sciper of user
     """
-    return LDAP_search(
+    attribute = 'uniqueIdentifier'
+    response = LDAP_search(
         pattern_search='(uid=' + username + ')',
-        attribute='uniqueIdentifier'
+        attribute=attribute
     )
+    return response[0]['attributes'][attribute][0]
 
 
 def get_username(sciper):
     """
     return username of user
     """
-    return LDAP_search(
+    attribute = 'uid'
+    response = LDAP_search(
         pattern_search='(uniqueIdentifier=' + sciper + ')',
-        attribute='uid'
+        attribute=attribute
     )
+    return response[0]['attributes'][attribute][0]
 
 
 def old_debug(string_to_display):

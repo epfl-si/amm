@@ -7,7 +7,7 @@ from rest_framework import serializers
 from api.accred import is_db_admin
 from .apikeyhandler import ApiKeyHandler
 from .rancher import Rancher
-from .utils import get_sciper, get_units
+from .utils import get_sciper, get_units, is_unit_exist
 
 
 class KeySerializer(serializers.Serializer):
@@ -56,7 +56,10 @@ class SchemaSerializer(serializers.Serializer):
     @staticmethod
     def _manage_units(username, unit, result):
         """
-        Manage unit
+        If an unit is given, check is the user 'username' belongs to the unit 'unit'.
+        If no unit is given, find all units of user 'username' and :
+        -> if the user have many units then ValidationError
+        -> if the user have only one unit, we associate this one
         """
 
         # Return all the unit of user
@@ -100,7 +103,11 @@ class SchemaSerializer(serializers.Serializer):
         if self.partial:
 
             if unit:
-                result["unit"] = unit
+                # check if the unit exists
+                if is_unit_exist(unit):
+                    result["unit"] = unit
+                else:
+                    raise serializers.ValidationError("Unit doesn't exist", code='invalid')
             else:
                 raise serializers.ValidationError("Unit not found", code='invalid')
 
