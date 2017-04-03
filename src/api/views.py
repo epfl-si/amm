@@ -146,9 +146,50 @@ class SchemaDetail(CommonView):
 
     filter_backends = (APIKeyFilterBackend,)
 
-    def _do_action(self, request, schema_id, http_method):
+    def get(self, request, schema_id):
         """
-        Do http_method [GET or DELETE]
+        Return the schema 'schema_id'
+        ---
+        Response messages:
+        - code: 200
+        message: OK
+        - code: 403
+        message: Invalid APIKey
+        - code: 403
+        message: This user isn't allowed to access to the schema
+        - code: 404
+        message: Access key or secret key no found
+        """
+        try:
+            username = self.apikey_handler.validate(
+                request.query_params['access_key'],
+                request.query_params['secret_key']
+            )
+            if username:
+                sciper = get_sciper(username)
+
+                # Get the complete information of schema
+                schema = Rancher.get_schema(schema_id)
+
+                # Get the unit of the schema
+                unit_id = schema["unit"]
+
+                # Check if the schema belongs to the user
+                # Or
+                # Check if the user is dbadmin of the schema's unit
+                if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
+                    return Response(schema, status=status.HTTP_200_OK)
+
+                return Response("This user isn't allowed to access to the schema", status=status.HTTP_403_FORBIDDEN)
+
+            return Response("Invalid APIKey", status=status.HTTP_403_FORBIDDEN)
+
+        except MultiValueDictKeyError:
+            return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, schema_id):
+        """
+        Delete the schema 'schema_id'
         ---
         Response messages:
         - code: 200
@@ -179,12 +220,8 @@ class SchemaDetail(CommonView):
                 # Check if the user is dbadmin of the schema's unit
                 if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
 
-                    if http_method == 'get':
-                        return Response(schema, status=status.HTTP_200_OK)
-
-                    elif http_method == 'delete':
-                        Rancher.delete_schema(schema_id)
-                        return Response("The schema " + schema_id + " has been deleted", status=status.HTTP_200_OK)
+                    Rancher.delete_schema(schema_id)
+                    return Response("The schema " + schema_id + " has been deleted", status=status.HTTP_200_OK)
 
                 return Response("This user isn't allowed to access to the schema", status=status.HTTP_403_FORBIDDEN)
 
@@ -192,38 +229,6 @@ class SchemaDetail(CommonView):
 
         except MultiValueDictKeyError:
             return Response("Access key or secret key no found", status=status.HTTP_404_NOT_FOUND)
-
-    def get(self, request, schema_id):
-        """
-        Return the schema 'schema_id'
-        ---
-        Response messages:
-        - code: 200
-        message: OK
-        - code: 403
-        message: Invalid APIKey
-        - code: 403
-        message: This user isn't allowed to access to the schema
-        - code: 404
-        message: Access key or secret key no found
-        """
-        self._do_action(request, schema_id, http_method='get')
-
-    def delete(self, request, schema_id):
-        """
-        Delete the schema 'schema_id'
-        ---
-        Response messages:
-        - code: 200
-        message: OK
-        - code: 403
-        message: Invalid APIKey
-        - code: 403
-        message: This user isn't allowed to access to the schema
-        - code: 404
-        message: Access key or secret key no found
-        """
-        self._do_action(request, schema_id, http_method='delete')
 
     def patch(self, request, schema_id):
         """
