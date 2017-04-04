@@ -31,4 +31,4 @@ class SchemaSerializerTest(unittest.TestCase):
         try:
             result = SchemaSerializer._manage_units(username="ebreton", unit=None, result={})
         except ValidationError as error:
-            self.assertEqual('User has more one unit', error.detail[0])
+            self.assertTrue(error.detail[0].startswith("User has more one unit"))

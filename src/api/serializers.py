@@ -7,7 +7,7 @@ from rest_framework import serializers
 from api.accred import is_db_admin
 from .apikeyhandler import ApiKeyHandler
 from .rancher import Rancher
-from .utils import get_sciper, get_units, is_unit_exist
+from .utils import get_sciper, get_units, is_unit_exist, get_unit_name
 
 
 class KeySerializer(serializers.Serializer):
@@ -67,7 +67,11 @@ class SchemaSerializer(serializers.Serializer):
 
         if not unit:
             if len(units) > 1:
-                raise serializers.ValidationError("User has more one unit", code='invalid')
+                msg = "User has more one unit"
+                for unit in units:
+                    msg += " Unit id: " + unit + ','
+                    msg += " Unit name: " + get_unit_name(unit) + ','
+                raise serializers.ValidationError(msg, code='invalid')
             if len(units) < 1:
                 raise serializers.ValidationError("User has no unit", code='invalid')
             elif len(units) == 1:
@@ -151,7 +155,8 @@ class SchemaSerializer(serializers.Serializer):
         return {
             "connection_string": schema["connection_string"],
             "mysql_cmd": schema["mysql_cmd"],
-            "unit": schema["unit"]
+            "unit": schema["unit"],
+            "schema_id": schema["schema_id"]
         }
 
     def update(self, schema_id, validated_data):
