@@ -98,6 +98,18 @@ def is_unit_exist(unit_id):
         return False
 
 
+def get_unit_name(unit_id):
+    """
+    Return the unit name to the unit 'unit_id'
+    """
+    attribute = 'cn'
+    response = LDAP_search(
+        pattern_search='(uniqueIdentifier=' + unit_id + ')',
+        attribute=attribute
+    )
+    return response[0]['attributes'][attribute][0]
+
+
 def get_units(username):
     """
     Return all units of user 'username'
