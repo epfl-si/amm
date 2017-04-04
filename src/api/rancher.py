@@ -181,6 +181,7 @@ class Rancher:
 
         data["connection_string"] = get_connection_string(*parameters)
         data["mysql_cmd"] = get_mysql_client_cmd(*parameters)
+        data["schema_id"] = payload["name"].split('-')[1]
 
         return data
 
@@ -249,7 +250,8 @@ class Rancher:
             "mysql_cmd": get_mysql_client_cmd(*parameters),
 
             # Example of stack['group'] = 'owner:133134,unit:1303'
-            "unit": stack['group'].split(',unit:')[1]
+            "unit": stack['group'].split(',unit:')[1],
+            "schema_id": schema_id
         }
         return schema
 
@@ -272,7 +274,8 @@ class Rancher:
                     "connection_string": get_connection_string(*parameters),
                     "mysql_cmd": get_mysql_client_cmd(*parameters),
                     # Example of stack['group'] = 'owner:133134,unit:13030'
-                    "unit": stack['group'].split(',unit:')[1]
+                    "unit": stack['group'].split(',unit:')[1],
+                    "schema_id": stack["name"].split("-")[1]
                 }
             )
 
