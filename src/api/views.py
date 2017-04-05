@@ -172,7 +172,7 @@ class SchemaDetail(CommonView):
                 schema = Rancher.get_schema(schema_id)
 
                 # Get the unit of the schema
-                unit_id = schema["unit"]
+                unit_id = schema["unit_id"]
 
                 # Check if the schema belongs to the user
                 # Or
@@ -213,7 +213,7 @@ class SchemaDetail(CommonView):
                 schema = Rancher.get_schema(schema_id)
 
                 # Get the unit of the schema
-                unit_id = schema["unit"]
+                unit_id = schema["unit_id"]
 
                 # Check if the schema belongs to the user
                 # Or

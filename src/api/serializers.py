@@ -51,10 +51,10 @@ class SchemaSerializer(serializers.Serializer):
     """
     access_key = serializers.CharField(max_length=256)
     secret_key = serializers.CharField(max_length=256)
-    unit = serializers.CharField(max_length=256, required=False)
+    unit_id = serializers.CharField(max_length=256, required=False)
 
     @staticmethod
-    def _manage_units(username, unit, result):
+    def _manage_units(username, unit_id, result):
         """
         If an unit is given, check is the user 'username' belongs to the unit 'unit'.
         If no unit is given, find all units of user 'username' and :
@@ -65,24 +65,24 @@ class SchemaSerializer(serializers.Serializer):
         # Return all the unit of user
         units = get_units(username)
 
-        if not unit:
+        if not unit_id:
             if len(units) > 1:
                 msg = "User has more one unit"
-                for unit in units:
-                    msg += " Unit id: " + unit + ','
-                    msg += " Unit name: " + get_unit_name(unit) + ','
+                for unit_id in units:
+                    msg += " Unit id: " + unit_id + ','
+                    msg += " Unit name: " + get_unit_name(unit_id) + ','
                 raise serializers.ValidationError(msg, code='invalid')
             if len(units) < 1:
                 raise serializers.ValidationError("User has no unit", code='invalid')
             elif len(units) == 1:
-                unit = units[0]
-                result["unit"] = unit
+                unit_id = units[0]
+                result["unit_id"] = unit_id
 
-        elif unit not in units:
+        elif unit_id not in units:
             raise serializers.ValidationError("Bad unit", code='invalid')
 
         else:
-            result["unit"] = unit
+            result["unit_id"] = unit_id
         return result
 
     def validate(self, attrs):
@@ -99,17 +99,17 @@ class SchemaSerializer(serializers.Serializer):
         username = ApiKeyHandler.validate(access=access_key, secret=secret_key)
 
         # Unit is given ?
-        unit = None
-        if 'unit' in attrs:
-            unit = attrs.get('unit')
+        unit_id = None
+        if 'unit_id' in attrs:
+            unit_id = attrs.get('unit_id')
 
         # Manage PATCH
         if self.partial:
 
-            if unit:
+            if unit_id:
                 # check if the unit exists
-                if is_unit_exist(unit):
-                    result["unit"] = unit
+                if is_unit_exist(unit_id):
+                    result["unit_id"] = unit_id
                 else:
                     raise serializers.ValidationError("Unit doesn't exist", code='invalid')
             else:
@@ -118,7 +118,7 @@ class SchemaSerializer(serializers.Serializer):
             schema_id = self.instance
             sciper = get_sciper(username)
 
-            if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit):
+            if Rancher.validate(schema_id, sciper) or is_db_admin(user_id=sciper, unid_id=unit_id):
                 return result
             else:
                 raise serializers.ValidationError("User is not authorized to acces to this schema", code='invalid')
@@ -131,9 +131,9 @@ class SchemaSerializer(serializers.Serializer):
 
                 # If unit is given, check if user belongs to this unit
                 # If no unit is given, try to associate schema and unit
-                result = SchemaSerializer._manage_units(username, unit, result)
+                result = SchemaSerializer._manage_units(username, unit_id, result)
 
-            if 'username' not in result or 'unit' not in result:
+            if 'username' not in result or 'unit_id' not in result:
                 raise serializers.ValidationError("Invalid APIKeys", code='invalid')
 
             return result
@@ -146,16 +146,16 @@ class SchemaSerializer(serializers.Serializer):
         # Ldap search to find sciper from username
         sciper = get_sciper(validated_data["username"])
 
-        unit = None
-        if "unit" in validated_data:
-            unit = validated_data['unit']
+        unit_id = None
+        if "unit_id" in validated_data:
+            unit_id = validated_data['unit_id']
 
-        schema = Rancher.create_mysql_stack(sciper, unit)
+        schema = Rancher.create_mysql_stack(sciper, unit_id)
 
         return {
             "connection_string": schema["connection_string"],
             "mysql_cmd": schema["mysql_cmd"],
-            "unit": schema["unit"],
+            "unit_id": schema["unit_id"],
             "schema_id": schema["schema_id"]
         }
 
@@ -165,7 +165,9 @@ class SchemaSerializer(serializers.Serializer):
         """
         schema = Rancher.get_schema(schema_id)
 
-        if "unit" in validated_data:
-            schema['unit'] = validated_data['unit']
+        if "unit_id" in validated_data:
+            unit_id = validated_data['unit_id']
+            Rancher.update_schema(schema_id, unit_id)
+            schema = Rancher.get_schema(schema_id)
 
         return schema

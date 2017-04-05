@@ -34,7 +34,7 @@ class RancherTest(unittest.TestCase):
     @tag('rancher')
     def test_create_mysql_stack(self):
         conn = rancher.Rancher()
-        data = conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        data = conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
 
         self.assertTrue(data["connection_string"].startswith("mysql://"))
         self.assertTrue(data["mysql_cmd"].startswith("mysql "))
@@ -61,8 +61,8 @@ class RancherTest(unittest.TestCase):
         # Create new stacks
         conn = rancher.Rancher()
 
-        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
-        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
 
         # Return stacks by sciper
         stacks = conn.get_stacks_by_user(KERMIT_SCIPER)
@@ -77,8 +77,8 @@ class RancherTest(unittest.TestCase):
     def test_get_schemas(self):
         # Create new stacks
         conn = rancher.Rancher()
-        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
-        conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
+        conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
 
         # Return schemas by sciper
         schemas = conn.get_schemas_by_user(KERMIT_SCIPER)
@@ -109,7 +109,7 @@ class RancherTest(unittest.TestCase):
 
         # Create and delete schema
         conn = rancher.Rancher()
-        data = conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        data = conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
         conn.delete_schema(data["schema_id"])
 
         sleep(15)
@@ -123,9 +123,9 @@ class RancherTest(unittest.TestCase):
     def test_get_schema(self):
 
         conn = rancher.Rancher()
-        data = conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        data = conn.create_mysql_stack(KERMIT_SCIPER, unit_id=self.idevelop_id)
 
         schema = conn.get_schema(data["schema_id"])
-        self.assertEqual(KERMIT_UNIT, schema["unit"])
+        self.assertEqual(KERMIT_UNIT, schema["unit_id"])
 
         conn.delete_schema(data["schema_id"])

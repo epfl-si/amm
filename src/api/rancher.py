@@ -56,6 +56,15 @@ class Rancher:
         return requests.post(url, data=data, **parameters)
 
     @classmethod
+    def put(cls, url, data, prefix=True):
+        """
+        Do an authenticated PUT at the given URL and return the response
+        """
+        url, parameters = cls.init_http_call(url, prefix)
+
+        return requests.put(url, data=data, **parameters)
+
+    @classmethod
     def delete(cls, url, prefix=True):
         """
         Do an authenticated DELETE at the given URL and return the response
@@ -117,7 +126,7 @@ class Rancher:
         }
 
     @classmethod
-    def _get_payload(cls, environment, sciper, unit):
+    def _get_payload(cls, environment, sciper, unit_id):
         """
         Return payload of stack
         """
@@ -134,18 +143,18 @@ class Rancher:
             "dockerCompose": template["files"]["docker-compose.yml"],
             "rancherCompose": template["files"]["rancher-compose.yml"],
             "externalId": "catalog://" + template["id"],
-            "group": "owner:" + sciper + "," + "unit:" + unit
+            "group": "owner:" + sciper + "," + "unit:" + unit_id
         }
 
         return payload
 
     @classmethod
-    def _create_mysql_stack(cls, sciper, password, unit):
+    def _create_mysql_stack(cls, sciper, password, unit_id):
         """
         Create a MySQL stack with default options
         """
         environment = cls._get_environment(password=password)
-        payload = cls._get_payload(environment=environment, sciper=sciper, unit=unit)
+        payload = cls._get_payload(environment=environment, sciper=sciper, unit_id=unit_id)
         mysql_stack = cls.post("/v2-beta/stacks", data=json.dumps(payload))
 
         # wait a bit for the stack to be created
@@ -154,11 +163,19 @@ class Rancher:
         return mysql_stack, payload, environment
 
     @classmethod
-    def create_mysql_stack(cls, sciper, unit):
+    def update_stack(cls, stack, unit_id):
+
+        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack["id"]
+        new_group = stack["group"].split(',unit:')[0] + ',unit:' + unit_id
+        data = {"group": new_group}
+        cls.put(url, data=data)
+
+    @classmethod
+    def create_mysql_stack(cls, sciper, unit_id):
 
         password = generate_password(20)
 
-        mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password, unit)
+        mysql_stack, payload, environment = cls._create_mysql_stack(sciper, password, unit_id)
 
         data = {
             "response": mysql_stack,
@@ -168,7 +185,7 @@ class Rancher:
             "db_host": payload["name"] + settings.DOMAIN,
             "db_port": environment["MYSQL_EXPORT_PORT"],
             "stack": payload["name"],
-            "unit": unit
+            "unit_id": unit_id
         }
 
         parameters = [
@@ -250,10 +267,18 @@ class Rancher:
             "mysql_cmd": get_mysql_client_cmd(*parameters),
 
             # Example of stack['group'] = 'owner:133134,unit:1303'
-            "unit": stack['group'].split(',unit:')[1],
+            "unit_id": stack['group'].split(',unit:')[1],
             "schema_id": schema_id
         }
         return schema
+
+    @classmethod
+    def update_schema(cls, schema_id, unit_id):
+        """
+        Update schema to modify unit_id
+        """
+        stack = cls.get_stack(name_stack="mysql-" + schema_id)[0]
+        cls.update_stack(stack, unit_id)
 
     @classmethod
     def __get_schemas(cls, stacks):
@@ -274,7 +299,7 @@ class Rancher:
                     "connection_string": get_connection_string(*parameters),
                     "mysql_cmd": get_mysql_client_cmd(*parameters),
                     # Example of stack['group'] = 'owner:133134,unit:13030'
-                    "unit": stack['group'].split(',unit:')[1],
+                    "unit_id": stack['group'].split(',unit:')[1],
                     "schema_id": stack["name"].split("-")[1]
                 }
             )

@@ -165,13 +165,15 @@ class ViewsTestCase(APITestCase):
         )
         self.assertIsNotNone(re.match('^mysql://\w+@[-\.\w]+:\d+/.+$', content['connection_string']))
 
+        sleep(10)
+
         # Patch schema
         response = self.client.patch(
             reverse(
                 viewname='schema-detail',
                 args={content["schema_id"]},
             ),
-            data={"access_key": access_key, "secret_key": secret_key, "unit": "13029"},
+            data={"access_key": access_key, "secret_key": secret_key, "unit_id": "13029"},
             format='json'
         )
         content = json.loads(response.content.decode('utf-8'))
@@ -183,8 +185,7 @@ class ViewsTestCase(APITestCase):
         )
         self.assertEqual(content["unit"], "13029")
 
-        sleep(10)
-
+        # Clean stacks
         # Clean stacks
         conn = rancher.Rancher()
         conn.clean_stacks(KERMIT_SCIPER)
