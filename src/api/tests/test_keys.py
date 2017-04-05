@@ -3,6 +3,7 @@
 from django.test import TestCase
 
 from api.apikey import APIKey
+from api.apikeyhandler import ApiKeyHandler
 from config.settings.base import get_config
 
 
@@ -32,3 +33,11 @@ class KeyTestCase(TestCase):
         self.assertEqual(len(apikey.get_values()), 2)
         self.assertTrue('secret_key' in apikey.get_values().keys())
         self.assertTrue('access_key' in apikey.get_values().keys())
+
+    def test_constructor(self):
+        api_key1 = APIKey()
+        api_key2 = APIKey(access_key=api_key1.access_key, secret_key=api_key1.secret_key_hash, salt=api_key1.salt)
+        self.assertEqual(api_key1.access_key, api_key2.access_key)
+
+    def test_validate(self):
+        self.assertFalse(ApiKeyHandler.validate(access=None, secret=None))

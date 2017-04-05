@@ -1,10 +1,11 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 import unittest
+from time import sleep
 
 from django.test import tag
 
 from api import rancher
-from api.tests import KERMIT_SCIPER
+from api.tests import KERMIT_SCIPER, KERMIT_UNIT
 
 
 class RancherTest(unittest.TestCase):
@@ -85,8 +86,46 @@ class RancherTest(unittest.TestCase):
         # Check the number of stacks
         self.assertEqual(len(schemas), 2)
 
+        # Return schemas by unit and user
+        schemas = conn.get_schemas_by_unit_and_user(KERMIT_UNIT, KERMIT_SCIPER)
+
+        # Check the number of stacks
+        self.assertEqual(len(schemas), 2)
+
+        # Return schemas by unit and user
+        schemas = conn.get_schemas_by_unit(KERMIT_UNIT)
+
+        # Check the number of stacks
+        self.assertEqual(len(schemas), 2)
+
         # Return stacks by sciper
         conn.get_stacks_by_user(KERMIT_SCIPER)
 
         # Clean stacks
         conn.clean_stacks(KERMIT_SCIPER)
+
+    @tag('rancher')
+    def test_delete_schema(self):
+
+        # Create and delete schema
+        conn = rancher.Rancher()
+        data = conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+        conn.delete_schema(data["schema_id"])
+
+        sleep(15)
+
+        # Return schemas by sciper
+        schemas = conn.get_schemas_by_user(KERMIT_SCIPER)
+
+        self.assertEqual(len(schemas), 0)
+
+    @tag('rancher')
+    def test_get_schema(self):
+
+        conn = rancher.Rancher()
+        data = conn.create_mysql_stack(KERMIT_SCIPER, unit=self.idevelop_id)
+
+        schema = conn.get_schema(data["schema_id"])
+        self.assertEqual(KERMIT_UNIT, schema["unit"])
+
+        conn.delete_schema(data["schema_id"])

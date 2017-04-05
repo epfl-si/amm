@@ -42,14 +42,14 @@ def get_connection_string(db_username, db_password, db_host, db_port, db_schema)
     return connection
 
 
-def get_mysql_client_cmd(db_username, db_password, db_ip, db_port, db_schema):
+def get_mysql_client_cmd(db_username, db_password, db_host, db_port, db_schema):
     """
     Returns a connection string according to the given variables
     """
     if db_password:
-        cmd = "mysql -h %s -u%s -p%s -P %s %s" % (db_ip, db_username, db_password, db_port, db_schema)
+        cmd = "mysql -h %s -u%s -p%s -P %s %s" % (db_host, db_username, db_password, db_port, db_schema)
     else:
-        cmd = "mysql -h %s -u%s -p -P %s %s" % (db_ip, db_username, db_port, db_schema)
+        cmd = "mysql -h %s -u%s -p -P %s %s" % (db_host, db_username, db_port, db_schema)
     return cmd
 
 
