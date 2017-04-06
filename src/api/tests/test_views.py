@@ -183,7 +183,7 @@ class ViewsTestCase(APITestCase):
             response['content-type'],
             'application/json'
         )
-        self.assertEqual(content["unit"], "13029")
+        self.assertEqual(content["unit_id"], "13029")
 
         # Clean stacks
         # Clean stacks

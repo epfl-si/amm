@@ -1,0 +1,268 @@
+{
+	"variables": [],
+	"info": {
+		"name": "API REST AMM",
+		"_postman_id": "82e904ea-221f-f21d-87e6-e02b13d94f69",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API ROOT",
+			"request": {
+				"url": "https://{{host}}:{{port}}/",
+				"method": "GET",
+				"header": [
+					{
+						"key": "host",
+						"value": "{{host}}",
+						"description": ""
+					},
+					{
+						"key": "port",
+						"value": "{{port}}",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Expose les points d'entrées de l'API"
+			},
+			"response": []
+		},
+		{
+			"name": "Get API version",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/version/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "Retourne la version de l'API"
+			},
+			"response": []
+		},
+		{
+			"name": "Create API Keys",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/apikeys/",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "- Authentification LDAPS\n- Génère les clefs d'API : acces_key et secret_key"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all access keys",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/apikeys/?access_key={{access_key}}&secret_key={{secret_key}}",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n- Retourne la liste des access keys de l'utilisateur"
+			},
+			"response": []
+		},
+		{
+			"name": "Create schema",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/schemas/",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "access_key",
+							"value": "{{access_key}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "secret_key",
+							"value": "{{secret_key}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "unit_id",
+							"value": "{{unit_id_idevelop}}",
+							"type": "text",
+							"enabled": false
+						}
+					]
+				},
+				"description": "- Vérifie que les clés API existent\n- Identifie l'utilisateur grâce à la paire de clés access_key/secret_key\n\nAssociation d'une unité au schéma : \n\n- Si le paramètre unit_id est donné Alors on vérfie que l'utilisateur appartient à l'unité et on associe l'unité au schéma\n- Si pas de paramètre unit_id donné Alors on récupère l'unité de l'utilisateur et on l'associe au schéma\n- Si l'utilisateur a plusieurs unités => HTTP Error + liste des unités"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all schemas",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/schemas/?access_key={{access_key}}&secret_key={{secret_key}}",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "- Vérifie que les clés API existent\n- Identifie l'utilisateur grâce à la paire de clés access_key/secret_key\n- Retourne tous les schémas de l'utilisateur"
+			},
+			"response": []
+		},
+		{
+			"name": "Get schema ID",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/schemas/{{schema_id}}/?access_key={{access_key}}&secret_key={{secret_key}}",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\nACCREDITATION\n- si le user est le créateur alors OK\n- si le user est le dbadmin de l'unité du schéma alors OK"
+			},
+			"response": []
+		},
+		{
+			"name": "Schema to change unit",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/schemas/{{schema_id}}/",
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "access_key",
+							"value": "{{access_key}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "secret_key",
+							"value": "{{secret_key}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "unit_id",
+							"value": "13029",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\nACCREDITATION\n- si le user est le créateur alors OK\n- si le user est le dbadmin de l'unité du schéma alors OK\n\nVérification de l'unité:\n- On vérifie pour l'instant uniquement que l'unité existe\n- soumis à discussion"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all schemas by user ",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/users/{{user_id}}/schemas/?secret_key={{secret_key}}&access_key={{access_key}}",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\n- Si le user est le user passé en paramètre Alors on retourne tous les schémas (sans tenir compte des unités)\n- Si le user est le dbadmin de l'unité du user passé en paramètre alors on retourne les schémas filtrés par userID et unit DBAdmin"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all schemas by unit",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/units/{{unit_id_idevelop}}/schemas/?secret_key={{secret_key}}&access_key={{access_key}}",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n- Vérifie que le user appartient à l'unité passé en paramètre\n- Vérifie que le user est le dbadmin de l'unité passé en paramètre\n\nRetourne :\n- Tous les schémas créés par l'utilisateur et dans l'unité passé en paramètre, si l'utilisateur est le créateur des schémas\n- Tous les schémas de l'unité si l'utilisateur est le dbadmin de l'unité"
+			},
+			"response": []
+		},
+		{
+			"name": "Create schema by unit",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/units/{{unit_id_idevelop}}/schemas/",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "access_key",
+							"value": "{{access_key}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "secret_key",
+							"value": "{{secret_key}}",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\nACCREDITATIONS :\n- Vérifie que le user appartient à l'unité passé en paramètre\n- Vérifie que le user est dbadmin de l'unité passé en paramètre"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete schema",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/schemas/{{schema_id_to_delete}}/?access_key={{access_key}}&secret_key={{secret_key}}",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "schema_id",
+							"value": "{{schema_id_to_delete}}",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\nACCREDITATION\n- si le user est le créateur alors OK\n- si le user est le dbadmin de l'unité du schéma alors OK"
+			},
+			"response": []
+		}
+	]
+}
