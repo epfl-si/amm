@@ -36,5 +36,6 @@ after_success:
   - if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
       docker login -u="${TRAVIS_SECRET_DOCKER_USERNAME}" -p="${TRAVIS_SECRET_DOCKER_PASSWORD}";
       docker push epflidevelop/amm:${TRAVIS_BRANCH};
+      docker push epflidevelop/amm:latest;
       docker logout;
     fi
