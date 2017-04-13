@@ -37,7 +37,7 @@ after_success:
       docker login -u="${TRAVIS_SECRET_DOCKER_USERNAME}" -p="${TRAVIS_SECRET_DOCKER_PASSWORD}";
       if [ x"${TRAVIS_BRANCH}" == "xmaster" ]; then
         docker push epflidevelop/amm:latest;
-      else
+      else;
         docker push epflidevelop/amm:${TRAVIS_BRANCH};
       fi
       docker logout;
