@@ -7,7 +7,7 @@ WORKDIR /opt/amm
 COPY ./requirements ./requirements/
 COPY ./bin ./bin/
 COPY ./src ./src/
-COPY ./docker/nginx/nginx.conf ./nginx/nginx.conf
+COPY ./docker/nginx/ ./nginx/
 
 ARG MAJOR_RELEASE
 ARG MINOR_RELEASE
