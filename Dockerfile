@@ -7,7 +7,7 @@ WORKDIR /opt/amm
 COPY ./requirements ./requirements/
 COPY ./bin ./bin/
 COPY ./src ./src/
-COPY ./nginx ./nginx
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/amm.conf
 
 ARG MAJOR_RELEASE
 ARG MINOR_RELEASE
@@ -42,6 +42,8 @@ RUN python ./src/manage.py collectstatic --no-input
 # integration doesn't work
 
 # CMD gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile config.wsgi:application
+
+VOLUME ["/opt/amm/", "/etc/nginx/conf.d/"]
 
 ENTRYPOINT [ "bash" ]
 CMD ["-c", "gunicorn --reload -w ${DJANGO_WORKER_COUNT} -b :8000 --chdir /opt/amm/src/ --access-logfile - config.wsgi:application" ]
