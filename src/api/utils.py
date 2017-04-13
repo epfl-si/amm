@@ -3,6 +3,8 @@ import os
 import string
 import binascii
 import ldap3
+from django.conf import settings
+
 from config.settings import base
 
 
@@ -157,6 +159,15 @@ def get_username(sciper):
         attribute=attribute
     )
     return response[0]['attributes'][attribute][0]
+
+
+def render_https_url(url):
+    """
+    Replace http by https for browsable API
+    """
+    if settings.DEBUG:
+        return url
+    return url.replace("http", "https")
 
 
 def old_debug(string_to_display):
