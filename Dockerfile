@@ -11,6 +11,7 @@ COPY ./src ./src/
 ARG MAJOR_RELEASE
 ARG MINOR_RELEASE
 ARG BUILD_NUMBER
+ARG REQUIREMENTS_FILE
 
 ENV \
     SECRET_KEY=dummy \
@@ -33,7 +34,7 @@ ENV \
     AMM_AUTHENTICATOR_CLASS=ldap \
     DJANGO_SETTINGS_MODULE=config.settings.local
 
-RUN pip install --no-cache-dir -r requirements/local.txt
+RUN pip install --no-cache-dir -r ${REQUIREMENTS_FILE}
 RUN python ./src/manage.py collectstatic --no-input
 
 # NOTE : if we have an ENTRYPOINT here Pycharm docker-compose

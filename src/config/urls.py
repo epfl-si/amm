@@ -1,7 +1,5 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-from django.conf import settings
 from django.conf.urls import url, include
-from django.conf.urls.static import static
 
 from rest_framework_swagger.views import get_swagger_view
 
@@ -14,4 +12,4 @@ urlpatterns = [
     # url(r'^docs/$', schema_view),
     url(r'^v1/', include('api.urls')),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]

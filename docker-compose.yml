@@ -8,7 +8,7 @@ services:
     image: library/redis
 
   django:
-    image: epflidevelop/amm:latest
+    image: epflidevelop/amm-dev:latest
     volumes:
       - ./src:/opt/amm/src
       - ./htmlcov:/opt/amm/htmlcov
@@ -43,7 +43,8 @@ services:
   nginx:
     image: library/nginx
     volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/amm.conf
+      - ./src:/opt/amm/src
     ports:
       - "127.0.0.1:8000:80"
     links:
