@@ -28,6 +28,7 @@ script:
     export CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient;
     export AMM_ENVIRONMENT=test;
     docker-compose up -d
+  - docker-compose exec django pip install -r requirements/local.txt
   - docker-compose exec django ./bin/flake8.sh
   - docker-compose exec django coverage run --source='.' src/manage.py test --settings=config.settings.local --exclude-tag=rancher --exclude-tag=ldap --exclude-tag=accred
 
