@@ -11,7 +11,7 @@ services:
   - docker
 
 install:
-  - docker build --build-arg MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --build-arg BUILD_NUMBER=${TRAVIS_BUILD_NUMBER} --no-cache -t epflidevelop/amm:${TRAVIS_BRANCH} .;
+  - docker build --build-arg REQUIREMENTS_FILE='requirements/prod.txt' MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --build-arg BUILD_NUMBER=${TRAVIS_BUILD_NUMBER} --no-cache -t epflidevelop/amm:${TRAVIS_BRANCH} .;
     docker tag $(docker images -q epflidevelop/amm:${TRAVIS_BRANCH}) epflidevelop/amm:latest
 
 script:
