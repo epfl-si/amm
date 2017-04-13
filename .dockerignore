@@ -1,5 +1,4 @@
 docs/*
-docker/nginx/*
-docker/redis/*
+nginx/*
 README.rst
 htmlcov/*

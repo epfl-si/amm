@@ -43,7 +43,7 @@ services:
   nginx:
     image: library/nginx
     volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/amm.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/amm.conf
       - ./src:/opt/amm/src
     ports:
       - "127.0.0.1:8000:80"
