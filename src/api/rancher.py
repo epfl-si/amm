@@ -10,11 +10,7 @@ from django.conf import settings
 from requests.auth import HTTPBasicAuth
 
 from config.settings.base import get_config
-
 from .utils import generate_password, generate_random_b64, get_mysql_client_cmd, get_connection_string
-
-# TODO get this dynamically
-ENVIRONMENT_ID = "1a9"
 
 
 class Rancher:
@@ -93,7 +89,7 @@ class Rancher:
         """
         Return the list of ports used
         """
-        ports = cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/ports").json()["data"]
+        ports = cls.get("/v2-beta/projects/" + settings.ENVIRONMENT_ID + "/ports").json()["data"]
         return [str(current_port["publicPort"]) for current_port in ports]
 
     @classmethod
@@ -165,7 +161,7 @@ class Rancher:
     @classmethod
     def update_stack(cls, stack, unit_id):
 
-        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack["id"]
+        url = "/v2-beta/projects/" + settings.ENVIRONMENT_ID + "/stacks/" + stack["id"]
         new_group = stack["group"].split(',unit:')[0] + ',unit:' + unit_id
         data = {"group": new_group}
         cls.put(url, data=data)
@@ -217,7 +213,7 @@ class Rancher:
         """
         Returns the stacks of the given users
         """
-        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?group_like=owner%3A" + user_id + "%25"
+        url = "/v2-beta/projects/" + settings.ENVIRONMENT_ID + "/stacks/?group_like=owner%3A" + user_id + "%25"
         return cls.get(url).json()["data"]
 
     @classmethod
@@ -225,7 +221,7 @@ class Rancher:
         """
         Returns the stacks filter by unit 'unit_id'
         """
-        url = "/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?group_like=%25unit%3A" + unit_id
+        url = "/v2-beta/projects/" + settings.ENVIRONMENT_ID + "/stacks/?group_like=%25unit%3A" + unit_id
         return cls.get(url).json()["data"]
 
     @classmethod
@@ -233,7 +229,7 @@ class Rancher:
         """
         Returns the stacks filter by unit 'unit_id' and user 'user_id'
         """
-        url = "/v2-beta/projects/" + ENVIRONMENT_ID
+        url = "/v2-beta/projects/" + settings.ENVIRONMENT_ID
         url += "/stacks/?group_like=owner%3A" + user_id + "%2Cunit%3A" + unit_id
         return cls.get(url).json()["data"]
 
@@ -244,7 +240,7 @@ class Rancher:
         Example :
         /v2-beta/projects/1a9/stacks/?name=mysql-e9608f8f
         """
-        return cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?name=" + name_stack).json()["data"]
+        return cls.get("/v2-beta/projects/" + settings.ENVIRONMENT_ID + "/stacks/?name=" + name_stack).json()["data"]
 
     @classmethod
     def get_mysql_user(cls, schema_id):
@@ -349,7 +345,7 @@ class Rancher:
         """
         Delete the stack 'stack_id'
         """
-        cls.delete("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/" + stack_id)
+        cls.delete("/v2-beta/projects/" + settings.ENVIRONMENT_ID + "/stacks/" + stack_id)
 
     @classmethod
     def clean_stacks(cls, sciper):

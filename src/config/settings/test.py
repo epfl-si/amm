@@ -8,3 +8,5 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
+
+ENVIRONMENT_ID = "1a7"

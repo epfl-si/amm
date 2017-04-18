@@ -18,3 +18,5 @@ DATABASES = {
         'PASSWORD': 'test',
     }
 }
+
+ENVIRONMENT_ID = "1a9"
