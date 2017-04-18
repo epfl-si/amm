@@ -13,7 +13,7 @@ from config.settings import base
 from .apikeyhandler import ApiKeyHandler
 from .filters import APIKeyFilterBackend
 from .rancher import Rancher
-from .serializers import KeySerializer, SchemaSerializer
+from .serializers import KeySerializer, SchemaSerializer, PasswordSerializer
 from .utils import get_sciper, get_units, get_username, render_https_url
 from .accred import is_db_admin, get_accreditations_units
 
@@ -149,6 +149,24 @@ class APIKeyList(CommonView):
         if serializer.is_valid():
             key = serializer.save()
             return Response(key.get_values(), status=status.HTTP_200_OK)
+
+        return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
+
+
+class SchemaDetailPassword(CommonView):
+
+    def post(self, request, schema_id):
+
+        serializer = PasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+
+            data = {
+                "schema_id": schema_id
+            }
+            schema = serializer.save(**data)
+
+            return Response(schema, status=status.HTTP_200_OK)
 
         return Response("Authentication failed", status=status.HTTP_401_UNAUTHORIZED)
 

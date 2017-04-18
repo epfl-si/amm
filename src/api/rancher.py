@@ -247,6 +247,12 @@ class Rancher:
         return cls.get("/v2-beta/projects/" + ENVIRONMENT_ID + "/stacks/?name=" + name_stack).json()["data"]
 
     @classmethod
+    def get_mysql_user(cls, schema_id):
+        name_stack = "mysql-" + schema_id
+        stack = cls.get_stack(name_stack=name_stack)[0]
+        return stack['environment']['AMM_USERNAME']
+
+    @classmethod
     def get_schema(cls, schema_id):
         """
         Returns the schema of the given user

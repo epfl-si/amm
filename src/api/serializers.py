@@ -1,13 +1,15 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
 
 import auth
+import requests
 
 from rest_framework import serializers
+from rest_framework.exceptions import APIException
 
 from api.accred import is_db_admin
 from .apikeyhandler import ApiKeyHandler
 from .rancher import Rancher
-from .utils import get_sciper, get_units, is_unit_exist, get_unit_name
+from .utils import get_sciper, get_units, is_unit_exist, get_unit_name, generate_password
 
 
 class KeySerializer(serializers.Serializer):
@@ -43,6 +45,55 @@ class KeySerializer(serializers.Serializer):
         Create the APIKeys
         """
         return ApiKeyHandler.generate_keys(validated_data["username"])
+
+
+class PasswordSerializer(serializers.Serializer):
+    """
+    Password serializer
+    """
+    access_key = serializers.CharField(max_length=256)
+    secret_key = serializers.CharField(max_length=256)
+
+    def validate(self, attrs):
+        """
+        Validate the APIKeys
+        """
+        result = {}
+
+        # Get required parameters
+        access_key = attrs.get('access_key')
+        secret_key = attrs.get('secret_key')
+
+        # Check API Keys exist and return username
+        result["username"] = ApiKeyHandler.validate(access=access_key, secret=secret_key)
+
+        return result
+
+    def create(self, validated_data):
+        """
+        Create a new mysql password
+        """
+        schema_id = validated_data["schema_id"]
+
+        url = "http://127.0.0.1:9000/v1/users/" + Rancher.get_mysql_user(schema_id) + "/"
+        data = {
+            "password": generate_password(length=20)
+        }
+
+        # ACTIVE THIS TOMORROW
+        # response = requests.patch(url, data=data)
+        response = 201
+
+        if response == 200:
+            schema = Rancher.get_schema(schema_id)
+            return {
+                "connection_string": schema["connection_string"],
+                "mysql_cmd": schema["mysql_cmd"],
+                "unit_id": schema["unit_id"],
+                "schema_id": schema["schema_id"]
+            }
+        else:
+            raise APIException("Database password has not changed", code='error')
 
 
 class SchemaSerializer(serializers.Serializer):

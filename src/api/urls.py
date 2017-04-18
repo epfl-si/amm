@@ -16,6 +16,7 @@ urlpatterns = [
 
     url(r'^schemas/$', views.SchemaList.as_view(), name="schema-list"),
     url(r'^schemas/(?P<schema_id>[^/.]+)/$', views.SchemaDetail.as_view(), name="schema-detail"),
+    url(r'^schemas/(?P<schema_id>[^/.]+)/password/$', views.SchemaDetailPassword.as_view(), name="schema-detail-password"),
 
     url(r'^version/$', views.VersionDetail.as_view(), name='version-detail'),
 ]
