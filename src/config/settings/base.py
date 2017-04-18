@@ -26,9 +26,8 @@ SECRET_KEY = get_config("SECRET_KEY")
 
 ALLOWED_HOSTS = [
         get_config('DJANGO_HOST'),
+        '127.0.0.1',
 ]
-
-DOMAIN = ".db.rsaas.epfl.ch"
 
 # Application definition
 
