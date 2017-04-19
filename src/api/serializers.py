@@ -80,9 +80,7 @@ class PasswordSerializer(serializers.Serializer):
             "password": generate_password(length=20)
         }
 
-        # ACTIVE THIS TOMORROW
-        # response = requests.patch(url, data=data)
-        response = 201
+        response = requests.patch(url, data=data)
 
         if response == 200:
             schema = Rancher.get_schema(schema_id)
