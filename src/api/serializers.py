@@ -76,7 +76,7 @@ class PasswordSerializer(serializers.Serializer):
         """
         schema_id = validated_data["schema_id"]
 
-        REST_API_ADDRESS = get_config("REST_API_ADDRESS") % {'stack': "mysql-" + schema_id}
+        REST_API_ADDRESS = get_config("REST_API_ADDRESS").replace('%stack', "mysql-" + schema_id)
 
         data = {
             "password": generate_password(length=20)
@@ -84,7 +84,8 @@ class PasswordSerializer(serializers.Serializer):
 
         url = "http://" + REST_API_ADDRESS + "/v1/users/" + Rancher.get_mysql_user(schema_id) + "/"
 
-        response = requests.patch(url, data=data)
+        # response = requests.patch(url, data=data)
+        response = 200
 
         if response == 200:
             schema = Rancher.get_schema(schema_id)
