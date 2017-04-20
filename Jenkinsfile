@@ -64,5 +64,7 @@ container_pipeline.process(
   // ID of the credential to use for writing to dockerhub
   'dockerhub-epflidevelop-jenkins-ci',
   // email address to use for jenkins automated commits
-  'amm-ci@groupes.epfl.ch'
+  'amm-ci@groupes.epfl.ch',
+  // prefix of the repository used to push new tags
+  ''
 )
