@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 
 from api.accred import is_db_admin
+from config.settings.base import get_config
 from .apikeyhandler import ApiKeyHandler
 from .rancher import Rancher
 from .utils import get_sciper, get_units, is_unit_exist, get_unit_name, generate_password
@@ -75,10 +76,13 @@ class PasswordSerializer(serializers.Serializer):
         """
         schema_id = validated_data["schema_id"]
 
-        url = "http://127.0.0.1:9000/v1/users/" + Rancher.get_mysql_user(schema_id) + "/"
+        REST_API_ADDRESS = get_config("REST_API_ADDRESS") % {'stack': "mysql-" + schema_id}
+
         data = {
             "password": generate_password(length=20)
         }
+
+        url = "http://" + REST_API_ADDRESS + "/v1/users/" + Rancher.get_mysql_user(schema_id) + "/"
 
         response = requests.patch(url, data=data)
 
