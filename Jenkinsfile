@@ -25,9 +25,13 @@ def buildcoveragexml() {
 def acceptancetests(container) {
 }
 
+def majorversion = 0
+def minorversion = 1
+
 def customBuild(tag) {
-    sh "docker build --no-cache --build-arg REQUIREMENTS_FILE='requirements/prod.txt' --build-arg MAJOR_RELEASE=0 --build-arg MINOR_RELEASE=1 --build-arg BUILD_NUMBER=5 . -t ${tag}"
-    return docker.image(tag)
+  buildversion = container_pipeline.get_build_version(majorversion, minorversion)
+  sh "docker build --no-cache --build-arg REQUIREMENTS_FILE='requirements/prod.txt' --build-arg MAJOR_RELEASE=${majorversion} --build-arg MINOR_RELEASE=${minorversion} --build-arg BUILD_NUMBER=${buildversion} . -t ${tag}"
+  return docker.image(tag)
 }
 
 container_pipeline.process(
@@ -47,9 +51,9 @@ container_pipeline.process(
   // acceptance tests to run on the image before publishing it
   this.&acceptancetests,
   // major version of image
-  '0',
+  majorversion,
   // minor version of image
-  '1',
+  minorversion,
   // custom build method for image
   // if it needs some custom arguments a simple:
   // "docker build ." doesn't provide set to null to use "docker build ."
