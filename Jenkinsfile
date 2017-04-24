@@ -51,9 +51,9 @@ container_pipeline.process(
   // acceptance tests to run on the image before publishing it
   this.&acceptancetests,
   // major version of image
-  this.majorversion,
+  majorversion,
   // minor version of image
-  this.minorversion,
+  minorversion,
   // custom build method for image
   // if it needs some custom arguments a simple:
   // "docker build ." doesn't provide set to null to use "docker build ."
