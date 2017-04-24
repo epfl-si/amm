@@ -30,7 +30,7 @@ minorversion = 1
 
 def customBuild(tag) {
   buildversion = pipeline.get_build_version(majorversion, minorversion)
-  sh "docker build --no-cache --build-arg REQUIREMENTS_FILE='requirements/prod.txt' --build-arg MAJOR_RELEASE=${this.majorversion} --build-arg MINOR_RELEASE=${this.minorversion} --build-arg BUILD_NUMBER=${buildversion} . -t ${tag}"
+  sh "docker build --no-cache --build-arg REQUIREMENTS_FILE='requirements/prod.txt' --build-arg MAJOR_RELEASE=${this.majorversion} --build-arg MINOR_RELEASE=${this.minorversion} --build-arg BUILD_NUMBER=${buildversion} -t ${tag} ."
   return docker.image(tag)
 }
 
