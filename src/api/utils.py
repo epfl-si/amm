@@ -19,7 +19,9 @@ def generate_password(length):
     """
     Generate a random password
     """
-    chars = string.ascii_letters + string.digits + '-+'
+    # the chars we are going to use. We don't use the plus sign (+) because
+    # it's problematic in URLs
+    chars = string.ascii_letters + string.digits + '-.'
     password = ''
 
     for i in range(length):

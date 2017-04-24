@@ -1,5 +1,6 @@
 """(c) All rights reserved. ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE, Switzerland, VPSI, 2017"""
-
+from django.http import HttpResponse
+from django.template import loader
 from django.utils.datastructures import MultiValueDictKeyError
 
 from rest_framework import status
@@ -18,25 +19,22 @@ from .utils import get_sciper, get_units, get_username, render_https_url
 from .accred import is_db_admin, get_accreditations_units
 
 
+def index(request):
+
+    context = {'API_URL': 'https://amm.db.rsaas.epfl.ch'}
+
+    template = loader.get_template('index.html')
+
+    return HttpResponse(template.render(context, request))
+
+
 @api_view()
 def api_root(request, format=None):
 
     return Response({
         'version': render_https_url(reverse('version-detail', request=request, format=format)),
         'apikeys': render_https_url(reverse('apikey-list', request=request, format=format)),
-        'schemas': render_https_url(reverse('schema-list', request=request, format=format)),
-        'schemas-by-user': render_https_url(reverse(
-            'schema-list-by-user',
-            args=["133134"],
-            request=request,
-            format=format)
-        ),
-        'schemas-by-unit': render_https_url(reverse(
-            'schema-list-by-unit',
-            args=["13030"],
-            request=request,
-            format=format)
-        ),
+        'schemas': render_https_url(reverse('schema-list', request=request, format=format))
     })
 
 
