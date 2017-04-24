@@ -2,7 +2,7 @@
 
 // Load shared library
 @Library('epflidevelop') import ch.epfl.idevelop.container_pipeline
-def container_pipeline = new ch.epfl.idevelop.container_pipeline()
+container_pipeline = new ch.epfl.idevelop.container_pipeline()
 
 def dependencies(start) {
   if (start) {
