@@ -25,6 +25,7 @@ def buildcoveragexml() {
 def acceptancetests(container) {
   sh "docker exec -it ${container.id} pip install -r requirements/local.txt"
   sh "docker exec -it ${container.id} coverage run --source='.' src/manage.py test --settings=config.settings.local"
+
 }
 
 majorversion = 0
