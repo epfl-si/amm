@@ -2,7 +2,7 @@
 
 // Load shared library
 @Library('epflidevelop') import ch.epfl.idevelop.container_pipeline
-container_pipeline = new ch.epfl.idevelop.container_pipeline()
+pipeline = new ch.epfl.idevelop.container_pipeline()
 
 def dependencies(start) {
   if (start) {
@@ -29,12 +29,12 @@ majorversion = 0
 minorversion = 1
 
 def customBuild(tag) {
-  buildversion = container_pipeline.get_build_version(majorversion, minorversion)
+  buildversion = pipeline.get_build_version(majorversion, minorversion)
   sh "docker build --no-cache --build-arg REQUIREMENTS_FILE='requirements/prod.txt' --build-arg MAJOR_RELEASE=${this.majorversion} --build-arg MINOR_RELEASE=${this.minorversion} --build-arg BUILD_NUMBER=${buildversion} . -t ${tag}"
   return docker.image(tag)
 }
 
-container_pipeline.process(
+pipeline.process(
   // project name, will be image name and git repository name
   'amm',
   // template name is rancher-template-$this_value
