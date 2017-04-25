@@ -86,7 +86,7 @@ def buildcoveragexml() {
 
 def acceptancetests(container) {
   sh "docker exec -i ${container.id} pip install -r requirements/local.txt"
-  sh "docker exec -i ${container.id} coverage run --source='.' src/manage.py test --settings=config.settings.test"
+  sh "docker exec -i ${container.id} coverage run --source='.' src/manage.py test --settings=config.settings.test --exclude-tag=rancher"
 }
 
 majorversion = 0
