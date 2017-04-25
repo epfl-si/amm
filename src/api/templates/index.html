@@ -39,20 +39,16 @@
     Exemple avec curl :
 </p>
 
-<pre>
-  curl --data "username=foo&password=bar" {{ API_URL }}/v1/apikeys/
-</pre>
+<pre><code class="bash">curl --data "username=foo&password=bar" {{ API_URL }}/v1/apikeys/</code></pre>
 
 <p>
     Vous recevez en retour votre clé au format JSON, par exemple :
 </p>
 
-<pre>
-  {
-    "access_key": "2975423afd3266a0aed61",
-    "secret_key": "KgLGW4tfZQv42cZgV4zHcMWcTcsivkANe6Oj"
-  }
-</pre>
+<pre><code class="json">{
+  "access_key": "2975423afd3266a0aed61",
+  "secret_key": "KgLGW4tfZQv42cZgV4zHcMWcTcsivkANe6Oj"
+}</code></pre>
 <h2>Créer un schéma</h2>
 
 <p>
@@ -88,22 +84,19 @@
     Exemple avec curl :
 </p>
 
-<pre>
-  curl --data "access_key=2975423afd3266a0aed61&secret_key=KgLGW4tfZQv42cZgV4zHcMWcTcsivkANe6Oj" {{ API_URL }}/v1/schemas/
-</pre>
+<pre><code class="bash">curl --data "access_key=2975423afd3266a0aed61&secret_key=KgLGW4tfZQv42cZgV4zHcMWcTcsivkANe6Oj" {{ API_URL }}/v1/schemas/</code></pre>
 
 <p>
     Vous recevez en retour les informations sur le schéma, par exemple :
 </p>
 
-<pre>
-{
-    "connection_string": "mysql://username:password@host.db.rsaas.epfl.ch:12345/schema",
-    "mysql_cmd": "mysql -h host.db.rsaas.epfl.ch -uusername -ppassword -P 12345 schema",
-    "unit_id": "13030",
-    "schema_id": "d8buhm4de"
+<pre><code class="json">{
+  "connection_string": "mysql://username:password@host.db.rsaas.epfl.ch:12345/schema",
+  "mysql_cmd": "mysql -h host.db.rsaas.epfl.ch -uusername -ppassword -P 12345 schema",
+  "unit_id": "13030",
+  "schema_id": "d8buhm4de"
 }
-</pre>
+</code></pre>
 
 <h2>Lister ses schémas</h2>
 
@@ -137,30 +130,27 @@
     Exemple avec curl :
 </p>
 
-<pre>
-  curl "https://amm.db.rsaas.epfl.ch/v1/schemas/?access_key=2975423afd3266a0aed61&secret_key=KgLGW4tfZQv42cZgV4zHcMWcTcsivkANe6Oj"
-</pre>
+<pre><code class="bash">curl "https://amm.db.rsaas.epfl.ch/v1/schemas/?access_key=2975423afd3266a0aed61&secret_key=KgLGW4tfZQv42cZgV4zHcMWcTcsivkANe6Oj"</code></pre>
 
 <p>
     Vous recevez en retour la liste de vos schémas, par exemple :
 </p>
 
-<pre>
-[
-    {
-        "connection_string": "mysql://username1:password1@host1.db.rsaas.epfl.ch:12345/schema1",
-        "mysql_cmd": "mysql -h host1.db.rsaas.epfl.ch -uusername1 -p -P 12345 schema1",
-        "unit_id": "13030",
-        "schema_id": "adh38629"
-    },
-    {
-        "connection_string": "mysql://password2@host2.db.rsaas.epfl.ch:12346/schema2",
-        "mysql_cmd": "mysql -h host2.db.rsaas.epfl.ch -uusername2 -p -P 12346 schema2",
-        "unit_id": "13030",
-        "schema_id": "a9bca1e0"
-    }
+<pre><code class="json">[
+  {
+    "connection_string": "mysql://username1:password1@host1.db.rsaas.epfl.ch:12345/schema1",
+    "mysql_cmd": "mysql -h host1.db.rsaas.epfl.ch -uusername1 -p -P 12345 schema1",
+    "unit_id": "13030",
+    "schema_id": "adh38629"
+  },
+  {
+    "connection_string": "mysql://password2@host2.db.rsaas.epfl.ch:12346/schema2",
+    "mysql_cmd": "mysql -h host2.db.rsaas.epfl.ch -uusername2 -p -P 12346 schema2",
+    "unit_id": "13030",
+    "schema_id": "a9bca1e0"
+  }
 ]
-</pre>
+</code></pre>
 
 <h2>Pour aller plus loin</h2>
 <p>
