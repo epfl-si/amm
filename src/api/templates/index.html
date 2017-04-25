@@ -1,3 +1,5 @@
+{% include "header.html" %}
+
 <h1>API AMM</h1>
 
 <p>
@@ -11,12 +13,15 @@
     de la méthode suivante :
 </p>
 
-<table>
+<table class="table">
+    <thead>
     <tr>
         <th>Méthode</th>
         <th>URL</th>
         <th>Paramètres</th>
     </tr>
+    </thead>
+    <tbody>
     <tr>
         <td>POST</td>
         <td><a href="/v1/apikeys/">/v1/apikeys/</a></td>
@@ -27,6 +32,7 @@
             </ul>
         </td>
     </tr>
+    </tbody>
 </table>
 
 <p>
@@ -53,12 +59,15 @@
     Une fois votre clé obtenue, vous pouvez l'utiliser pour créer un schéma :
 </p>
 
-<table>
+<table class="table">
+    <thead>
     <tr>
         <th>Méthode</th>
         <th>URL</th>
         <th>Paramètres</th>
     </tr>
+    </thead>
+    <tbody>
     <tr>
         <td>POST</td>
         <td><a href="/v1/schemas/">/v1/schemas/</a></td>
@@ -66,10 +75,13 @@
             <ul>
                 <li><strong>access_key</strong> : votre access key</li>
                 <li><strong>secret_key</strong> : votre secret key</li>
-                <li><strong>unit_id</strong> : l'id de l'unité rattachée à la base de donnée (facultatif si vous n'êtes membre que d'une unité)</li>
+                <li><strong>unit_id</strong> : l'id de l'unité rattachée à la base de donnée (facultatif si vous n'êtes
+                    membre que d'une unité)
+                </li>
             </ul>
         </td>
     </tr>
+    </tbody>
 </table>
 
 <p>
@@ -81,7 +93,7 @@
 </pre>
 
 <p>
-  Vous recevez en retour les informations sur le schéma, par exemple :
+    Vous recevez en retour les informations sur le schéma, par exemple :
 </p>
 
 <pre>
@@ -99,12 +111,15 @@
     Vous pouvez obtenir la liste de vos schémas à l'aide de la méthode suivante :
 </p>
 
-<table>
+<table class="table">
+    <thead>
     <tr>
         <th>Méthode</th>
         <th>URL</th>
         <th>Paramètres</th>
     </tr>
+    </thead>
+    <tbody>
     <tr>
         <td>GET</td>
         <td><a href="/v1/schemas/">/v1/schemas/</a></td>
@@ -115,6 +130,7 @@
             </ul>
         </td>
     </tr>
+    </tbody>
 </table>
 
 <p>
@@ -126,7 +142,7 @@
 </pre>
 
 <p>
-  Vous recevez en retour la liste de vos schémas, par exemple :
+    Vous recevez en retour la liste de vos schémas, par exemple :
 </p>
 
 <pre>
@@ -150,3 +166,5 @@
 <p>
     <a href="/v1/doc">Voir la documentation dynamique de l'API</a>
 </p>
+
+{% include "footer.html" %}
