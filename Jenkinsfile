@@ -4,19 +4,81 @@
 @Library('epflidevelop') import ch.epfl.idevelop.container_pipeline
 pipeline = new ch.epfl.idevelop.container_pipeline()
 
+redis_container = null
+
 def dependencies(start) {
   if (start) {
     // Start dependencies for acceptance tests
+    redis_container = docker.image('redis').run()
+    sh "docker exec -i ${redis_container.id} ip route get 1 | awk '{print \$NF;exit}' > /tmp/ip "
   } else {
     // Stop depdencies for acceptance tests
+    sh "docker rm -f ${redis_container.id}"
   }
+
+  redisip = readFile('/tmp/ip').trim()
+  accesskey = null
+  secretkey = null
+  username = null
+  password = null
+  rancher_env_id = null
+  accred_password = null
+
+  withCredentials(
+    [[$class: 'UsernamePasswordMultiBinding',
+    credentialsId: 'amm-test-rancher-creds',
+    usernameVariable: 'ACCESSKEY',
+    passwordVariable: 'SECRETKEY']]
+  ) {
+    accesskey = "${ACCESSKEY}"
+    secretkey = "${SECRETKEY}"
+  }
+
+  withCredentials(
+    [[$class: 'UsernamePasswordMultiBinding',
+    credentialsId: 'ldap-test-credentials',
+    usernameVariable: 'USERNAME',
+    passwordVariable: 'PASSWORD']]
+  ) {
+    username = env.USERNAME
+    password = env.PASSWORD
+  }
+
+  withCredentials([string(credentialsId: 'amm-test-environment-id', variable: 'SECRET')]) {
+    rancher_env_id = "${SECRET}"
+  }
+
+  withCredentials([string(credentialsId: 'amm-accred-password', variable: 'SECRET')]) {
+    accred_password = "${SECRET}"
+  }
+
   // return array of arguments for docker run of image
   // can set links with other containers, etc
-  return []
+  return [
+    "-e", "LDAP_BASE_DN=o=epfl,c=ch",
+    "-e", "LDAP_SERVER=scoldap.epfl.ch",
+    "-e", "LDAP_SERVER_FOR_SEARCH=ldap.epfl.ch",
+    "-e", "LDAP_USER_SEARCH_ATTR=uid",
+    "-e", "CACHE_REDIS_LOCATION=redis://${redisip}:6379/1",
+    "-e", "CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient",
+    "-e", "TEST_USERNAME=${username}",
+    "-e", "TEST_CORRECT_PWD=${password}",
+    "-e", "TEST_WRONG_PWD=test_wrong_pwd",
+    "-e", "SECRET_KEY=dummy_value_since_it_is_not_important",
+    "-e", "LDAP_USE_SSL=false",
+    "-e", "DJANGO_WORKER_COUNT=1",
+    "-e", "REST_API_ADDRESS=localhost",
+    "-e", "RANCHER_ACCESS_KEY=${accesskey}",
+    "-e", "RANCHER_SECRET_KEY=${secretkey}",
+    "-e", "RANCHER_VERIFY_CERTIFICATE=true",
+    "-e", "RANCHER_API_URL=https://test-rancher.epfl.ch",
+    "-e", "DJANGO_SETTINGS_MODULE=config.settings.test",
+    "-e", "AMM_ENVIRONMENT=${rancher_env_id}",
+    "-e", "ACCRED_PASSWORD=${accred_password}",
+  ]
 }
 
 def unittest() {
-  sh "echo yes"
 }
 
 def buildcoveragexml() {
@@ -24,7 +86,7 @@ def buildcoveragexml() {
 
 def acceptancetests(container) {
   sh "docker exec -i ${container.id} pip install -r requirements/local.txt"
-  sh "docker exec -i ${container.id} coverage run --source='.' src/manage.py test --settings=config.settings.local"
+  sh "docker exec -i ${container.id} coverage run --source='.' src/manage.py test --settings=config.settings.test --exclude-tag=rancher"
 }
 
 majorversion = 0
