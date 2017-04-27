@@ -4,6 +4,7 @@ from django.conf.urls import url
 from api import views
 
 urlpatterns = [
+    url(r'^doc/$', views.api_root),
     url(r'^units/$', views.UnitList.as_view(), name="unit-list"),
     url(r'^units/(?P<unit_id>[^/.]+)/$', views.UnitDetail.as_view(), name="unit-detail"),
     url(r'^units/(?P<unit_id>[^/.]+)/schemas/$', views.SchemaListByUnit.as_view(), name="schema-list-by-unit"),
