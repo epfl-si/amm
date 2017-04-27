@@ -15,7 +15,7 @@ from .apikeyhandler import ApiKeyHandler
 from .filters import APIKeyFilterBackend
 from .rancher import Rancher
 from .serializers import KeySerializer, SchemaSerializer, PasswordSerializer
-from .utils import get_sciper, get_units, get_username, render_https_url
+from .utils import get_sciper, get_units, get_username, https_url
 from .accred import is_db_admin, get_accreditations_units
 
 
@@ -32,9 +32,9 @@ def index(request):
 def api_root(request, format=None):
 
     return Response({
-        'version': render_https_url(reverse('version-detail', request=request, format=format)),
-        'apikeys': render_https_url(reverse('apikey-list', request=request, format=format)),
-        'schemas': render_https_url(reverse('schema-list', request=request, format=format))
+        'version': https_url(reverse('version-detail', request=request, format=format)),
+        'apikeys': https_url(reverse('apikey-list', request=request, format=format)),
+        'schemas': https_url(reverse('schema-list', request=request, format=format))
     })
 
 

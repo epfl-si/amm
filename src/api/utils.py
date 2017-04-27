@@ -163,13 +163,11 @@ def get_username(sciper):
     return response[0]['attributes'][attribute][0]
 
 
-def render_https_url(url):
+def https_url(url):
     """
-    Replace http by https for browsable API
+    Make sure the url is in https
     """
-    if settings.DEBUG:
-        return url
-    return url.replace("http", "https")
+    return url.replace("http://", "https://")
 
 
 def old_debug(string_to_display):
