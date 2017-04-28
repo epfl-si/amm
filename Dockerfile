@@ -33,7 +33,10 @@ ENV \
     MINOR_RELEASE=${MINOR_RELEASE} \
     BUILD_NUMBER=${BUILD_NUMBER} \
     AMM_AUTHENTICATOR_CLASS=ldap \
-    DJANGO_SETTINGS_MODULE=config.settings.local
+    DJANGO_SETTINGS_MODULE=config.settings.local \
+    AMM_MYSQL_DOMAIN=.example.com \
+    DJANGO_DEBUG=False
+    
 
 RUN pip install --no-cache-dir -r ${REQUIREMENTS_FILE}
 RUN python ./src/manage.py collectstatic --no-input

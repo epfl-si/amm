@@ -35,6 +35,8 @@ services:
       RANCHER_ACCESS_KEY: ${RANCHER_ACCESS_KEY}
       RANCHER_SECRET_KEY: ${RANCHER_SECRET_KEY}
       REST_API_ADDRESS: ${REST_API_ADDRESS}
+      DJANGO_DEBUG: True
+      AMM_MYSQL_DOMAIN: ''
 
     expose:
       - "8000"

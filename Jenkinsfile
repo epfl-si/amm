@@ -75,6 +75,8 @@ def dependencies(start) {
     "-e", "DJANGO_SETTINGS_MODULE=config.settings.test",
     "-e", "AMM_ENVIRONMENT=${rancher_env_id}",
     "-e", "ACCRED_PASSWORD=${accred_password}",
+    "-e", "DJANGO_DEBUG=True",
+    "-e", "AMM_MYSQL_DOMAIN=.example.com",
   ]
 }
 

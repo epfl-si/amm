@@ -10,7 +10,6 @@ from unipath import Path
 BASE_DIR = Path(__file__).ancestor(4)
 SRC_DIR = Path(__file__).ancestor(3)
 
-
 def get_config(setting):
     try:
         return os.environ[setting]
@@ -20,6 +19,12 @@ def get_config(setting):
 
 
 VERSION = get_config('MAJOR_RELEASE') + '.' + get_config('MINOR_RELEASE') + '.' + get_config('BUILD_NUMBER')
+
+ENVIRONMENT_ID = get_config('AMM_ENVIRONMENT')
+DOMAIN = get_config('AMM_MYSQL_DOMAIN')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = get_config('DJANGO_DEBUG') == 'True'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_config("SECRET_KEY")

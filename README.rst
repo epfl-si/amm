@@ -25,6 +25,8 @@ Create a .env file on the project's root with the following variables :
 #. RANCHER_VERIFY_CERTIFICATE: if true the Rancher SSL certificate will be verified
 #. RANCHER_ACCESS_KEY: the Rancher API access key
 #. RANCHER_SECRET_KEY: the Rancher API secret key
+#. AMM_MYSQL_DOMAIN: Suffix to add to stack name to obtain FQDN access to the DB
+#. DJANGO_DEBUG: Set the debug mode of django "True" enables it, anything else disables it.
 
 For the tests to pass, some more variables need to be assigned:
 
@@ -36,9 +38,9 @@ Version Number:
 
 The version number is set using the following environment variables:
 
-# MAJOR_RELEASE: The major version of the application
-# MINOR_RELEASE: The bugfix version of the application
-# BUILD_NUMBER: The build number, which should be incremented at each image build
+#. MAJOR_RELEASE: The major version of the application
+#. MINOR_RELEASE: The bugfix version of the application
+#. BUILD_NUMBER: The build number, which should be incremented at each image build
 
 These variables are setup when the image is built using variables of the exact same name set with --build-arg. The build system is responsible for setting these variables correctly in the docker ``build command``.
 
