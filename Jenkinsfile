@@ -73,8 +73,10 @@ def dependencies(start) {
     "-e", "RANCHER_VERIFY_CERTIFICATE=true",
     "-e", "RANCHER_API_URL=https://test-rancher.epfl.ch",
     "-e", "DJANGO_SETTINGS_MODULE=config.settings.test",
-    "-e", "AMM_ENVIRONMENT=${rancher_env_id}",
+    "-e", "RANCHER_ENVIRONMENT_ID=${rancher_env_id}",
     "-e", "ACCRED_PASSWORD=${accred_password}",
+    "-e", "DJANGO_DEBUG=True",
+    "-e", "AMM_MYSQL_DOMAIN=.example.com",
   ]
 }
 

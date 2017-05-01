@@ -26,14 +26,17 @@ ENV \
     LDAP_USE_SSL=true \
     CACHE_REDIS_LOCATION=redis://redis:6379/1 \
     CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient \
-    AMM_ENVIRONMENT=prod \
+    RANCHER_ENVIRONMENT_ID=prod \
     DJANGO_HOST=localhost \
     DJANGO_WORKER_COUNT=2 \
     MAJOR_RELEASE=${MAJOR_RELEASE} \
     MINOR_RELEASE=${MINOR_RELEASE} \
     BUILD_NUMBER=${BUILD_NUMBER} \
     AMM_AUTHENTICATOR_CLASS=ldap \
-    DJANGO_SETTINGS_MODULE=config.settings.local
+    DJANGO_SETTINGS_MODULE=config.settings.local \
+    AMM_MYSQL_DOMAIN=.example.com \
+    DJANGO_DEBUG=False
+    
 
 RUN pip install --no-cache-dir -r ${REQUIREMENTS_FILE}
 RUN python ./src/manage.py collectstatic --no-input
