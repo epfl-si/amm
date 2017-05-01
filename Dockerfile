@@ -26,7 +26,7 @@ ENV \
     LDAP_USE_SSL=true \
     CACHE_REDIS_LOCATION=redis://redis:6379/1 \
     CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient \
-    AMM_ENVIRONMENT=prod \
+    RANCHER_ENVIRONMENT_ID=prod \
     DJANGO_HOST=localhost \
     DJANGO_WORKER_COUNT=2 \
     MAJOR_RELEASE=${MAJOR_RELEASE} \

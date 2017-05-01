@@ -26,7 +26,7 @@ script:
     export LDAP_USER_SEARCH_ATTR=uid;
     export CACHE_REDIS_LOCATION=redis://redis:6379/1;
     export CACHE_REDIS_CLIENT_CLASS=django_redis.client.DefaultClient;
-    export AMM_ENVIRONMENT=test;
+    export RANCHER_ENVIRONMENT_ID=test;
     docker-compose up -d
   - docker-compose exec django pip install -r requirements/local.txt
   - docker-compose exec django ./bin/flake8.sh

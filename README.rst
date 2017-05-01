@@ -16,7 +16,7 @@ Create a .env file on the project's root with the following variables :
 #. LDAP_SERVER: The LDAP server to bind to
 #. LDAP_SERVER_FOR_SEARCH: The LDAP server for search
 #. LDAP_USE_SSL: Whether to use 'ldaps' or 'ldap' (no support for starttls), use 'ldaps' only if set to 'true' any other value is false
-#. AMM_ENVIRONMENT: the amm environment
+#. RANCHER_ENVIRONMENT_ID: the rancher environment id where amm will deploy stacks
 #. AMM_AUTHENTICATOR_CLASS: The authentication class to use, currently only 'ldap' is supported
 #. DJANGO_HOST: the value to accept as Host header in HTTP requests
 #. DJANGO_WORKER_COUNT: the number of worker processes

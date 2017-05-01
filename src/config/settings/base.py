@@ -20,7 +20,7 @@ def get_config(setting):
 
 VERSION = get_config('MAJOR_RELEASE') + '.' + get_config('MINOR_RELEASE') + '.' + get_config('BUILD_NUMBER')
 
-ENVIRONMENT_ID = get_config('AMM_ENVIRONMENT')
+ENVIRONMENT_ID = get_config('RANCHER_ENVIRONMENT_ID')
 DOMAIN = get_config('AMM_MYSQL_DOMAIN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
