@@ -73,7 +73,7 @@
 			},
 			"response": [
 				{
-					"id": "52851843-74ca-48df-bea7-a7d46ae70357",
+					"id": "46a064c0-d30c-42b9-a41e-3efd7709eb5f",
 					"name": "error redis",
 					"originalRequest": {
 						"url": "https://{{host}}:{{port}}/v1/apikeys/",
@@ -277,19 +277,24 @@
 			"request": {
 				"url": "https://{{host}}:{{port}}/v1/schemas/{{schema_id}}/reset-password/",
 				"method": "POST",
-				"header": [
-					{
-						"key": "host",
-						"value": "{{host}}",
-						"description": ""
-					},
-					{
-						"key": "port",
-						"value": "{{port}}",
-						"description": ""
-					}
-				],
-				"body": {},
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "access_key",
+							"value": "{{access_key}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "secret_key",
+							"value": "{{secret_key}}",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
 				"description": "Reset le mot de passe du schéma"
 			},
 			"response": []
