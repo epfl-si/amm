@@ -236,7 +236,7 @@ class Rancher:
     @classmethod
     def get_stack(cls, name_stack):
         """
-        Return the stack whith the name 'name_stack'
+        Return the stack having the given name
         Example :
         /v2-beta/projects/1a9/stacks/?name=mysql-e9608f8f
         """
@@ -267,8 +267,34 @@ class Rancher:
         schema = {
             "connection_string": get_connection_string(*parameters),
             "mysql_cmd": get_mysql_client_cmd(*parameters),
+            # format is 'owner:<owner_id>,unit:<unit_id>'
+            "unit_id": stack['group'].split(',unit:')[1],
+            "schema_id": schema_id
+        }
+        return schema
 
-            # Example of stack['group'] = 'owner:133134,unit:1303'
+    @classmethod
+    def get_schema_with_password(cls, schema_id, password):
+        """
+        Returns the schema of the given user. Use this method
+        when you know the password and you want to return it
+        to the user
+        """
+        name_stack = "mysql-" + schema_id
+        stack = cls.get_stack(name_stack=name_stack)[0]
+
+        parameters = [
+            stack['environment']['AMM_USERNAME'],
+            password,
+            name_stack + settings.DOMAIN,
+            stack['environment']['MYSQL_EXPORT_PORT'],
+            stack['environment']['MYSQL_DATABASE']
+        ]
+
+        schema = {
+            "connection_string": get_connection_string(*parameters),
+            "mysql_cmd": get_mysql_client_cmd(*parameters),
+            # format is 'owner:<owner_id>,unit:<unit_id>'
             "unit_id": stack['group'].split(',unit:')[1],
             "schema_id": schema_id
         }
