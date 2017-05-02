@@ -114,6 +114,44 @@ class ViewsTestCase(APITestCase):
         )
 
     @tag('rancher')
+    def test_reset_password(self):
+
+        # create an APIKey
+        response = self.client.post(
+            reverse('apikey-list'),
+            data={"username": get_config('TEST_USERNAME'), "password": get_config('TEST_CORRECT_PWD')},
+            format='json'
+        )
+
+        content = json.loads(response.content.decode('utf-8'))
+        access_key = content["access_key"]
+        secret_key = content["secret_key"]
+
+        # create a schema
+        response = self.client.post(
+            reverse('schema-list'),
+            data={"access_key": access_key,
+                  "secret_key": secret_key},
+            format='json'
+        )
+
+        content = json.loads(response.content.decode('utf-8'))
+
+        sleep(10)
+
+        # reset the password
+        response = self.client.post(
+            reverse(
+                viewname='schema-detail-password',
+                args={content["schema_id"]},
+            ),
+            data={"access_key": access_key, "secret_key": secret_key},
+            format='json'
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    @tag('rancher')
     def test_post_schemas(self):
         """ Test the POST method of Schemas """
 
@@ -128,7 +166,7 @@ class ViewsTestCase(APITestCase):
         access_key = content["access_key"]
         secret_key = content["secret_key"]
 
-        # create schemas
+        # create a schema
         response = self.client.post(
             reverse('schema-list'),
             data={"access_key": access_key,
@@ -138,7 +176,6 @@ class ViewsTestCase(APITestCase):
 
         content = json.loads(response.content.decode('utf-8'))
 
-        "mysql://aa2ea71b:-CxMbtSVdPcY88MH3Vo7@mysql-78bc59f0.db.rsaas.epfl.ch:12068/98c321cb"
         self.assertIsNotNone(re.match('^mysql://\w+:[-\+\w]+@[-\.\w]+:\d+/.+$', content['connection_string']))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
