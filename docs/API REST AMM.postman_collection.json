@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "API REST AMM",
-		"_postman_id": "82e904ea-221f-f21d-87e6-e02b13d94f69",
+		"_postman_id": "e64f03ae-d424-9735-a6be-725a97273fa6",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -24,7 +24,10 @@
 						"description": ""
 					}
 				],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": "Expose les points d'entrées de l'API"
 			},
 			"response": []
@@ -35,7 +38,10 @@
 				"url": "https://{{host}}:{{port}}/v1/version/",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": "Retourne la version de l'API"
 			},
 			"response": []
@@ -65,7 +71,79 @@
 				},
 				"description": "- Authentification LDAPS\n- Génère les clefs d'API : acces_key et secret_key"
 			},
-			"response": []
+			"response": [
+				{
+					"id": "52851843-74ca-48df-bea7-a7d46ae70357",
+					"name": "error redis",
+					"originalRequest": {
+						"url": "https://{{host}}:{{port}}/v1/apikeys/",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "plainText",
+					"_postman_previewtype": "text",
+					"header": [
+						{
+							"name": "Content-Length",
+							"key": "Content-Length",
+							"value": "14419",
+							"description": "The length of the response body in octets (8-bit bytes)"
+						},
+						{
+							"name": "Content-Type",
+							"key": "Content-Type",
+							"value": "text/plain",
+							"description": "The mime type of this content"
+						},
+						{
+							"name": "Date",
+							"key": "Date",
+							"value": "Tue, 02 May 2017 08:13:46 GMT",
+							"description": "The date and time that the message was sent"
+						},
+						{
+							"name": "Server",
+							"key": "Server",
+							"value": "gunicorn/19.6.0",
+							"description": "A name for the server"
+						},
+						{
+							"name": "Vary",
+							"key": "Vary",
+							"value": "Cookie",
+							"description": "Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server."
+						},
+						{
+							"name": "X-Frame-Options",
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN",
+							"description": "Clickjacking protection: \"deny\" - no rendering within a frame, \"sameorigin\" - no rendering if origin mismatch"
+						}
+					],
+					"cookie": [],
+					"responseTime": 365,
+					"body": "MasterNotFoundError at /v1/apikeys/\nNo master found for 'replicationset'\n\nRequest Method: POST\nRequest URL: http://amm.db.test-rsaas.epfl.ch/v1/apikeys/\nDjango Version: 1.11\nPython Executable: /usr/local/bin/python3.6\nPython Version: 3.6.1\nPython Path: ['/opt/amm/src', '/usr/local/bin', '/usr/local/lib/python36.zip', '/usr/local/lib/python3.6', '/usr/local/lib/python3.6/lib-dynload', '/usr/local/lib/python3.6/site-packages']\nServer time: Tue, 2 May 2017 08:13:46 +0000\nInstalled Applications:\n['django.contrib.admin',\n 'django.contrib.auth',\n 'django.contrib.contenttypes',\n 'django.contrib.sessions',\n 'django.contrib.messages',\n 'django.contrib.staticfiles',\n 'rest_framework',\n 'rest_framework_swagger',\n 'api.apps.ApiConfig']\nInstalled Middleware:\n['django.middleware.security.SecurityMiddleware',\n 'django.contrib.sessions.middleware.SessionMiddleware',\n 'django.middleware.common.CommonMiddleware',\n 'django.middleware.csrf.CsrfViewMiddleware',\n 'django.contrib.auth.middleware.AuthenticationMiddleware',\n 'django.contrib.messages.middleware.MessageMiddleware',\n 'django.middleware.clickjacking.XFrameOptionsMiddleware']\n\n\nTraceback:  \n\nFile \"/usr/local/lib/python3.6/site-packages/django/core/handlers/exception.py\" in inner\n  41.             response = get_response(request)\n\nFile \"/usr/local/lib/python3.6/site-packages/django/core/handlers/base.py\" in _get_response\n  187.                 response = self.process_exception_by_middleware(e, request)\n\nFile \"/usr/local/lib/python3.6/site-packages/django/core/handlers/base.py\" in _get_response\n  185.                 response = wrapped_callback(request, *callback_args, **callback_kwargs)\n\nFile \"/usr/local/lib/python3.6/site-packages/django/views/decorators/csrf.py\" in wrapped_view\n  58.         return view_func(*args, **kwargs)\n\nFile \"/usr/local/lib/python3.6/site-packages/django/views/generic/base.py\" in view\n  68.             return self.dispatch(request, *args, **kwargs)\n\nFile \"/usr/local/lib/python3.6/site-packages/rest_framework/views.py\" in dispatch\n  483.             response = self.handle_exception(exc)\n\nFile \"/usr/local/lib/python3.6/site-packages/rest_framework/views.py\" in handle_exception\n  443.             self.raise_uncaught_exception(exc)\n\nFile \"/usr/local/lib/python3.6/site-packages/rest_framework/views.py\" in dispatch\n  480.             response = handler(request, *args, **kwargs)\n\nFile \"/opt/amm/src/api/views.py\" in post\n  148.             key = serializer.save()\n\nFile \"/usr/local/lib/python3.6/site-packages/rest_framework/serializers.py\" in save\n  214.             self.instance = self.create(validated_data)\n\nFile \"/opt/amm/src/api/serializers.py\" in create\n  48.         return ApiKeyHandler.generate_keys(validated_data[\"username\"])\n\nFile \"/opt/amm/src/api/apikeyhandler.py\" in generate_keys\n  34.         save_key(username, the_key)\n\nFile \"/opt/amm/src/api/redis.py\" in save_key\n  21.     connection = get_connection()\n\nFile \"/opt/amm/src/api/redis.py\" in get_connection\n  13.     return get_redis_connection(\"default\")\n\nFile \"/usr/local/lib/python3.6/site-packages/django_redis/__init__.py\" in get_redis_connection\n  22.     return cache.client.get_client(write)\n\nFile \"/usr/local/lib/python3.6/site-packages/django_redis_sentinel/sentinel.py\" in get_client\n  60.                 self._client_write = self.connect(write)\n\nFile \"/usr/local/lib/python3.6/site-packages/django_redis_sentinel/sentinel.py\" in connect\n  85.             host, port = sentinel.discover_master(master_name)\n\nFile \"/usr/local/lib/python3.6/site-packages/redis/sentinel.py\" in discover_master\n  222.         raise MasterNotFoundError(\"No master found for %r\" % (service_name,))\n\nException Type: MasterNotFoundError at /v1/apikeys/\nException Value: No master found for 'replicationset'\nRequest information:\nUSER: AnonymousUser\n\nGET: No GET data\n\nPOST: No POST data\n\nFILES: No FILES data\n\nCOOKIES: No cookie data\n\nMETA:\nCONTENT_LENGTH = '252'\nCONTENT_TYPE = 'multipart/form-data; boundary=----WebKitFormBoundaryTzDJ5BRxLtD2Wm1y'\nHTTP_ACCEPT = '*/*'\nHTTP_ACCEPT_ENCODING = 'gzip, deflate, br'\nHTTP_ACCEPT_LANGUAGE = 'en-US,en;q=0.8,fr;q=0.6'\nHTTP_CACHE_CONTROL = 'no-cache'\nHTTP_CONNECTION = 'close'\nHTTP_HOST = 'amm.db.test-rsaas.epfl.ch'\nHTTP_ORIGIN = 'chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop'\nHTTP_POSTMAN_TOKEN = 'e9b5ce7b-a4e8-7c26-2a64-cf2f15550025'\nHTTP_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/58.0.3029.81 Chrome/58.0.3029.81 Safari/537.36'\nHTTP_X_FORWARDED_FOR = '128.178.1.66'\nHTTP_X_FORWARDED_PORT = '443'\nHTTP_X_FORWARDED_PROTO = 'https'\nPATH_INFO = '/v1/apikeys/'\nQUERY_STRING = ''\nRAW_URI = '/v1/apikeys/'\nREMOTE_ADDR = '10.42.121.17'\nREMOTE_PORT = '53024'\nREQUEST_METHOD = 'POST'\nSCRIPT_NAME = ''\nSERVER_NAME = '0.0.0.0'\nSERVER_PORT = '8000'\nSERVER_PROTOCOL = 'HTTP/1.1'\nSERVER_SOFTWARE = 'gunicorn/19.6.0'\ngunicorn.socket = <socket.socket fd=14, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('10.42.49.118', 8000), raddr=('10.42.121.17', 53024)>\nwsgi.errors = <gunicorn.http.wsgi.WSGIErrorsWrapper object at 0x7f9281740a58>\nwsgi.file_wrapper = ''\nwsgi.input = <gunicorn.http.body.Body object at 0x7f9281740358>\nwsgi.multiprocess = True\nwsgi.multithread = False\nwsgi.run_once = False\nwsgi.url_scheme = 'http'\nwsgi.version = \n\nSettings:\nUsing settings module config.settings.test\nABSOLUTE_URL_OVERRIDES = {}\nADMINS = []\nALLOWED_HOSTS = ['amm.db.test-rsaas.epfl.ch', '127.0.0.1']\nAPPEND_SLASH = True\nAUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']\nAUTH_PASSWORD_VALIDATORS = '********************'\nAUTH_USER_MODEL = 'auth.User'\nBASE_DIR = Path('/opt/amm')\nCACHES = {'default': {'BACKEND': 'django_redis.cache.RedisCache', 'LOCATION': 'replicationset/sentinel.redis-sentinel.rancher.internal:6379/1', 'OPTIONS': {'CLIENT_CLASS': 'django_redis_sentinel.SentinelClient', 'SERIALIZER': 'django_redis.serializers.json.JSONSerializer'}}}\nCACHE_MIDDLEWARE_ALIAS = 'default'\nCACHE_MIDDLEWARE_KEY_PREFIX = '********************'\nCACHE_MIDDLEWARE_SECONDS = 600\nCSRF_COOKIE_AGE = 31449600\nCSRF_COOKIE_DOMAIN = None\nCSRF_COOKIE_HTTPONLY = False\nCSRF_COOKIE_NAME = 'csrftoken'\nCSRF_COOKIE_PATH = '/'\nCSRF_COOKIE_SECURE = False\nCSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'\nCSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'\nCSRF_TRUSTED_ORIGINS = []\nCSRF_USE_SESSIONS = False\nDATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'HOST': '127.0.0.1', 'NAME': 'test', 'USER': 'test', 'PASSWORD': '********************', 'ATOMIC_REQUESTS': False, 'AUTOCOMMIT': True, 'CONN_MAX_AGE': 0, 'OPTIONS': {}, 'TIME_ZONE': None, 'PORT': '', 'TEST': {'CHARSET': None, 'COLLATION': None, 'NAME': None, 'MIRROR': None}}}\nDATABASE_ROUTERS = []\nDATA_UPLOAD_MAX_MEMORY_SIZE = 2621440\nDATA_UPLOAD_MAX_NUMBER_FIELDS = 1000\nDATETIME_FORMAT = 'N j, Y, P'\nDATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M:%S.%f', '%Y-%m-%d %H:%M', '%Y-%m-%d', '%m/%d/%Y %H:%M:%S', '%m/%d/%Y %H:%M:%S.%f', '%m/%d/%Y %H:%M', '%m/%d/%Y', '%m/%d/%y %H:%M:%S', '%m/%d/%y %H:%M:%S.%f', '%m/%d/%y %H:%M', '%m/%d/%y']\nDATE_FORMAT = 'N j, Y'\nDATE_INPUT_FORMATS = ['%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y', '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y', '%d %B %Y', '%d %B, %Y']\nDEBUG = True\nDEBUG_PROPAGATE_EXCEPTIONS = False\nDECIMAL_SEPARATOR = '.'\nDEFAULT_CHARSET = 'utf-8'\nDEFAULT_CONTENT_TYPE = 'text/html'\nDEFAULT_EXCEPTION_REPORTER_FILTER = 'django.views.debug.SafeExceptionReporterFilter'\nDEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'\nDEFAULT_FROM_EMAIL = 'webmaster@localhost'\nDEFAULT_INDEX_TABLESPACE = ''\nDEFAULT_TABLESPACE = ''\nDISALLOWED_USER_AGENTS = []\nDOMAIN = '.db.test-rsaas.epfl.ch'\nEMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'\nEMAIL_HOST = 'localhost'\nEMAIL_HOST_PASSWORD = '********************'\nEMAIL_HOST_USER = ''\nEMAIL_PORT = 25\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_KEYFILE = '********************'\nEMAIL_SUBJECT_PREFIX = '[Django] '\nEMAIL_TIMEOUT = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_USE_SSL = False\nEMAIL_USE_TLS = False\nENVIRONMENT_ID = '1a7'\nFILE_CHARSET = 'utf-8'\nFILE_UPLOAD_DIRECTORY_PERMISSIONS = None\nFILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.MemoryFileUploadHandler', 'django.core.files.uploadhandler.TemporaryFileUploadHandler']\nFILE_UPLOAD_MAX_MEMORY_SIZE = 2621440\nFILE_UPLOAD_PERMISSIONS = None\nFILE_UPLOAD_TEMP_DIR = None\nFIRST_DAY_OF_WEEK = 0\nFIXTURE_DIRS = []\nFORCE_SCRIPT_NAME = None\nFORMAT_MODULE_PATH = None\nFORM_RENDERER = 'django.forms.renderers.DjangoTemplates'\nIGNORABLE_404_URLS = []\nINSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles', 'rest_framework', 'rest_framework_swagger', 'api.apps.ApiConfig']\nINTERNAL_IPS = []\nLANGUAGES = [('af', 'Afrikaans'), ('ar', 'Arabic'), ('ast', 'Asturian'), ('az', 'Azerbaijani'), ('bg', 'Bulgarian'), ('be', 'Belarusian'), ('bn', 'Bengali'), ('br', 'Breton'), ('bs', 'Bosnian'), ('ca', 'Catalan'), ('cs', 'Czech'), ('cy', 'Welsh'), ('da', 'Danish'), ('de', 'German'), ('dsb', 'Lower Sorbian'), ('el', 'Greek'), ('en', 'English'), ('en-au', 'Australian English'), ('en-gb', 'British English'), ('eo', 'Esperanto'), ('es', 'Spanish'), ('es-ar', 'Argentinian Spanish'), ('es-co', 'Colombian Spanish'), ('es-mx', 'Mexican Spanish'), ('es-ni', 'Nicaraguan Spanish'), ('es-ve', 'Venezuelan Spanish'), ('et', 'Estonian'), ('eu', 'Basque'), ('fa', 'Persian'), ('fi', 'Finnish'), ('fr', 'French'), ('fy', 'Frisian'), ('ga', 'Irish'), ('gd', 'Scottish Gaelic'), ('gl', 'Galician'), ('he', 'Hebrew'), ('hi', 'Hindi'), ('hr', 'Croatian'), ('hsb', 'Upper Sorbian'), ('hu', 'Hungarian'), ('ia', 'Interlingua'), ('id', 'Indonesian'), ('io', 'Ido'), ('is', 'Icelandic'), ('it', 'Italian'), ('ja', 'Japanese'), ('ka', 'Georgian'), ('kk', 'Kazakh'), ('km', 'Khmer'), ('kn', 'Kannada'), ('ko', 'Korean'), ('lb', 'Luxembourgish'), ('lt', 'Lithuanian'), ('lv', 'Latvian'), ('mk', 'Macedonian'), ('ml', 'Malayalam'), ('mn', 'Mongolian'), ('mr', 'Marathi'), ('my', 'Burmese'), ('nb', 'Norwegian Bokmål'), ('ne', 'Nepali'), ('nl', 'Dutch'), ('nn', 'Norwegian Nynorsk'), ('os', 'Ossetic'), ('pa', 'Punjabi'), ('pl', 'Polish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('ro', 'Romanian'), ('ru', 'Russian'), ('sk', 'Slovak'), ('sl', 'Slovenian'), ('sq', 'Albanian'), ('sr', 'Serbian'), ('sr-latn', 'Serbian Latin'), ('sv', 'Swedish'), ('sw', 'Swahili'), ('ta', 'Tamil'), ('te', 'Telugu'), ('th', 'Thai'), ('tr', 'Turkish'), ('tt', 'Tatar'), ('udm', 'Udmurt'), ('uk', 'Ukrainian'), ('ur', 'Urdu'), ('vi', 'Vietnamese'), ('zh-hans', 'Simplified Chinese'), ('zh-hant', 'Traditional Chinese')]\nLANGUAGES_BIDI = ['he', 'ar', 'fa', 'ur']\nLANGUAGE_CODE = 'en-us'\nLANGUAGE_COOKIE_AGE = None\nLANGUAGE_COOKIE_DOMAIN = None\nLANGUAGE_COOKIE_NAME = 'django_language'\nLANGUAGE_COOKIE_PATH = '/'\nLOCALE_PATHS = []\nLOGGING = {}\nLOGGING_CONFIG = 'logging.config.dictConfig'\nLOGIN_REDIRECT_URL = '/accounts/profile/'\nLOGIN_URL = '/accounts/login/'\nLOGOUT_REDIRECT_URL = None\nMANAGERS = []\nMEDIA_ROOT = ''\nMEDIA_URL = ''\nMESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'\nMIDDLEWARE = ['django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware', 'django.contrib.messages.middleware.MessageMiddleware', 'django.middleware.clickjacking.XFrameOptionsMiddleware']\nMIDDLEWARE_CLASSES = ['django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware']\nMIGRATION_MODULES = {}\nMONTH_DAY_FORMAT = 'F j'\nNUMBER_GROUPING = 0\nPASSWORD_HASHERS = '********************'\nPASSWORD_RESET_TIMEOUT_DAYS = '********************'\nPREPEND_WWW = False\nREST_FRAMEWORK = {'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',), 'EXCEPTION_HANDLER': 'api.api_exception_handler.api_exception_handler'}\nROOT_URLCONF = 'config.urls'\nSECRET_KEY = '********************'\nSECURE_BROWSER_XSS_FILTER = False\nSECURE_CONTENT_TYPE_NOSNIFF = False\nSECURE_HSTS_INCLUDE_SUBDOMAINS = False\nSECURE_HSTS_PRELOAD = False\nSECURE_HSTS_SECONDS = 0\nSECURE_PROXY_SSL_HEADER = None\nSECURE_REDIRECT_EXEMPT = []\nSECURE_SSL_HOST = None\nSECURE_SSL_REDIRECT = False\nSERVER_EMAIL = 'root@localhost'\nSESSION_CACHE_ALIAS = 'default'\nSESSION_COOKIE_AGE = 1209600\nSESSION_COOKIE_DOMAIN = None\nSESSION_COOKIE_HTTPONLY = True\nSESSION_COOKIE_NAME = 'sessionid'\nSESSION_COOKIE_PATH = '/'\nSESSION_COOKIE_SECURE = False\nSESSION_ENGINE = 'django.contrib.sessions.backends.db'\nSESSION_EXPIRE_AT_BROWSER_CLOSE = False\nSESSION_FILE_PATH = None\nSESSION_SAVE_EVERY_REQUEST = False\nSESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'\nSETTINGS_MODULE = 'config.settings.test'\nSHORT_DATETIME_FORMAT = 'm/d/Y P'\nSHORT_DATE_FORMAT = 'm/d/Y'\nSIGNING_BACKEND = 'django.core.signing.TimestampSigner'\nSILENCED_SYSTEM_CHECKS = []\nSRC_DIR = Path('/opt/amm/src')\nSTATICFILES_DIRS = []\nSTATICFILES_FINDERS = ['django.contrib.staticfiles.finders.FileSystemFinder', 'django.contrib.staticfiles.finders.AppDirectoriesFinder']\nSTATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'\nSTATIC_ROOT = Path('/opt/amm/src/static')\nSTATIC_URL = '/static/'\nTEMPLATES = [{'BACKEND': 'django.template.backends.django.DjangoTemplates', 'DIRS': [], 'APP_DIRS': True, 'OPTIONS': {'context_processors': ['django.template.context_processors.debug', 'django.template.context_processors.request', 'django.contrib.auth.context_processors.auth', 'django.contrib.messages.context_processors.messages']}}]\nTEST_NON_SERIALIZED_APPS = []\nTEST_RUNNER = 'django.test.runner.DiscoverRunner'\nTHOUSAND_SEPARATOR = ','\nTIME_FORMAT = 'P'\nTIME_INPUT_FORMATS = ['%H:%M:%S', '%H:%M:%S.%f', '%H:%M']\nTIME_ZONE = 'UTC'\nUSE_ETAGS = False\nUSE_I18N = True\nUSE_L10N = True\nUSE_THOUSAND_SEPARATOR = False\nUSE_TZ = True\nUSE_X_FORWARDED_HOST = False\nUSE_X_FORWARDED_PORT = False\nVERSION = '0.1.37'\nWSGI_APPLICATION = 'config.wsgi.application'\nX_FRAME_OPTIONS = 'SAMEORIGIN'\nYEAR_MONTH_FORMAT = 'F Y'\n\n\nYou're seeing this error because you have DEBUG = True in your\nDjango settings file. Change that to False, and Django will\ndisplay a standard page generated by the handler for this status code.\n\n"
+				}
+			]
 		},
 		{
 			"name": "Get all access keys",
@@ -133,7 +211,10 @@
 				"url": "https://{{host}}:{{port}}/v1/schemas/?access_key={{access_key}}&secret_key={{secret_key}}",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": "- Vérifie que les clés API existent\n- Identifie l'utilisateur grâce à la paire de clés access_key/secret_key\n- Retourne tous les schémas de l'utilisateur"
 			},
 			"response": []
@@ -144,7 +225,10 @@
 				"url": "https://{{host}}:{{port}}/v1/schemas/{{schema_id}}/?access_key={{access_key}}&secret_key={{secret_key}}",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\nACCREDITATION\n- si le user est le créateur alors OK\n- si le user est le dbadmin de l'unité du schéma alors OK"
 			},
 			"response": []
@@ -189,12 +273,37 @@
 			"response": []
 		},
 		{
+			"name": "Reset password",
+			"request": {
+				"url": "https://{{host}}:{{port}}/v1/schemas/{{schema_id}}/reset-password/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "host",
+						"value": "{{host}}",
+						"description": ""
+					},
+					{
+						"key": "port",
+						"value": "{{port}}",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Reset le mot de passe du schéma"
+			},
+			"response": []
+		},
+		{
 			"name": "Get all schemas by user ",
 			"request": {
 				"url": "https://{{host}}:{{port}}/v1/users/{{user_id}}/schemas/?secret_key={{secret_key}}&access_key={{access_key}}",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n\n- Si le user est le user passé en paramètre Alors on retourne tous les schémas (sans tenir compte des unités)\n- Si le user est le dbadmin de l'unité du user passé en paramètre alors on retourne les schémas filtrés par userID et unit DBAdmin"
 			},
 			"response": []
@@ -205,7 +314,10 @@
 				"url": "https://{{host}}:{{port}}/v1/units/{{unit_id_idevelop}}/schemas/?secret_key={{secret_key}}&access_key={{access_key}}",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": "- Vérifie que les clés API existent\n- Identifie le user grâce à la paire de clés access_key/secret_key\n- Vérifie que le user appartient à l'unité passé en paramètre\n- Vérifie que le user est le dbadmin de l'unité passé en paramètre\n\nRetourne :\n- Tous les schémas créés par l'utilisateur et dans l'unité passé en paramètre, si l'utilisateur est le créateur des schémas\n- Tous les schémas de l'unité si l'utilisateur est le dbadmin de l'unité"
 			},
 			"response": []

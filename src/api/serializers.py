@@ -87,7 +87,7 @@ class PasswordSerializer(serializers.Serializer):
         response = requests.patch(url, data=data)
 
         if response == 200:
-            schema = Rancher.get_schema(schema_id)
+            schema = Rancher.get_schema_with_password(schema_id, data["password"])
             return {
                 "connection_string": schema["connection_string"],
                 "mysql_cmd": schema["mysql_cmd"],
