@@ -10,6 +10,7 @@ from unipath import Path
 BASE_DIR = Path(__file__).ancestor(4)
 SRC_DIR = Path(__file__).ancestor(3)
 
+
 def get_config(setting):
     try:
         return os.environ[setting]
