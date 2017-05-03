@@ -76,17 +76,19 @@ class PasswordSerializer(serializers.Serializer):
         """
         schema_id = validated_data["schema_id"]
 
-        url = get_config("REST_API_ADDRESS").format(stack="mysql-" + schema_id)
+        host = get_config("REST_API_ADDRESS").format(stack="mysql-" + schema_id)
+
+        user = Rancher.get_mysql_user(schema_id)
+
+        url = "http://" + host + "/v1/users/" + user + "/"
 
         data = {
             "password": generate_password(length=20)
         }
 
-        url = "http://" + url + "/v1/users/" + Rancher.get_mysql_user(schema_id) + "/"
-
         response = requests.patch(url, data=data)
 
-        if response == 200:
+        if response.status_code == 200:
             schema = Rancher.get_schema_with_password(schema_id, data["password"])
             return {
                 "connection_string": schema["connection_string"],
