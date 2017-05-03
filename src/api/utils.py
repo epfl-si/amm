@@ -3,7 +3,6 @@ import os
 import string
 import binascii
 import ldap3
-from django.conf import settings
 
 from config.settings import base
 

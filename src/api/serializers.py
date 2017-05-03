@@ -76,7 +76,7 @@ class PasswordSerializer(serializers.Serializer):
         """
         schema_id = validated_data["schema_id"]
 
-        url = get_config("REST_API_ADDRESS").replace('%stack', "mysql-" + schema_id)
+        url = get_config("REST_API_ADDRESS").format(stack="mysql-" + schema_id)
 
         data = {
             "password": generate_password(length=20)
