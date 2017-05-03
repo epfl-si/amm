@@ -7,26 +7,26 @@ Requirements
 
 Create a .env file on the project's root with the following variables :
 
-#. ACCRED_PASSWORD: The password to access to accred webservices
-#. CACHE_REDIS_LOCATION: The django-cache connection string for the redis driver (depends on client selected)
-#. CACHE_REDIS_CLIENT_CLASS: The django-cache client class to use for the redis driver (for standalone redis use: "django_redis.client.DefaultClient" )
-#. SECRET_KEY: django secret key
+#. ACCRED_PASSWORD: accred webservice password
+#. AMM_MYSQL_DOMAIN: suffix to add to stack name to obtain FQDN access to the DB
+#. AMM_AUTHENTICATOR_CLASS: class to use for the authentication, currently only 'ldap' is supported
+#. CACHE_REDIS_LOCATION: django-cache connection string for the redis driver (depends on client selected)
+#. CACHE_REDIS_CLIENT_CLASS: django-cache client class to use for the redis driver (for standalone redis use: "django_redis.client.DefaultClient" )
+#. DJANGO_HOST: value to accept as Host header in HTTP requests
+#. DJANGO_WORKER_COUNT: number of worker processes
+#. DJANGO_SETTINGS_MODULE: Django configuration module to use, currently only 'config.settings.local' for local testing and 'config.settings.base' for production are supported
+#. DJANGO_DEBUG: debug mode for Django "True" enables it, anything else disables it.
+#. SECRET_KEY: Django secret key
 #. LDAP_USER_SEARCH_ATTR: the LDAP user search attribute
-#. LDAP_BASE_DN: The BaseDN for ldap user search
 #. LDAP_SERVER: The LDAP server to bind to
 #. LDAP_SERVER_FOR_SEARCH: The LDAP server for search
+#. LDAP_BASE_DN: The BaseDN for ldap user search
 #. LDAP_USE_SSL: Whether to use 'ldaps' or 'ldap' (no support for starttls), use 'ldaps' only if set to 'true' any other value is false
-#. RANCHER_ENVIRONMENT_ID: the rancher environment id where amm will deploy stacks
-#. AMM_AUTHENTICATOR_CLASS: The authentication class to use, currently only 'ldap' is supported
-#. DJANGO_HOST: the value to accept as Host header in HTTP requests
-#. DJANGO_WORKER_COUNT: the number of worker processes
-#. DJANGO_SETTINGS_MODULE: the django configuration module to use, currently only 'config.settings.local' for local testing and 'config.settings.base' for production are supported
-#. RANCHER_API_URL: the base URL to access the Rancher API
-#. RANCHER_VERIFY_CERTIFICATE: if true the Rancher SSL certificate will be verified
+#. RANCHER_API_URL: the Rancher API url
 #. RANCHER_ACCESS_KEY: the Rancher API access key
 #. RANCHER_SECRET_KEY: the Rancher API secret key
-#. AMM_MYSQL_DOMAIN: Suffix to add to stack name to obtain FQDN access to the DB
-#. DJANGO_DEBUG: Set the debug mode of django "True" enables it, anything else disables it.
+#. RANCHER_ENVIRONMENT_ID: the Rancher environment id
+#. RANCHER_VERIFY_CERTIFICATE: if true the Rancher SSL certificate will be verified
 
 For the tests to pass, some more variables need to be assigned:
 
